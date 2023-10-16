@@ -1,10 +1,9 @@
-import { ComponentClass, FC } from 'react';
-
 export type IRoute = {
 	key: string,
     title: string,
     path: string,
     enabled: boolean,
-    component: ComponentClass | FC
+    element: React.FC
+    // component: ComponentClass | FC
     children?: IRoute | undefined;
 };

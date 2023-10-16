@@ -21,12 +21,12 @@ export const AlertReducer: Reducer<IAlertState, Action> = (
               message: action.payload,
               isModalOpen: true
             };
-          case ActionType.TOGGLE_ALERT_MODAL:
-            return {
-              ...state,
-              isModalOpen: !state.isModalOpen
-            };
-          default:
-            return state;
+        case ActionType.TOGGLE_ALERT_MODAL:
+          return {
+            ...state,
+            isModalOpen: !state.isModalOpen
+          };
+        default:
+          return state;
     }
 };

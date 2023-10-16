@@ -1,16 +1,14 @@
-import async from "../components/Async";
 import { IRoute as Route } from "../types/Route";
+import Login from '../pages/Login'
+import Dashboard from '../pages/dashboard/DashBoard'
 
-const Dashboard = async(() => import('../pages/dashboard/DashBoard'));
-const Login = async(() => import('../pages/Login'));
-
-export const routes: Array<Route> = [
+export const dashboardRoutes: Array<Route> = [
     {
         key: 'dashboard-route',
         title: 'Quản trị',
         path: '/',
         enabled: true,
-        component: Dashboard
+        element: Dashboard
     }
 ]
 
@@ -20,6 +18,6 @@ export const authRoutes: Array<Route> = [
         title: 'Đăng nhập',
         path: '/',
         enabled: true,
-        component: Login
+        element: Login
     },  
 ]

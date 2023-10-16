@@ -8,6 +8,7 @@ export interface TemplateThemeModeContextType {
     isDark: boolean;
     toggleThemeMode: () => void;
 }
+
 export { 
     SidebarSelectedMenuTitleContext, 
     TemplateThemeModeContext, 

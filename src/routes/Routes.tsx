@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { Route, Routes } from "react-router-dom";
 import { Outlet } from 'react-router-dom';
 import { IRoute } from "../types/Route";
-import { routes as dashboardRoutes, authRoutes } from "./index";
+import { dashboardRoutes, authRoutes } from "./index";
 import MainLayout from "../layouts/MainLayout";
 import AuthLayout from "../layouts/AuthLayout";
 import { RootState } from '../redux/store/store';
@@ -14,7 +14,7 @@ const ModifiedMainLayout = () => {
             <Outlet />
         </MainLayout>
     )
-    };
+};
 const ModifiedAuthLayout = () => {
     return (
         <AuthLayout>
@@ -23,12 +23,12 @@ const ModifiedAuthLayout = () => {
     )
 };
 
+
 const AppRoutes: FC = () => {
     const isAuthenticated: boolean = useSelector(
         (state: RootState) => state.auth.accessToken !== ''
     )
-    console.log(isAuthenticated)
-    console.log(authRoutes);
+
     return (
         <>
             {isAuthenticated ? 
@@ -38,7 +38,7 @@ const AppRoutes: FC = () => {
                         <Route
                             key={route.key}
                             path={route.path}
-                            element={<route.component />}
+                            element={<route.element />}
                         />
                     ))}
                     </Route>
@@ -51,7 +51,7 @@ const AppRoutes: FC = () => {
                             <Route
                                 key={route.key}
                                 path={route.path}
-                                element={<route.component />}
+                                element={<route.element />}
                             />
                         ))}
                         </Route>

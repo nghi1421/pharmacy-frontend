@@ -1,11 +1,11 @@
+import { Grid } from "@mui/material";
 import { FC, ReactNode } from "react";
-import { Grid } from '@mui/material';
-
 type AuthLayoutProps = {
   children: ReactNode;
 }
 
 const AuthLayout: FC<AuthLayoutProps> = ({ children }) => {
+  
   return (
     <Grid 
       container 

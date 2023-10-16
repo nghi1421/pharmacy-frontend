@@ -14,7 +14,7 @@ export interface IAuthState {
 }
 
 const initialState = {
-    accessToken: "",
+    accessToken: "123",
     refreshToken: "",
     data : null , 
     loading: false,
