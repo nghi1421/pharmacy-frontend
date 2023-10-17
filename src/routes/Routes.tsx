@@ -26,7 +26,7 @@ const ModifiedAuthLayout = () => {
 
 const AppRoutes: FC = () => {
     const isAuthenticated: boolean = useSelector(
-        (state: RootState) => state.login.accessToken !== ''
+        (state: RootState) => state.login.accessToken !== '123'
     )
 
     return (

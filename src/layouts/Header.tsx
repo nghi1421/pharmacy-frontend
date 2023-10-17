@@ -1,5 +1,5 @@
 import { AccountCircle } from "@mui/icons-material"
-import { IconButton, Toolbar, Typography, styled } from "@mui/material"
+import { Divider, IconButton, Menu, MenuItem, Toolbar, Typography, styled } from "@mui/material"
 import MuiAppBar, { AppBarProps as MuiAppBarProps  } from '@mui/material/AppBar';
 import { useState } from "react";
 import MenuIcon from '@mui/icons-material/Menu';
@@ -29,10 +29,21 @@ const AppBar = styled(MuiAppBar, {
 }));
 
 const Header: React.FC = () => {
-    const [open, setOpen] = useState(true);
-    const toggleDrawer = () => {
-        setOpen(!open);
-    };
+  const [avatarEl, setAvatarEl] = useState<HTMLButtonElement|null>(null);
+  const openSetting = Boolean(avatarEl);
+
+  const handleAvatarClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    setAvatarEl(e.currentTarget);
+  };
+
+  const handleAvatarClose = () => {
+    setAvatarEl(null);
+  };
+
+  const [open, setOpen] = useState(true);
+  const toggleDrawer = () => {
+      setOpen(!open);
+  };
     return (
         <AppBar position="absolute" open={open}>
           <Toolbar
@@ -60,11 +71,32 @@ const Header: React.FC = () => {
               sx={{ flexGrow: 1 }}
             >
               Trang quản lí
-            </Typography>
-            <IconButton color="inherit">
-               <AccountCircle />
-            </IconButton>
-          </Toolbar>
+          </Typography>
+          <IconButton
+            id="basic-button"
+            color="inherit"
+            onClick={handleAvatarClick}
+          >
+              <AccountCircle />
+          </IconButton>
+          <Menu
+            id="basic-menu"
+            anchorEl={avatarEl}
+            open={openSetting}
+            onClose={handleAvatarClose}
+            MenuListProps={{
+              'aria-labelledby': 'basic-button',
+            }}
+          >
+            <MenuItem onClick={handleAvatarClose}>Cập nhật thông tin</MenuItem>
+            <MenuItem onClick={handleAvatarClose}>Đổi mật khẩu</MenuItem>
+              <Divider />
+            <MenuItem onClick={handleAvatarClose}>Đăng xuất</MenuItem>
+          </Menu>
+        </Toolbar>
+        
+        
+
         </AppBar>
     )
 }

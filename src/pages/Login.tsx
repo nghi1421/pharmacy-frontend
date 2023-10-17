@@ -3,7 +3,7 @@ import TextInput from '../components/form/InputText.tsx'
 import { Avatar, Box, Button, Container, CssBaseline, Grid, Link, Typography } from '@mui/material'
 import '../assets/styles/index.css'
 import { useAppDispatch } from '../redux/store/hooks.ts'
-import { authenticate } from '../redux/authSlice'
+import { authenticate } from '../redux/async/Authenticate'
 
 function Login() {
     const dispatch = useAppDispatch()
