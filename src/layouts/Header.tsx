@@ -29,7 +29,10 @@ const AppBar = styled(MuiAppBar, {
 }));
 
 const Header: React.FC = () => {
-    
+    const [open, setOpen] = useState(true);
+    const toggleDrawer = () => {
+        setOpen(!open);
+    };
     return (
         <AppBar position="absolute" open={open}>
           <Toolbar

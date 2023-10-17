@@ -1,9 +1,7 @@
 import { Reducer } from 'redux';
-
 import { IAuth as Auth } from '../../models/Auth';
 import { User } from '../../types/User';
 import { Action, ActionType } from '../actions/types/AuthTypes';
-
 
 export interface IAuthState {
     accessToken: string
@@ -14,7 +12,7 @@ export interface IAuthState {
 }
 
 const initialState = {
-    accessToken: "123",
+    accessToken: "",
     refreshToken: "",
     data : null , 
     loading: false,

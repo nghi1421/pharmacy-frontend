@@ -16,11 +16,10 @@ type Config = {
     headers: Record<string, string>
 };
    
-export const AuthStart = (username: string, password: string): ThunkResult<void> => 
+export const authStart = (username: string, password: string): ThunkResult<void> => 
     async (dispatch: Dispatch<Action>) => {
-        dispatch<IAuthStart>({ type: ActionType.AUTH_START 
-    });
-        
+
+    dispatch<IAuthStart>({ type: ActionType.AUTH_START }); 
     const config: Config = {
         headers: {
             "Content-Type": "application/json"
@@ -34,14 +33,16 @@ export const AuthStart = (username: string, password: string): ThunkResult<void>
         
     try {
         const response: AxiosResponse<Auth> = await axiosClient.post(`login`, body, config);
+        console.log(response);
         dispatch<IAuthSuccess>({
             type: ActionType.AUTH_SUCCESS,
             payload: response.data
         });
-    } catch (err: any) {
+    } catch (error: any) {
+        console.log(error)
         dispatch<IAuthFail>({
             type: ActionType.AUTH_FAIL,
-            payload: err
+            payload: error
         });    
     }
 };
