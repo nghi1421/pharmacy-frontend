@@ -1,16 +1,15 @@
 import { ReactElement, ReactNode, useState } from "react";
 import { Box, CssBaseline, styled } from "@mui/material";
-import { mainListItems } from './listItem';
-import { Container, Divider, List, Toolbar } from '@mui/material';
+import { Container, Divider, Toolbar } from '@mui/material';
 import IconButton from '@mui/material/IconButton'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import MuiDrawer from '@mui/material/Drawer'
-import TableComponent from "../components/table/TableComponent";
 import { Column } from "../types/Column";
 import Header from "./Header";
 import { RootState } from "../redux/store/store";
 import { useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
+import { SideBar } from "../components/Sidebar";
 
 interface LayoutProps {
   children: ReactNode;
@@ -111,10 +110,10 @@ const Layout: React.FC<LayoutProps> = ({ children }): ReactElement => {
               <ChevronLeftIcon />
             </IconButton>
           </Toolbar>
-          <Divider />
-          <List component="nav">
-            {mainListItems}
-          </List>
+        <Divider />
+        
+        <SideBar/>
+        
         </Drawer>
           <Box
             component="main"

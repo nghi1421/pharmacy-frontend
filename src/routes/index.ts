@@ -8,60 +8,71 @@ import TypeByUsePage from "../pages/type-by-use/TypeByUsePage";
 import ImportPage from "../pages/import/ImportPage";
 import ExportPage from "../pages/export/ExportPage";
 import ProviderPage from "../pages/provider/ProviderPage";
+import { AttachMoney, ClearAll, Group, Handshake, ManageAccounts, Medication, VerticalAlignBottom, VolunteerActivism } from "@mui/icons-material";
+import PeopleIcon from '@mui/icons-material/People';
 
 export const dashboardRoutes: Array<Route> = [
     {      
         key: 'user-route',
-        title: 'Quản lí tài khoản',
+        title: 'Tài khoản',
         path: '/users',
+        icon: ManageAccounts,
         element: UserPage      
     },
     {      
         key: 'staff-route',
-        title: 'Quản lí nhân viên',
+        title: 'Nhân viên',
         path: '/staffs',
+        icon: Group,
         element: StaffPage      
     },
     {      
         key: 'customer-route',
-        title: 'Quản lí khách hàng',
+        title: 'Khách hàng',
         path: '/customers',
+        icon: PeopleIcon,
         element: CustomerPage      
     },
     {      
         key: 'provider-route',
-        title: 'Quản lí nhà cung cấp thuốc',
+        title: 'Nhà cung cấp',
         path: '/providers',
+        icon: Handshake,
         element: ProviderPage      
     },
     {      
         key: 'position-route',
-        title: 'Quản lí chức vụ',
+        title: 'Chức vụ',
         path: '/positions',
+        icon: ClearAll,
         element: PositionPage      
     },
     {      
         key: 'drug-category-route',
-        title: 'Quản lí danh mục thuốc',
+        title: 'Danh mục thuốc',
         path: '/drug-categories',
+        icon: Medication,
         element: DrugCategoryPage      
     },
     {      
         key: 'type-by-use-route',
-        title: 'Quản lí công dụng thuốc',
+        title: 'Phân loại công dụng',
         path: '/type-by-uses',
+        icon: VolunteerActivism,
         element: TypeByUsePage      
     },
     {      
         key: 'import-route',
-        title: 'Quản lí danh nhập hàng',
+        title: 'Nhập hàng',
         path: '/imports',
+        icon: VerticalAlignBottom,
         element: ImportPage      
     },
     {      
         key: 'export-route',
-        title: 'Quản lí danh xuất hàng',
+        title: 'Xuất hàng',
         path: '/exports',
+        icon: AttachMoney,
         element: ExportPage      
     }
 ]

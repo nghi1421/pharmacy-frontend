@@ -3,4 +3,5 @@ export type Route = {
     title: string
     path: string
     element: React.FC<any>
+    icon: React.FC<any>
 };
