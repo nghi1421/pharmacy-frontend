@@ -1,12 +1,12 @@
-import React, { FC }  from "react";
-import { useSelector } from "react-redux";
+import React from "react";
 import { Route, Routes } from "react-router-dom";
 import { Outlet } from 'react-router-dom';
-import { IRoute } from "../types/Route";
-import { dashboardRoutes, authRoutes } from "./index";
+import { Route as IRoute } from "../types/Route";
+import { dashboardRoutes } from "./index";
 import MainLayout from "../layouts/MainLayout";
 import AuthLayout from "../layouts/AuthLayout";
-import { RootState } from '../redux/store/store';
+import Login from '../pages/Login'
+import ErrorPage from "../error-page";
 
 const ModifiedMainLayout = () => {
     return (
@@ -18,47 +18,37 @@ const ModifiedMainLayout = () => {
 const ModifiedAuthLayout = () => {
     return (
         <AuthLayout>
-            <Outlet />  
+            <Outlet />
         </AuthLayout>
     )
 };
 
 
-const AppRoutes: FC = () => {
-    const isAuthenticated: boolean = useSelector(
-        (state: RootState) => state.login.accessToken !== '123'
-    )
-
+const AppRoutes: React.FC = () => {
     return (
-        <>
-            {isAuthenticated ? 
-                <Routes>
-                    <Route element={<ModifiedMainLayout />}>
-                    {dashboardRoutes.map((route: IRoute) => (
-                        <Route
-                            key={route.key}
-                            path={route.path}
-                            element={<route.element />}
-                        />
-                    ))}
-                    </Route>
-                </Routes>
-            :
-                <React.Fragment>
-                    <Routes>
-                        <Route element={<ModifiedAuthLayout />}>
-                        {authRoutes.map((route: IRoute) => (
-                            <Route
-                                key={route.key}
-                                path={route.path}
-                                element={<route.element />}
-                            />
-                        ))}
-                        </Route>
-                    </Routes>
-                </React.Fragment>
-            }
-        </>
+        <Routes>
+            <Route
+                path="*"
+                element={ <ErrorPage />}
+            />
+            <Route element={<ModifiedMainLayout />}>
+                {dashboardRoutes.map((route: IRoute) => (
+                    <Route
+                        key={route.key}
+                        path={route.path}
+                        element={<route.element />}
+                        errorElement={ <ErrorPage/>}
+                    />
+                ))}
+            </Route>
+            <Route element={<ModifiedAuthLayout />}>
+                <Route key='login-route'
+                    path='/login'
+                    element={<Login />}
+                    errorElement={ <ErrorPage/>}
+                />
+            </Route>
+        </Routes>
     )
 }
 

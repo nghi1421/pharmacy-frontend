@@ -10,12 +10,12 @@ import Meta from './components/Meta.tsx';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>  
-    <Meta/>
+    <Meta />
     <Provider store={store}>
       <ContextProvider>
-        <Router>
+        {/* <RouterProvider router={router} /> */}
+          {/* <App /> */}
           <App />
-        </Router>
       </ContextProvider>
     </Provider>
   </React.StrictMode>,

@@ -94,9 +94,6 @@ const Header: React.FC = () => {
             <MenuItem onClick={handleAvatarClose}>Đăng xuất</MenuItem>
           </Menu>
         </Toolbar>
-        
-        
-
         </AppBar>
     )
 }

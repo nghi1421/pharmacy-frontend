@@ -1,4 +1,4 @@
-import { FC, ReactElement, ReactNode, useState } from "react";
+import { ReactElement, ReactNode, useState } from "react";
 import { Box, CssBaseline, styled } from "@mui/material";
 import { mainListItems } from './listItem';
 import { Container, Divider, List, Toolbar } from '@mui/material';
@@ -8,6 +8,9 @@ import MuiDrawer from '@mui/material/Drawer'
 import TableComponent from "../components/table/TableComponent";
 import { Column } from "../types/Column";
 import Header from "./Header";
+import { RootState } from "../redux/store/store";
+import { useSelector } from "react-redux";
+import { Navigate } from "react-router-dom";
 
 interface LayoutProps {
   children: ReactNode;
@@ -74,14 +77,23 @@ const columns: Column[] = [
   { key: 'updatedAt', value: 'Ngày cập nhật'},
 ]
 
-const Layout: FC<LayoutProps> = ({ children }): ReactElement => {
+const Layout: React.FC<LayoutProps> = ({ children }): ReactElement => {
   const [open, setOpen] = useState(true);
     const toggleDrawer = () => {
       setOpen(!open);
   };
+  const isAuthenticated: boolean = useSelector(
+    (state: RootState) => state.login.accessToken !== '123'
+  )
   
+  if (!isAuthenticated) {
+    return (
+      <Navigate replace to="/login" />
+    )
+  }
+  else 
   return (
-    <Box sx={{ display: 'flex' }}>
+      <Box sx={{ display: 'flex' }}>
       <CssBaseline />
       
         <Header />
@@ -104,27 +116,28 @@ const Layout: FC<LayoutProps> = ({ children }): ReactElement => {
             {mainListItems}
           </List>
         </Drawer>
-        <Box
-          component="main"
-          sx={{
-            backgroundColor: (theme) =>
-              theme.palette.mode === 'light'
-                ? theme.palette.grey[100]
-                : theme.palette.grey[900],
-            flexGrow: 1,
-            height: '100vh',
-            overflow: 'auto',
-          }}
-        >
+          <Box
+            component="main"
+            sx={{
+              backgroundColor: (theme) =>
+                theme.palette.mode === 'light'
+                  ? theme.palette.grey[100]
+                  : theme.palette.grey[900],
+              flexGrow: 1,
+              height: '100vh',
+              overflow: 'auto',
+            }}
+          >
           <Toolbar />
         <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-          <TableComponent
-            rows={rows}
-            tableName="Quản lí tài khoản"
-            columns={columns}
-          ></TableComponent>
-          </Container>
-        </Box>
+          { children }
+            {/* <TableComponent
+              rows={rows}
+              tableName="Quản lí tài khoản"
+              columns={columns}
+            ></TableComponent> */}
+            </Container>
+          </Box>
       </Box>
   );
 };

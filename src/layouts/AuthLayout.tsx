@@ -1,5 +1,6 @@
 import { Grid } from "@mui/material";
 import { FC, ReactNode } from "react";
+
 type AuthLayoutProps = {
   children: ReactNode;
 }

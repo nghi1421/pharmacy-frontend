@@ -17,9 +17,9 @@ export const ContextProvider = ({ children }: ContextProviderProps) => {
     
     return (
         <TemplateThemeModeContext.Provider value={{ isDark, toggleThemeMode }}>
-                <SidebarSelectedMenuTitleContext.Provider value={{ menuTitle, setMenuTitle }}>
-                    {children}
-                </SidebarSelectedMenuTitleContext.Provider>
+            <SidebarSelectedMenuTitleContext.Provider value={{ menuTitle, setMenuTitle }}>
+                {children}
+            </SidebarSelectedMenuTitleContext.Provider>
         </TemplateThemeModeContext.Provider>
     );
   };

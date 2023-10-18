@@ -3,13 +3,16 @@ import { ThemeProvider } from "@emotion/react"
 import { CssBaseline } from "@mui/material"
 import { theme } from './themes'
 import AppRoutes from "./routes/Routes"
+import { BrowserRouter } from "react-router-dom"
 
 const App: React.FC = () => {
   return (
     <React.Fragment>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <AppRoutes/>
+        <BrowserRouter>
+          <AppRoutes/>
+        </BrowserRouter>
       </ThemeProvider>
     </React.Fragment>
   )

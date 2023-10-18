@@ -1,13 +1,12 @@
-import { FormEvent, useState } from 'react'
+import React, { FormEvent, useState } from 'react'
 import TextInput from '../components/form/InputText.tsx'
 import { Avatar, Box, Button, Container, CssBaseline, Grid, Link, Typography } from '@mui/material'
 import '../assets/styles/index.css'
 import { useAppDispatch } from '../redux/store/hooks.ts'
-import { authenticate } from '../redux/async/Authenticate'
+import { authenticate } from '../redux/async/Authenticate.ts'
 
-function Login() {
+const Login: React.FC<{}> = () => {
     const dispatch = useAppDispatch()
-
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
     
