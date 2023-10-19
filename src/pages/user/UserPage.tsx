@@ -33,9 +33,7 @@ const columns: Column[] = [
 ]
 
 const UserPage: React.FC<{}> = () => {
-    // const { data, error, isLoading } = useGetUsersQuery()
-    const isLoading = true
-    const data = {data: []}
+    const { data, error, isLoading } = useGetUsersQuery()
     return (
         <Paper>
             <Typography
