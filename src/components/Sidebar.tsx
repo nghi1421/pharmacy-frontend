@@ -22,7 +22,8 @@ export const SideBar: React.FC = () =>{
   return (
     <List>
       { dashboardRoutes.map((route: Route) => (
-          <ListItem
+        <ListItem
+            key={route.key}
             component={MyNavLink}
             to={route.path}
             activeClassName={classes.activeLink}

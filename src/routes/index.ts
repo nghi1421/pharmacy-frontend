@@ -17,62 +17,62 @@ export const dashboardRoutes: Array<Route> = [
         title: 'Tài khoản',
         path: '/users',
         icon: ManageAccounts,
-        element: UserPage      
+        element: UserPage
     },
     {      
         key: 'staff-route',
         title: 'Nhân viên',
         path: '/staffs',
         icon: Group,
-        element: StaffPage      
+        element: StaffPage
     },
     {      
         key: 'customer-route',
         title: 'Khách hàng',
         path: '/customers',
         icon: PeopleIcon,
-        element: CustomerPage      
+        element: CustomerPage
     },
     {      
         key: 'provider-route',
         title: 'Nhà cung cấp',
         path: '/providers',
         icon: Handshake,
-        element: ProviderPage      
+        element: ProviderPage
     },
     {      
         key: 'position-route',
         title: 'Chức vụ',
         path: '/positions',
         icon: ClearAll,
-        element: PositionPage      
+        element: PositionPage
     },
     {      
         key: 'drug-category-route',
         title: 'Danh mục thuốc',
         path: '/drug-categories',
         icon: Medication,
-        element: DrugCategoryPage      
+        element: DrugCategoryPage
     },
     {      
         key: 'type-by-use-route',
         title: 'Phân loại công dụng',
         path: '/type-by-uses',
         icon: VolunteerActivism,
-        element: TypeByUsePage      
+        element: TypeByUsePage
     },
     {      
         key: 'import-route',
         title: 'Nhập hàng',
         path: '/imports',
         icon: VerticalAlignBottom,
-        element: ImportPage      
+        element: ImportPage
     },
     {      
         key: 'export-route',
         title: 'Xuất hàng',
         path: '/exports',
         icon: AttachMoney,
-        element: ExportPage      
+        element: ExportPage
     }
 ]

@@ -1,11 +1,9 @@
 import { Divider, Paper, Table, TableBody, TableCell, TableContainer, TableFooter, TableHead, TablePagination, TableRow, Typography, styled, tableCellClasses } from "@mui/material"
 import { Column } from '../../types/Column'
-import { useState } from "react"
 // import { TablePaginationActions } from "./TablePaginationActions";
 
 interface TableProps<T> {
   rows: T[]
-  tableName: string
   columns: Column[]
 }
 
@@ -30,40 +28,29 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-const TableComponent: React.FC<TableProps<any>> = ({ rows, tableName, columns}) => {
-    const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(5);
+const TableComponent: React.FC<TableProps<any>> = ({ rows, columns}) => {
+    // const [page, setPage] = useState<number>(0);
+    // const [rowsPerPage, setRowsPerPage] = useState<number>(5);
 
-    const emptyRows =
-      page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
+    // const emptyRows =
+    //   page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
-    const handleChangePage = (
-      event: React.MouseEvent<HTMLButtonElement> | null,
-      newPage: number,
-    ) => {
-      setPage(newPage);
-    };
+    // const handleChangePage = (
+    //   event: React.MouseEvent<HTMLButtonElement> | null,
+    //   newPage: number,
+    // ) => {
+    //   setPage(newPage);
+    // };
 
-    const handleChangeRowsPerPage = (
-      event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    ) => {
-      setRowsPerPage(parseInt(event.target.value, 10));
-      setPage(0);
-  };
+    // const handleChangeRowsPerPage = (
+    //   event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    // ) => {
+    //     setRowsPerPage(parseInt(event.target.value, 10));
+    //     setPage(0);
+    // };
   
-    return (
-        <TableContainer component={Paper}>
-        <Typography
-            variant="h4"
-            gutterBottom
-            marginLeft="16px"
-            marginRight="16px"
-            marginTop="12px"
-            marginBottom="12px"
-            fontWeight='500'
-        >
-            { tableName }
-        </Typography>
+  return (
+      <TableContainer component={Paper}>
         <Divider/>
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
                 <TableHead>
@@ -73,6 +60,7 @@ const TableComponent: React.FC<TableProps<any>> = ({ rows, tableName, columns}) 
                         ))}
                     </TableRow>
                 </TableHead>
+
                 <TableBody>
                     {rows.map((row) => (
                     <StyledTableRow
@@ -84,8 +72,9 @@ const TableComponent: React.FC<TableProps<any>> = ({ rows, tableName, columns}) 
                         ))}
                     </StyledTableRow>
                     ))}
-                    </TableBody>
-                    <TableFooter>
+                </TableBody>
+        
+                    {/* <TableFooter>
                       <TableRow>
                         <TablePagination
                           rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
@@ -104,7 +93,7 @@ const TableComponent: React.FC<TableProps<any>> = ({ rows, tableName, columns}) 
                           // ActionsComponent={TablePaginationActions}
                         />
                       </TableRow>
-                    </TableFooter>
+                    </TableFooter> */}
             </Table>
         </TableContainer>
     )
