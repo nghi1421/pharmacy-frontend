@@ -5,7 +5,7 @@ export const importApi = createApi({
   reducerPath: 'importApi',
   baseQuery: deFaultFetchBaseQuery,
   endpoints: (builder) => ({
-    getImports: builder.query({
+    getImports: builder.query<any,void>({
       query: () => `imports`,
     }),
   }),

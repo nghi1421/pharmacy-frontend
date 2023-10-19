@@ -5,7 +5,7 @@ export const drugCategoryApi = createApi({
   reducerPath: 'drugCategoryApi',
   baseQuery: deFaultFetchBaseQuery,
   endpoints: (builder) => ({
-    getDrugs: builder.query({
+    getDrugs: builder.query<any,void>({
       query: () => `drug-categories`,
     }),
   }),

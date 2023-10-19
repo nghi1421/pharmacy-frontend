@@ -5,7 +5,7 @@ export const staffApi = createApi({
   reducerPath: 'staffApi',
   baseQuery: deFaultFetchBaseQuery,
   endpoints: (builder) => ({
-    getStaffs: builder.query({
+    getStaffs: builder.query<any,void>({
       query: () => `staffs`,
     }),
   }),

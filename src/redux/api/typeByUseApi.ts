@@ -5,7 +5,7 @@ export const typeByUseApi = createApi({
   reducerPath: 'typeByUseApi',
   baseQuery: deFaultFetchBaseQuery,
   endpoints: (builder) => ({
-    getTypes: builder.query({
+    getTypes: builder.query<any,void>({
       query: () => `type-by-uses`,
     }),
   }),

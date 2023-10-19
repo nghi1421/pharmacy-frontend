@@ -40,7 +40,7 @@ const StaffPage: React.FC<{}> = () => {
                 fontWeight='500'
                 sx={{ px:3, py: 2 }}
             >
-                Quản lí tài khoản
+                Quản lí nhân viên
             </Typography>
             <Divider></Divider>
             {

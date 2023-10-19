@@ -5,7 +5,7 @@ export const positionApi = createApi({
   reducerPath: 'positionApi',
   baseQuery: deFaultFetchBaseQuery,
   endpoints: (builder) => ({
-    getPositions: builder.query({
+    getPositions: builder.query<any,void>({
       query: () => `positions`,
     }),
   }),
