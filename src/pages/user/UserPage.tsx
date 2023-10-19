@@ -3,7 +3,7 @@ import TableComponent from "../../components/table/TableComponent";
 import { useGetUsersQuery } from "../../redux/api/userApi";
 import { Column } from "../../types/Column";
 import { User } from '../../types/User';
-import { fortmatDateTime } from "../../utils/format";
+import { formatDateTime } from "../../utils/format";
 import { Role } from "../../types/Role";
 
 function createData(
@@ -16,8 +16,8 @@ function createData(
     return {
         id, username,
         role: role.name,
-        createdAt: fortmatDateTime(createdAt),
-        updatedAt: fortmatDateTime(updatedAt),
+        createdAt: formatDateTime(createdAt),
+        updatedAt: formatDateTime(updatedAt),
     };
 }
 
@@ -59,6 +59,7 @@ const UserPage: React.FC<{}> = () => {
                 :
                     <TableComponent
                         rows={data.data}
+                        keyTable='user-table'
                         columns={columns}
                     ></TableComponent>
             }

@@ -54,6 +54,7 @@ const CustomerPage: React.FC<{}> = () => {
                 :
                     <TableComponent
                         rows={data.data}
+                        keyTable='customer-table'
                         columns={columns}
                     ></TableComponent>
             }

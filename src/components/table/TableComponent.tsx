@@ -5,6 +5,7 @@ import { Column } from '../../types/Column'
 interface TableProps<T> {
   rows: T[]
   columns: Column[]
+  keyTable: string
 }
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -28,7 +29,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-const TableComponent: React.FC<TableProps<any>> = ({ rows, columns}) => {
+const TableComponent: React.FC<TableProps<any>> = ({ rows, keyTable, columns}) => {
     // const [page, setPage] = useState<number>(0);
     // const [rowsPerPage, setRowsPerPage] = useState<number>(5);
 
@@ -54,21 +55,30 @@ const TableComponent: React.FC<TableProps<any>> = ({ rows, columns}) => {
         <Divider/>
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
                 <TableHead>
-                    <TableRow>
-                        {columns.map(column => (
-                          <StyledTableCell align="left">{column.value}</StyledTableCell>
+                    <TableRow key={keyTable}>
+                        {columns.map((column, index) => (
+                          <StyledTableCell
+                            align="left"
+                            key={`header-cell-${keyTable}-${index}`}
+                          >
+                            {column.value}
+                          </StyledTableCell>
                         ))}
                     </TableRow>
                 </TableHead>
 
                 <TableBody>
-                    {rows.map((row) => (
+                    {rows.map((row, rowIndex) => (
                     <StyledTableRow
-                        key={row.id}
+                        key={`row-${keyTable}-${rowIndex}`}
                         sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                       >
-                        {columns.map(column => (
-                          <TableCell align="left">{row[column.key]}</TableCell>
+                        {columns.map((column, index) => (
+                          <TableCell
+                            align="left"
+                            key={`row-${rowIndex}-${keyTable}-${index}`}>
+                            {row[column.key]}
+                          </TableCell>
                         ))}
                     </StyledTableRow>
                     ))}

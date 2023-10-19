@@ -1,6 +1,6 @@
 import moment from "moment"
 
-export const fortmatDateTime = (datetime: string) => {
+export const formatDateTime = (datetime: string) => {
     return moment(datetime).format('DD/MM/YYYY HH:mm:ss')
 }
 

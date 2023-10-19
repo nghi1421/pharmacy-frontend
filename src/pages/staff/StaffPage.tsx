@@ -56,6 +56,7 @@ const StaffPage: React.FC<{}> = () => {
                 :
                     <TableComponent
                         rows={data.data}
+                        keyTable='staff-table'
                         columns={columns}
                     ></TableComponent>
             }

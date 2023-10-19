@@ -8,6 +8,7 @@ import { providerApi } from '../api/providerApi';
 import { drugCategoryApi } from '../api/drugCategoryApi';
 import { importApi } from '../api/importApi';
 import { exportApi } from '../api/exportApi';
+import { positionApi } from '../api/positionApi';
 
 export const store = configureStore({
   reducer: {
@@ -16,6 +17,7 @@ export const store = configureStore({
     [staffApi.reducerPath]: staffApi.reducer,
     [customerApi.reducerPath]: customerApi.reducer,
     [providerApi.reducerPath]: providerApi.reducer,
+    [positionApi.reducerPath]: positionApi.reducer,
     [drugCategoryApi.reducerPath]: drugCategoryApi.reducer,
     [importApi.reducerPath]: importApi.reducer,
     [exportApi.reducerPath]: exportApi.reducer,
@@ -26,6 +28,7 @@ export const store = configureStore({
       .concat(staffApi.middleware)
       .concat(customerApi.middleware)
       .concat(providerApi.middleware)
+      .concat(positionApi.middleware)
       .concat(drugCategoryApi.middleware)
       .concat(importApi.middleware)
       .concat(exportApi.middleware)
