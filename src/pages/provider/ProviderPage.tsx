@@ -5,7 +5,6 @@ import { Provider } from "../../types/Provider";
 import { useGetProvidersQuery } from "../../redux/api/providerApi";
 import { formatDateTime } from "../../utils/format";
 
-
 function createData({id, name, address, createdAt, updatedAt, phoneNumber, email}: Provider) {
     return {
         id, name, phoneNumber, email, address,

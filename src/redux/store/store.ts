@@ -9,6 +9,7 @@ import { drugCategoryApi } from '../api/drugCategoryApi';
 import { importApi } from '../api/importApi';
 import { exportApi } from '../api/exportApi';
 import { positionApi } from '../api/positionApi';
+import { typeByUseApi } from '../api/typeByUseApi';
 
 export const store = configureStore({
   reducer: {
@@ -19,6 +20,7 @@ export const store = configureStore({
     [providerApi.reducerPath]: providerApi.reducer,
     [positionApi.reducerPath]: positionApi.reducer,
     [drugCategoryApi.reducerPath]: drugCategoryApi.reducer,
+    [typeByUseApi.reducerPath]: typeByUseApi.reducer,
     [importApi.reducerPath]: importApi.reducer,
     [exportApi.reducerPath]: exportApi.reducer,
   },
@@ -29,6 +31,7 @@ export const store = configureStore({
       .concat(customerApi.middleware)
       .concat(providerApi.middleware)
       .concat(positionApi.middleware)
+      .concat(typeByUseApi.middleware)
       .concat(drugCategoryApi.middleware)
       .concat(importApi.middleware)
       .concat(exportApi.middleware)
