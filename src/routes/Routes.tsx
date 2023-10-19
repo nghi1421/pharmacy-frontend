@@ -2,7 +2,7 @@ import React from "react";
 import { Route, Routes } from "react-router-dom";
 import { Outlet } from 'react-router-dom';
 import { Route as IRoute } from "../types/Route";
-import { dashboardRoutes } from "./index";
+import { dashboardRoutes, formRoutes } from "./index";
 import MainLayout from "../layouts/MainLayout";
 import AuthLayout from "../layouts/AuthLayout";
 import Login from '../pages/Login'
@@ -40,6 +40,16 @@ const AppRoutes: React.FC = () => {
                         errorElement={ <ErrorPage/>}
                     />
                 ))}
+
+                {formRoutes.map((route: IRoute) => (
+                    <Route
+                        key={route.key}
+                        path={route.path}
+                        element={<route.element />}
+                        errorElement={ <ErrorPage/>}
+                    />
+                ))}
+
             </Route>
             <Route element={<ModifiedAuthLayout />}>
                 <Route key='login-route'
