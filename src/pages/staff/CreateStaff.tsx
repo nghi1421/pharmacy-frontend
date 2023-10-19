@@ -1,5 +1,6 @@
-import { Checkbox, FormControlLabel, Grid, Paper, TextField, Typography } from "@mui/material"
+import { Button, Checkbox, FormControlLabel, Grid, Paper, TextField, Typography } from "@mui/material"
 import React from "react"
+import { useNavigate } from "react-router-dom";
 
 const styles = theme => ({
   appBar: {
@@ -38,13 +39,17 @@ const styles = theme => ({
   },
 });
 const CreateStaff: React.FC = () => {
+    const navigate = useNavigate()
+    const backToTable = () => {
+        navigate('/staffs')
+    }
     return (
-    <Paper sx={{ px:8, py:2 }}>
+    <Paper sx={{ px:6, py:4 }}>
         <Typography variant="h6" gutterBottom>
             Shipping address
         </Typography>
         <Grid container spacing={4}>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={8} sm={4}>
             <TextField
                 required
                 id="firstName"
@@ -54,7 +59,7 @@ const CreateStaff: React.FC = () => {
                 autoComplete="fname"
             />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={8} sm={4}>
             <TextField
                 required
                 id="lastName"
@@ -64,7 +69,7 @@ const CreateStaff: React.FC = () => {
                 autoComplete="lname"
             />
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={8}>
             <TextField
                 required
                 id="address1"
@@ -74,7 +79,7 @@ const CreateStaff: React.FC = () => {
                 autoComplete="billing address-line1"
             />
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={8}>
             <TextField
                 id="address2"
                 name="address2"
@@ -83,7 +88,7 @@ const CreateStaff: React.FC = () => {
                 autoComplete="billing address-line2"
             />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={8} sm={4}>
             <TextField
                 required
                 id="city"
@@ -93,10 +98,10 @@ const CreateStaff: React.FC = () => {
                 autoComplete="billing address-level2"
             />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={8} sm={4}>
             <TextField id="state" name="state" label="State/Province/Region" fullWidth />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={8} sm={4}>
             <TextField
                 required
                 id="zip"
@@ -106,7 +111,7 @@ const CreateStaff: React.FC = () => {
                 autoComplete="billing postal-code"
             />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={8} sm={4}>
             <TextField
                 required
                 id="country"
@@ -116,13 +121,42 @@ const CreateStaff: React.FC = () => {
                 autoComplete="billing country"
             />
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={8}>
             <FormControlLabel
                 control={<Checkbox color="secondary" name="saveAddress" value="yes" />}
                 label="Use this address for payment details"
             />
             </Grid>
             </Grid>
+
+            <Grid container sx={{
+                display: 'flex',
+                justifyContent: "end",
+                gap: 2
+            }}>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    sx={{
+                        textTransform: 'none',
+                    }}
+                >
+                    Thêm
+                </Button>
+
+                <Button
+                    variant="contained"
+                    color="error"
+                    sx={{
+                        textTransform: 'none',
+                    }}
+                    onClick={backToTable}
+                >
+                    Quay về
+                </Button>
+            </Grid>
+           
+            
     </Paper>)
 }
 
