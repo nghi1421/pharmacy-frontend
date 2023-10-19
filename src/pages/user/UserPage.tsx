@@ -2,38 +2,40 @@ import { Box, CircularProgress, Divider, Paper, Typography } from "@mui/material
 import TableComponent from "../../components/table/TableComponent";
 import { useGetUsersQuery } from "../../redux/api/userApi";
 import { Column } from "../../types/Column";
+import { User } from '../../types/User';
+import { fortmatDateTime } from "../../utils/format";
+import { Role } from "../../types/Role";
 
 function createData(
-  id: number,
-  username: string,
-  createdAt: string,
-  updatedAt: string,
+    id: number,
+    username: string,
+    role: Role, 
+    createdAt: string,
+    updatedAt: string,
 ) {
-  return { id, username, createdAt, updatedAt };
+    return {
+        id, username,
+        role: role.name,
+        createdAt: fortmatDateTime(createdAt),
+        updatedAt: fortmatDateTime(updatedAt),
+    };
 }
-
-// const rows = [
-//   createData(1, 'thanhnghi123', 'Quản lí', 'Nguyễn Thanh Nghị', new Date().toLocaleString(), new Date().toLocaleString()),
-//   createData(2, 'thanhnghi123', 'Quản lí', 'Nguyễn Thanh Nghị', new Date().toLocaleString(), new Date().toLocaleString()),
-//   createData(3, 'thanhnghi123', 'Quản lí', 'Nguyễn Thanh Nghị', new Date().toLocaleString(), new Date().toLocaleString()),
-//   createData(4, 'thanhnghi123', 'Quản lí', 'Nguyễn Thanh Nghị', new Date().toLocaleString(), new Date().toLocaleString()),
-//   createData(5, 'thanhnghi123', 'Quản lí', 'Nguyễn Thanh Nghị', new Date().toLocaleString(), new Date().toLocaleString()),
-//   createData(6, 'thanhnghi123', 'Quản lí', 'Nguyễn Thanh Nghị', new Date().toLocaleString(), new Date().toLocaleString()),
-//   createData(7, 'thanhnghi123', 'Quản lí', 'Nguyễn Thanh Nghị', new Date().toLocaleString(), new Date().toLocaleString()),
-//   createData(8, 'thanhnghi123', 'Quản lí', 'Nguyễn Thanh Nghị', new Date().toLocaleString(), new Date().toLocaleString()),
-//   createData(9, 'thanhnghi123', 'Quản lí', 'Nguyễn Thanh Nghị', new Date().toLocaleString(), new Date().toLocaleString()),
-//   createData(10, 'thanhnghi123', 'Quản lí', 'Nguyễn Thanh Nghị', new Date().toLocaleString(), new Date().toLocaleString()),
-// ];
 
 const columns: Column[] = [
   { key: 'id', value: 'Mã tài khoản'},
   { key: 'username', value: 'Tên đăng nhập'},
-  { key: 'createdAt', value: 'Ngày tạo'},
-  { key: 'updatedAt', value: 'Ngày cập nhật'},
+  { key: 'role', value: 'Quyền'},
+  { key: 'createdAt', value: 'Thời gian tạo'},
+  { key: 'updatedAt', value: 'Cập nhật'},
 ]
 
 const UserPage: React.FC<{}> = () => {
-    const { data, error, isLoading } = useGetUsersQuery()
+    let { data, error, isLoading } = useGetUsersQuery()
+    if (!isLoading) {
+        data = {...data,data: data.data.map((user: User) => {
+            return createData(user.id, user.username, user.role, user.createdAt, user.updatedAt)
+        })};
+    }
     return (
         <Paper>
             <Typography
