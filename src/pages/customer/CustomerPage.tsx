@@ -8,9 +8,8 @@ import { formatDate } from "../../utils/format";
 
 function createData({id, name, gender, dob, phoneNumber, email}: Customer) {
     return {
-        id, name, phoneNumber,
+        id, name, phoneNumber, email,
         gender: GenderEnum[gender],
-        email,
         dob: !dob ? '_' : formatDate(dob),
     };
 }

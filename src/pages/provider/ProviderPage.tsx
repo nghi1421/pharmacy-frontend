@@ -1,13 +1,14 @@
 import { Box, CircularProgress, Divider, Paper, Typography } from "@mui/material";
 import TableComponent from "../../components/table/TableComponent";
 import { Column } from "../../types/Column";
-import { Position } from "../../types/Position";
-import { useGetPositionsQuery } from "../../redux/api/positionApi";
+import { Provider } from "../../types/Provider";
+import { useGetProvidersQuery } from "../../redux/api/providerApi";
 import { formatDateTime } from "../../utils/format";
 
-function createData({id, name, createdAt, updatedAt}: Position) {
+
+function createData({id, name, address, createdAt, updatedAt, phoneNumber, email}: Provider) {
     return {
-        id, name,
+        id, name, phoneNumber, email, address,
         createdAt: formatDateTime(createdAt),
         updatedAt: formatDateTime(updatedAt),
     };
@@ -16,15 +17,18 @@ function createData({id, name, createdAt, updatedAt}: Position) {
 const columns: Column[] = [
     { key: 'id', value: 'Mã chức vụ'},
     { key: 'name', value: 'Tên' },
+    { key: 'address', value: 'Địa chỉ' },
+    { key: 'phoneNumber', value: 'Số điện thoại'},
+    { key: 'email', value: 'Email'},
     { key: 'createdAt', value: 'Thời gian tạo'},
     { key: 'updatedAt', value: 'Cập nhật'},
 ]
 
-const PositionPage: React.FC<{}> = () => {
-    let { data, error, isLoading } = useGetPositionsQuery()
+const ProviderPage: React.FC<{}> = () => {
+    let { data, error, isLoading } = useGetProvidersQuery()
     if (!isLoading) {
-        data = {...data,data: data.data.map((position: Position) => {
-            return createData(position)
+        data = {...data,data: data.data.map((provider: Provider) => {
+            return createData(provider)
         })};
     }
     return (
@@ -34,7 +38,7 @@ const PositionPage: React.FC<{}> = () => {
                 fontWeight='500'
                 sx={{ px:3, py: 2 }}
             >
-                Quản lí chức vụ
+                Quản lí nhà cung cấp
             </Typography>
             <Divider></Divider>
             {
@@ -50,6 +54,7 @@ const PositionPage: React.FC<{}> = () => {
                 :
                     <TableComponent
                         rows={data.data}
+                        keyTable='provider-table'
                         columns={columns}
                     ></TableComponent>
             }
@@ -58,4 +63,4 @@ const PositionPage: React.FC<{}> = () => {
     
 }
 
-export default PositionPage;
+export default ProviderPage;
