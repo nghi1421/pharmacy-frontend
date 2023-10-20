@@ -1,4 +1,5 @@
 let backendUrl: string = ''
+const addressApiUrl = 'https://vn-public-apis.fpo.vn/'
 
 if(import.meta.env.MODE === "development"){
     backendUrl = 'http://localhost:3000/api/'
@@ -8,5 +9,6 @@ else{
 }
 
 export {
-    backendUrl
+    backendUrl,
+    addressApiUrl
 }
