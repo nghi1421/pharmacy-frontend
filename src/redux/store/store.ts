@@ -10,7 +10,6 @@ import { importApi } from '../api/importApi';
 import { exportApi } from '../api/exportApi';
 import { positionApi } from '../api/positionApi';
 import { typeByUseApi } from '../api/typeByUseApi';
-import { addressApi } from '../api/addressApi';
 
 export const store = configureStore({
   reducer: {
@@ -24,7 +23,6 @@ export const store = configureStore({
     [typeByUseApi.reducerPath]: typeByUseApi.reducer,
     [importApi.reducerPath]: importApi.reducer,
     [exportApi.reducerPath]: exportApi.reducer,
-    [addressApi.reducerPath]: addressApi.reducer
   },
   middleware: (getDefaultMiddleware) => 
     getDefaultMiddleware()

@@ -1,5 +1,4 @@
 import provinces from '../../node_modules/hanhchinhvn/dist/tinh_tp.json'
-import { ChangeEvent } from 'react';
 import { District, Province, Ward } from '../types/Address';
 
 const allProvince = () => {
