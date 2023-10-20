@@ -31,6 +31,9 @@ const getDistrictsByProvinceCode = (setData: (districts: District[])=> void,prov
             })
         }
         setData(array)
+    })
+    .catch((error) => {
+        
     });
 }
 
@@ -53,7 +56,10 @@ const getWardsByDistrictCode = (setData: (wards: Ward[])=> void, districtCode: s
             })
         }
         setData(array)
-    });
+    })
+    .catch((error) => {
+        
+    });;
 }
 
 const getProvinceNameByCode = (provinceCode: string, provinces: Province[]) => {
