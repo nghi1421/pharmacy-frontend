@@ -12,11 +12,11 @@ export const FormInputDate: React.FC<FormInputProps> = ({ name, control, label }
             name={name}
             control={control}
             render={({ field: { onChange, value } }) => (
-                <DatePicker
-                    value={dayjs(value)}
-                    onChange={onChange}
-                    format="DD-MM-YYYY"
-                    label={label}
+              <DatePicker
+                  value={dayjs(value)}
+                  onChange={onChange}
+                  format="DD-MM-YYYY"
+                  label={label}
                 />
             )}
         />

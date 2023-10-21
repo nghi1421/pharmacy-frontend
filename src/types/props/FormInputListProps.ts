@@ -1,4 +1,4 @@
-export type Radio = {
+export type Item = {
     value: string
     label: string
 }
@@ -8,5 +8,6 @@ export interface FormInputListProps {
   control: any;
   label: string;
   setValue?: any;
-  list: Radio[]
+  list: Item[];
+  placeholder: string;
 }

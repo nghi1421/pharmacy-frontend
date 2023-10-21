@@ -1,8 +1,9 @@
 import { Controller } from "react-hook-form";
 import TextField from "@mui/material/TextField";
 import { FormInputProps } from "../../types/props/FormInputProps";
+import '../../assets/styles/Input.css'
 
-export const FormInputText: React.FC<FormInputProps<{}>> = ({ name, control, label }) => {
+export const FormInputText: React.FC<FormInputProps> = ({ name, control, label, placeholder }) => {
   return (
     <Controller
         name={name}
@@ -14,13 +15,13 @@ export const FormInputText: React.FC<FormInputProps<{}>> = ({ name, control, lab
         }) => (
           <TextField
               helperText={error ? error.message : null}
-              size="small"
               error={!!error}
               onChange={onChange}
               value={value}
               fullWidth
               label={label}
               variant="outlined"
+              placeholder={placeholder}
           />
         )}
     />

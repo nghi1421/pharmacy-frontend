@@ -1,65 +1,93 @@
-import { Box, Button, Checkbox, CircularProgress, FormControl, FormControlLabel, Grid, InputLabel, MenuItem, Paper, Select, SelectChangeEvent, TextField, Typography } from "@mui/material"
+import {
+    Button,
+    CircularProgress,
+    Grid,
+    Paper,
+    Typography
+} from "@mui/material"
 import React, { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom";
-import { allProvince, getDistrictsByProvinceCode, getWardsByDistrictCode, getProvinceNameByCode, getDistrictNameByCode, getWardNameByCode } from '../../utils/address'
-import { District, Province, Ward } from "../../types/Address";
-import { useIsFirstRender } from "../../hooks/firstRender";
-import dayjs, { Dayjs } from 'dayjs';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { useGetPositionsQuery } from "../../redux/api/positionApi";
 import { Position } from "../../types/Position";
+import { FormInputText } from "../../components/form/FormInputText";
+import { useForm } from "react-hook-form";
+import { genders } from '../../utils/constants'
+import { FormInputDropdown } from "../../components/form/FormInputDropdown";
+import yup from '../../utils/yup'
+import { yupResolver } from "@hookform/resolvers/yup";
+import { Item } from "../../types/props/FormInputListProps";
+import Address from "../../components/Address";
+import { FormInputDate } from "../../components/form/FormInputDate";
+import { FormInputCheckBox } from "../../components/form/FormInputCheckBox";
+
+interface StaffForm {
+    name: string;
+    phoneNumber: string;
+    gender: string;
+    dob: Date|null;
+    email: string,
+    identification: string;
+    positionId: string;
+    isWorking: boolean;
+}
+
+const defaultValues = {
+    name: "",
+    phoneNumber: "",
+    gender: '1',
+    dob: null,
+    email: '',
+    identification: '',
+    positionId: '1',
+    isWorking: true
+};
+
+const staffFormValidate = yup.object({
+    name: yup
+        .string()
+        .required('Tên nhân viên bắt buộc.')
+        .max(255),
+    phoneNumber: yup
+        .string()
+        .required('Số điện thoại bắt buộc.')
+        .phoneNumber('Số điện thoại không hợp lệ.'),
+    email: yup
+        .string()
+        .required('Email bắt buộc.')
+        .email('Email không hợp lệ.'),
+    gender: yup
+        .string()
+        .required('Giới tính bắt buộc')
+        .oneOf(['0', '1', '2']),
+    dob: yup
+        .date()
+        .nullable(),
+    identification: yup
+        .string()
+        .onlyNumber('CCCD không hợp lệ.'),
+})
 
 const CreateStaff: React.FC = () => {
     const navigate = useNavigate()
-    const isFirst = useIsFirstRender()
-    const [province, setProvince] = useState<Province>({ name: '', code: '' })
-    const [district, setDistrict] = useState<District>({ name: '', code:'' })
-    const [ward, setWard] = useState<Ward>({ name: '', code: '' })
-    const [provinces, setProvinces] = useState<Province[]>(allProvince())
-    const [districts, setDistricts] = useState<District[]>([])
-    const [wards, setWards] = useState<Ward[]>([])
-    const [dob, setDob] = React.useState<Dayjs | null>(null);
+    const [address, setAddress] = useState<string>('')
     let { data, error, isLoading } = useGetPositionsQuery()
-    const [position, setPosition] = useState<string>('1')
+    const [positions, setPositions] = useState<Item[]>([]);
+  
+    useEffect(() => {
+        const positions: Item[] = data.data.map((position: Position) => {
+            return { value: position.id.toString(), label: position.name }
+        })
+        setPositions(positions);
+    }, [])
 
     
-    useEffect(() => {
-        if (!isFirst) {
-            getDistrictsByProvinceCode(setDistricts, province.code)
-            setWard({ name: '', code: ''})
-        }
-    }, [province])
+    const { handleSubmit, watch, reset, control, setValue } = useForm<StaffForm>({
+        defaultValues: defaultValues,
+        resolver: yupResolver(staffFormValidate)
+    });
+    const watchIsWorking = watch('isWorking')
 
-    useEffect(() => {
-        if (!isFirst) {
-            getWardsByDistrictCode(setWards, district.code)
-        }
-    }, [district])
-
-    const handleProvinceChange = (e: SelectChangeEvent) =>{
-        setProvince({
-            code: e.target.value as string,
-            name: getProvinceNameByCode(e.target.value as string, provinces)
-        })
-    }
-
-    const handleDistrictChange = (e: SelectChangeEvent) =>{
-        setDistrict({
-            code: e.target.value as string,
-            name: getDistrictNameByCode(e.target.value as string, districts)
-        })
-    }
-
-    const handleWardChange = (e: SelectChangeEvent) =>{
-        setWard({
-            code: e.target.value as string,
-            name: getWardNameByCode(e.target.value as string, wards)
-        })
-    }
-
-    const handlePositionChange = (e: SelectChangeEvent) =>{
-        setPosition(e.target.value as string)
-    }
+    const onSubmit = (data: StaffForm) => console.log(data);
 
     const backToTable = () => {
         navigate('/staffs')
@@ -69,212 +97,97 @@ const CreateStaff: React.FC = () => {
         <Typography variant="h6" gutterBottom mb='20px'>
             Thông tin nhân viên
         </Typography>
-        <Grid container spacing={4}>
-                
+        <Grid container spacing={3}>
             <Grid item xs={8} sm={5}>
-                <TextField
-                    required
-                    id="name"
+                <FormInputText
                     name="name"
+                    control={control}
                     label="Họ và tên"
-                    placeholder="Nhập họ và tên nhân viên"
-                    fullWidth
-                    autoComplete="name"
+                    placeholder='Nhập họ và tên nhân viên'
                 />
             </Grid>
-                
             <Grid item xs={8} sm={5}>
-                <TextField
-                    required
-                    id="phoneNumber"
+                <FormInputText
                     name="phoneNumber"
+                    control={control}
                     label="Số điện thoại"
-                    placeholder="Nhập số điện thoại nhân viên"
-                    fullWidth
-                    autoComplete="phoneNumber"
-                /> 
+                    placeholder='Nhập họ số điện thoại'
+                />
             </Grid>
-                
-            <Grid item xs={2}>
-                <Box sx={{ minWidth: 10 }}>
-                    <FormControl fullWidth>
-                        <InputLabel id="gender-select-label">Giới tính</InputLabel>
-                        <Select
-                            labelId="gender-select-label"
-                            defaultValue=""
-                            id="gender-select"
-                        // value={age}
-                        label="Giới tính"
-                        // onChange={()}
-                        >
-                            <MenuItem value={0}>Nữ</MenuItem>
-                            <MenuItem value={1}>Nam</MenuItem>
-                            <MenuItem value={2}>Khác</MenuItem>
-                        </Select>
-                    </FormControl>
-                </Box>
+            <Grid item xs={8} sm={2}>
+                <FormInputDropdown
+                    name="gender"
+                    control={control}
+                    label="Giới tính"
+                    placeholder='Giới tính'
+                    list={genders}
+                />
             </Grid>
-                
             <Grid item xs={8} sm={4}>
-                <TextField
-                    required
-                    id="email"
+                <FormInputText
                     name="email"
+                    control={control}
                     label="Email"
-                    placeholder="Nhập email nhân viên"
-                    type="email"
-                    fullWidth
-                    autoComplete="email"
-                /> 
+                    placeholder='Nhập email nhân viên'
+                />
             </Grid>
-                
             <Grid item xs={8} sm={4}>
-                <TextField
-                    required
-                    id="identification"
+                <FormInputText
                     name="identification"
+                    control={control}
                     label="CCCD"
-                    placeholder="Nhập số CCCD"
-                    type="text"
-                    fullWidth
-                    autoComplete="identification"
-                /> 
-            </Grid>
-                
-            <Grid item xs={4}>
-                <FormControl fullWidth > 
-                    <InputLabel id="position-select-label"> 
-                        Chức vụ
-                    </InputLabel> 
-                    <Select 
-                        labelId="position-select-label"
-                        id="position-select-label"
-                        fullWidth
-                        label="Chức vụ"
-                        value={position}
-                        onChange={handlePositionChange}    
-                    > 
-                        {
-                            !isLoading ?
-                            data.data.map((position: Position) => (
-                                <MenuItem value={position.id}>{ position.name }</MenuItem>                                     
-                            )) 
-                            : <CircularProgress sx={{ margin: 'auto'}}/>
-                        }
-                    </Select> 
-                </FormControl>
-            </Grid>
-                
-            <Grid item xs={4}>
-                <FormControl fullWidth> 
-                    <InputLabel id="province-select-label"> 
-                        Tỉnh thành 
-                    </InputLabel> 
-                    <Select
-                        labelId="province-select-label"
-                        id="province-select-label"
-                        fullWidth
-                        label="Tỉnh thành"
-                        onChange={handleProvinceChange} 
-                        > 
-                            {
-                                provinces.length > 0 ? 
-                                provinces.map((province) => (
-                                    <MenuItem value={province.code}>{ province.name }</MenuItem>                                     
-                                )) 
-                                : <CircularProgress sx={{ margin: 'auto'}}/>
-                            }
-                    </Select> 
-                </FormControl> 
-            </Grid>
-                
-            <Grid item xs={4}>
-                <FormControl fullWidth disabled={province.name === ''}> 
-                    <InputLabel id="district-select-label"> 
-                        Quận/Huyện
-                    </InputLabel> 
-                    <Select 
-                        labelId="district-select-label"
-                        defaultValue=""
-                        id="district-simple-select"
-                        fullWidth
-                        label="Quận/Huyện"
-                        onChange={handleDistrictChange} 
-                        > 
-                            {
-                                districts.length > 0 ?
-                                districts.map((district) => (
-                                    <MenuItem value={district.code}>{ district.name }</MenuItem>                                     
-                                )) : <CircularProgress sx={{ margin: 'auto'}} />
-                            }
-                    </Select> 
-                </FormControl>  
-            </Grid>
-                
-            <Grid item xs={4}>
-                <FormControl fullWidth disabled={district.name.length === 0}> 
-                    <InputLabel id="ward-select-label"> 
-                        Phường/Xã/Thị trấn
-                    </InputLabel> 
-                    <Select 
-                        labelId="ward-select-label"
-                        id="ward-select-label"
-                        fullWidth
-                        label="Phường/Xã/Thị trấn"
-                        onChange={handleWardChange} 
-                    > 
-                        {
-                            wards.length > 0 ?
-                            wards.map((ward) => (
-                                <MenuItem value={ward.code}>{ ward.name }</MenuItem>                                     
-                            )) 
-                            : <CircularProgress sx={{ margin: 'auto'}}/>
-                        }
-                    </Select> 
-                </FormControl>
-            </Grid>
-                
-            <Grid item xs={8} sm={4}>
-                <TextField
-                    id="address"
-                    name="address"
-                    label="Tên đường, hẻm, số nhà"
-                    placeholder="Nhập số nhà"
-                    type="text"
-                    fullWidth
-                    autoComplete="address"
-                /> 
-            </Grid>
-                
-            <Grid item xs={8} sm={4}>
-                <DatePicker
-                    value={dob}
-                    onChange={(newValue) => setDob(newValue)}
-                    label="Ngày sinh"
-                    maxDate={dayjs().subtract(18, 'year')}
-                    format="DD-MM-YYYY"
+                    placeholder='Nhập số CCCD nhân viên'
                 />
             </Grid>
             
-            <Grid item xs={8}>
-            <FormControlLabel
-                control={<Checkbox color="secondary" name="saveAddress" value="1" defaultChecked />}
-                label="Nhân viên đang làm việc"
-            />
+            <Grid item xs={8} sm={4}>
+                {
+                    !isLoading ?
+                    <FormInputDropdown
+                        name="positionId"
+                        control={control}
+                        label="Chức vụ"
+                        placeholder='a'
+                        list={positions}
+                    />
+                    : <CircularProgress sx={{ margin: 'auto'}}/>
+                }  
             </Grid>
+                
+            <Address setAddress={setAddress} />  
+                
+            <Grid item xs={8} sm={4}>
+                <FormInputDate
+                    name="dob"
+                    control={control}
+                    label="Ngày sinh"
+                    placeholder='x'
+                />
+            </Grid>
+            
+            <Grid item xs={12} sm={12}>
+                <FormInputCheckBox
+                    name="isWorking"
+                    control={control}
+                    label="Nhân viên đang làm việc"
+                    placeholder='x'
+                    />
             </Grid>
 
-            <Grid container sx={{
-                display: 'flex',
-                justifyContent: "end",
-                gap: 2
-            }}>
+            <Grid item xs={12} sm={12} container 
+                sx={{
+                    display: 'flex',
+                    justifyContent: "end",
+                    gap: 2
+                }}
+            >
                 <Button
                     variant="contained"
                     color="primary"
                     sx={{
                         textTransform: 'none',
                     }}
+                    onClick={handleSubmit(onSubmit)}
                 >
                     Thêm
                 </Button>
@@ -290,8 +203,7 @@ const CreateStaff: React.FC = () => {
                     Quay về
                 </Button>
             </Grid>
-           
-            
+        </Grid>
     </Paper>)
 }
 

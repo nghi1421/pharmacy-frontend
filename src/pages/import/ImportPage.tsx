@@ -69,9 +69,11 @@ dropdownList
 
 
 export default () => {
-  const { handleSubmit, reset, control, setValue } = useForm<IFormInput>({
+  const { handleSubmit, watch, reset, control, setValue } = useForm<IFormInput>({
     defaultValues: defaultValues,
   });
+    const watchTextValue = watch('textValue');
+
     const onSubmit = (data: IFormInput) => console.log(data);
     
   return (
@@ -83,27 +85,32 @@ export default () => {
         margin: "10px 300px",
       }}
     >
-      <Typography variant="h4"> Form Demo</Typography>
-      <FormInputText name="textValue" control={control} label="Text Input" />
+    <Typography variant="h4"> Form Demo</Typography>
+        <Typography variant="h6">{watchTextValue}</Typography>
+          
+      <FormInputText name="textValue" control={control} label="Text Input" placeholder='This is my holder'/>
       <FormInputRadio
         name={"radioValue"}
         control={control}
         label={"Radio Input"}
         list={radioList}
+        placeholder='This is my holder'
       />
       <FormInputDropdown
         name="dropdownValue"
         control={control}
         label="Dropdown Input"
         list={dropdownList}
+        placeholder='This is my holder'
       />
-      <FormInputDate name="dateValue" control={control} label="Date Input" />
+        <FormInputDate name="dateValue" control={control} label="Date Input" placeholder='This is my holder' />
       <FormInputMultiCheckbox
         control={control}
         setValue={setValue}
         name={"checkboxValue"}
         label={"Checkbox Input"}
         list={checkBoxList}
+        placeholder='This is my holder'
       />
       <Button onClick={handleSubmit(onSubmit)} variant={"contained"}>
         Submit
