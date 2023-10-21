@@ -20,7 +20,7 @@ const CreateStaff: React.FC = () => {
     const [wards, setWards] = useState<Ward[]>([])
     const [dob, setDob] = React.useState<Dayjs | null>(null);
     let { data, error, isLoading } = useGetPositionsQuery()
-    const [position, setPosition] = useState<number>(1)
+    const [position, setPosition] = useState<string>('1')
 
     
     useEffect(() => {
@@ -58,7 +58,7 @@ const CreateStaff: React.FC = () => {
     }
 
     const handlePositionChange = (e: SelectChangeEvent) =>{
-        setPosition(parseInt(e.target.value))
+        setPosition(e.target.value as string)
     }
 
     const backToTable = () => {
@@ -167,7 +167,7 @@ const CreateStaff: React.FC = () => {
                 
             <Grid item xs={4}>
                 <FormControl fullWidth> 
-                    <InputLabel key='12312321dsfdsfsdfct' id="province-select-label"> 
+                    <InputLabel id="province-select-label"> 
                         Tỉnh thành 
                     </InputLabel> 
                     <Select
