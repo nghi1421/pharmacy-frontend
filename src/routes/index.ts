@@ -11,6 +11,7 @@ import ProviderPage from "../pages/provider/ProviderPage";
 import { AttachMoney, ClearAll, Group, Handshake, ManageAccounts, Medication, VerticalAlignBottom, VolunteerActivism } from "@mui/icons-material";
 import PeopleIcon from '@mui/icons-material/People';
 import CreateStaff from "../pages/staff/CreateStaff";
+import CreateCustomer from "../pages/customer/CreateCustomer";
 
 export const dashboardRoutes: Array<Route> = [
     {      
@@ -80,10 +81,17 @@ export const dashboardRoutes: Array<Route> = [
 
 export const formRoutes: Array<Route> = [
     {      
-        key: 'staff-form-route',
+        key: 'staff-create-form-route',
         title: 'Form nhân viên',
         path: '/staffs/create',
         icon: AttachMoney,
         element: CreateStaff
+    },
+    {      
+        key: 'customer-create-form-route',
+        title: 'Form khách hàng',
+        path: '/customers/create',
+        icon: AttachMoney,
+        element: CreateCustomer
     }
 ]
