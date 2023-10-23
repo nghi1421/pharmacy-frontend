@@ -1,8 +1,12 @@
 import {
     Button,
     CircularProgress,
+    FormControl,
     Grid,
+    InputLabel,
+    MenuItem,
     Paper,
+    Select,
     Typography
 } from "@mui/material"
 import React, { useEffect, useState } from "react"
@@ -10,7 +14,7 @@ import { useNavigate } from "react-router-dom";
 import { useGetPositionsQuery } from "../../redux/api/positionApi";
 import { Position } from "../../types/Position";
 import { FormInputText } from "../../components/form/FormInputText";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { genders } from '../../utils/constants'
 import { FormInputDropdown } from "../../components/form/FormInputDropdown";
 import yup from '../../utils/yup'
@@ -19,6 +23,7 @@ import { Item } from "../../types/props/FormInputListProps";
 import Address from "../../components/Address";
 import { FormInputDate } from "../../components/form/FormInputDate";
 import { FormInputCheckBox } from "../../components/form/FormInputCheckBox";
+import dayjs from "dayjs";
 
 interface StaffForm {
     name: string;
@@ -35,12 +40,15 @@ const defaultValues = {
     name: "",
     phoneNumber: "",
     gender: '1',
-    dob: null,
+    dob: new Date(),
     email: '',
     identification: '',
     positionId: '1',
     isWorking: true
 };
+
+const maxDate = new Date()
+maxDate.setFullYear(new Date().getFullYear() - 18)
 
 const staffFormValidate = yup.object({
     name: yup
@@ -61,7 +69,7 @@ const staffFormValidate = yup.object({
         .oneOf(['0', '1', '2']),
     dob: yup
         .date()
-        .nullable(),
+        .max(maxDate, 'Nhân viên phải trên 18 tuổi.'),
     identification: yup
         .string()
         .onlyNumber('CCCD không hợp lệ.'),
@@ -70,17 +78,8 @@ const staffFormValidate = yup.object({
 const CreateStaff: React.FC = () => {
     const navigate = useNavigate()
     const [address, setAddress] = useState<string>('')
-    let { data, error, isLoading } = useGetPositionsQuery()
-    const [positions, setPositions] = useState<Item[]>([]);
-  
-    useEffect(() => {
-        const positions: Item[] = data.data.map((position: Position) => {
-            return { value: position.id.toString(), label: position.name }
-        })
-        setPositions(positions);
-    }, [])
+    let { data, error, isLoading, isFetching } = useGetPositionsQuery()
 
-    
     const { handleSubmit, watch, reset, control, setValue } = useForm<StaffForm>({
         defaultValues: defaultValues,
         resolver: yupResolver(staffFormValidate)
@@ -92,6 +91,7 @@ const CreateStaff: React.FC = () => {
     const backToTable = () => {
         navigate('/staffs')
     }
+
     return (
     <Paper sx={{ px:6, py:4 }}>
         <Typography variant="h6" gutterBottom mb='20px'>
@@ -139,19 +139,34 @@ const CreateStaff: React.FC = () => {
                     placeholder='Nhập số CCCD nhân viên'
                 />
             </Grid>
-            
+          
             <Grid item xs={8} sm={4}>
-                {
-                    !isLoading ?
-                    <FormInputDropdown
-                        name="positionId"
+                <FormControl fullWidth>
+                    <InputLabel >Chức vụ</InputLabel>
+                    <Controller
+                        render={({ field: { onChange, value } }) => (
+                                <Select
+                                    onChange={onChange}
+                                    value={value}
+                                    label='Chức vụ'
+                                >
+                                    {
+                                        isLoading
+                                            ?
+                                            <CircularProgress sx={{ margin: 'auto' }} />
+                                            :
+                                            data.data.map((position) => (<MenuItem value={position.id}>
+                                                    {position.name}
+                                                </MenuItem>)
+                                            )
+                                    }
+                            </Select>
+                        )}
                         control={control}
-                        label="Chức vụ"
-                        placeholder='a'
-                        list={positions}
-                    />
-                    : <CircularProgress sx={{ margin: 'auto'}}/>
-                }  
+                        name='positionId'
+                    />    
+      
+                </FormControl>
             </Grid>
                 
             <Address setAddress={setAddress} />  

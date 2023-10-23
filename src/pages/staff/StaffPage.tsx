@@ -77,8 +77,6 @@ const StaffPage: React.FC<{}> = () => {
                
 
             </Box>
-            
-
 
             <Divider></Divider>
             {

@@ -19,7 +19,7 @@ export const FormInputDropdown: React.FC<FormInputListProps> = ({
     });
   };
   return (
-    <FormControl size={"small"} fullWidth>
+    <FormControl fullWidth>
       <InputLabel >{label}</InputLabel>
       <Controller
         render={({ field: { onChange, value } }) => (
