@@ -6,47 +6,61 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from 'yup'
 
-interface DrugCategoryForm {
+interface PositionForm {
     name: string;
+    detail: string;
 }
 
 const defaultValues = {
     name: "",
+    detail: '',
 };
 
  // @ts-ignore
-const drugCategoryFormValidate: Yup.ObjectSchema<DrugCategoryForm>
-    = yup.object({
+const positionFormValidate: Yup.ObjectSchema<PositionForm> = yup.object({
     name: yup
         .string()
-        .required('Tên chức vụ bắt buộc.')
-        .max(255),
+        .required('Tên công dụng bắt buộc.')
+        .max(100, 'Tên công dụng không quá 100 kí tự'),
+    detail: yup
+        .string()
+        .required('Chi tiết công dụng bắt buộc.')
+        .max(255, 'Chi tiết công dụng không quá 255 kí tự'),
 })
 const CreatePosition: React.FC = () => {
     const navigate = useNavigate()
 
-    const { handleSubmit, reset, control } = useForm<DrugCategoryForm>({
+    const { handleSubmit, reset, control } = useForm<PositionForm>({
         defaultValues: defaultValues,
-        resolver: yupResolver(drugCategoryFormValidate)
+        resolver: yupResolver(positionFormValidate)
     });
 
-    const onSubmit = (data: DrugCategoryForm) => console.log(data);
+    const onSubmit = (data: PositionForm) => console.log(data);
 
     const backToTable = () => {
-        navigate('/positions')
+        navigate('/type-by-uses')
     }
     return (
         <Paper sx={{ px:6, py:4 }}>
             <Typography variant="h6" gutterBottom mb='20px'>
-                Thông tin chức vụ
+                Thông tin công dụng thuốc
             </Typography>
             <Grid container spacing={3}>
                 <Grid item xs={8} sm={6}>
                     <FormInputText
                         name="name"
                         control={control}
-                        label="Tên chức vu"
-                        placeholder='Nhập tên chức vụ'
+                        label="Tên công dụng"
+                        placeholder='Nhập tên công dụng thuốc'
+                    />
+                </Grid>
+
+                <Grid item xs={8} sm={6}>
+                    <FormInputText
+                        name="name"
+                        control={control}
+                        label="Chi tiết"
+                        placeholder='Nhập chi tiết công dụng thuốc'
                     />
                 </Grid>
 

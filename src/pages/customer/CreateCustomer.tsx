@@ -29,7 +29,7 @@ const customerFormValidate: Yup.ObjectSchema<CustomerForm>
     = yup.object({
     name: yup
         .string()
-        .required('Tên nhân viên bắt buộc.')
+        .required('Tên khách hàng bắt buộc.')
         .max(255),
     phoneNumber: yup
         .string()
