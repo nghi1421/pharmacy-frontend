@@ -50,7 +50,7 @@ const positionFormValidate: Yup.ObjectSchema<PositionForm> = yup.object({
         .max(1, 'VAT phải là nhỏ hơn 1'),
     quantityConversion: yup
         .number()
-        .min(0, 'Số lượng quy đổi phải lớn hơn 0'),
+        .min(1, 'Số lượng quy đổi phải lớn hơn 0'),
     instruction: yup
         .string()
         .required('Hướng dẫn sử dụng thuốc bắt buộc.'),
@@ -65,10 +65,12 @@ const CreateDrugCategory: React.FC = () => {
     const navigate = useNavigate()
     const { data, isLoading } = useGetTypesQuery();
 
-    const { handleSubmit, reset, control } = useForm<PositionForm>({
+    const { handleSubmit, watch, reset, control } = useForm<PositionForm>({
         defaultValues: defaultValues,
         resolver: yupResolver(positionFormValidate)
     });
+    const watchUnit = watch('unit')
+    const watchMinimalUnit = watch('minimalUnit')
 
     const onSubmit = (data: PositionForm) => console.log(data);
 
@@ -112,15 +114,16 @@ const CreateDrugCategory: React.FC = () => {
                     <FormInputFloat
                         name='vat'
                         label='VAT'
-                        step='0.01'
+                        step='0.5'
                         min={0}
-                        max={1}
+                        max={100}
+                        postfix='%'
                         control={control}
+                        prefix=''
                     />
-
                 </Grid>
 
-                <Grid item xs={8} sm={4}>
+                <Grid item xs={8} sm={3}>
                     <FormControl fullWidth>
                         <InputLabel>Phân loại công dụng</InputLabel>
                         <Controller
@@ -148,12 +151,43 @@ const CreateDrugCategory: React.FC = () => {
         
                     </FormControl>
                 </Grid>
+                <Grid item xs={8} sm={3}>
+                    <FormInputFloat
+                        name='quantityConversion'
+                        label='Số lượng quy đổi'
+                        step='1'
+                        min={0}
+                        max={200000}
+                        prefix={`1 ${watchUnit} = `}
+                        control={control}
+                        postfix={ watchMinimalUnit}
+                    />
+                </Grid>
+
                 <Grid item xs={8} sm={6}>
                     <FormInputText
-                        name="name"
+                        name="instruction"
                         control={control}
-                        label="Chi tiết"
-                        placeholder='Nhập chi tiết công dụng thuốc'
+                        label="Hướng dẫn sử dụng"
+                        placeholder='Nhập hướng dẫn sử dụng'
+                    />
+                </Grid>
+
+                <Grid item xs={8} sm={5}>
+                    <FormInputText
+                        name="preserved"
+                        control={control}
+                        label="Cách bảo quản"
+                        placeholder='Nhập cách bảo quản'
+                    />
+                </Grid>
+
+                <Grid item xs={8} sm={3}>
+                    <FormInputText
+                        name="form"
+                        control={control}
+                        label="Dạng thuốc"
+                        placeholder='Nhập dạng thuốc'
                     />
                 </Grid>
 

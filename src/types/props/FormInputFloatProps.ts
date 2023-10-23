@@ -6,4 +6,6 @@ export interface FormInputFloatProps {
     max: number;
     min: number;
     step: string;
+    postfix: string;
+    prefix: string
 }
