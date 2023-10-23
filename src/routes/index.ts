@@ -13,6 +13,7 @@ import PeopleIcon from '@mui/icons-material/People';
 import CreateStaff from "../pages/staff/CreateStaff";
 import CreateCustomer from "../pages/customer/CreateCustomer";
 import CreateProvider from "../pages/provider/CreateProvider";
+import CreatePosition from "../pages/position/CreatePosition";
 
 export const dashboardRoutes: Array<Route> = [
     {      
@@ -38,7 +39,7 @@ export const dashboardRoutes: Array<Route> = [
     },
     {      
         key: 'provider-route',
-        title: 'Nhà cung cấp',
+        title: 'Công ty dược',
         path: '/providers',
         icon: Handshake,
         element: ProviderPage
@@ -59,7 +60,7 @@ export const dashboardRoutes: Array<Route> = [
     },
     {      
         key: 'type-by-use-route',
-        title: 'Phân loại công dụng',
+        title: 'Công dụng',
         path: '/type-by-uses',
         icon: VolunteerActivism,
         element: TypeByUsePage
@@ -101,5 +102,12 @@ export const formRoutes: Array<Route> = [
         path: '/providers/create',
         icon: AttachMoney,
         element: CreateProvider
+    },
+    {      
+        key: 'positions-create-form-route',
+        title: 'Form vị trí',
+        path: '/positions/create',
+        icon: AttachMoney,
+        element: CreatePosition
     }
 ]

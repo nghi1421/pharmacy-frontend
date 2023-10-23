@@ -1,9 +1,11 @@
-import { Box, CircularProgress, Divider, Paper, Typography } from "@mui/material";
+import { Box, Button, CircularProgress, Divider, Paper, Typography } from "@mui/material";
 import TableComponent from "../../components/table/TableComponent";
 import { Column } from "../../types/Column";
 import { Position } from "../../types/Position";
 import { useGetPositionsQuery } from "../../redux/api/positionApi";
 import { formatDateTime } from "../../utils/format";
+import { useNavigate } from "react-router-dom";
+import { Add } from "@mui/icons-material";
 
 function createData({id, name, createdAt, updatedAt}: Position) {
     return {
@@ -22,20 +24,50 @@ const columns: Column[] = [
 
 const PositionPage: React.FC<{}> = () => {
     let { data, error, isLoading } = useGetPositionsQuery()
+    const navigate = useNavigate()
     if (!isLoading) {
         data = {...data,data: data.data.map((position: Position) => {
             return createData(position)
         })};
     }
+
+    const clickAdd = () => {
+        navigate('/positions/create')
+    }
     return (
         <Paper>
-            <Typography
+            <Box sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'baseline',
+                p: 1,
+                m: 1,
+                bgcolor: 'background.paper',
+                borderRadius: 1,
+            }}
+            >
+                <Typography
                 variant="h4"
                 fontWeight='500'
                 sx={{ px:3, py: 2 }}
-            >
-                Quản lí chức vụ
-            </Typography>
+                >
+                    Quản lí chức vụ
+                </Typography>
+                <Button
+                    variant="contained"
+                    size="small"
+                    onClick={clickAdd}
+                >
+                    <Add></Add>
+                    <Typography
+                        color="inherit"
+                        fontSize='16px'
+                        marginLeft='4px'
+                    >
+                        Thêm mới
+                    </Typography>
+                </Button>
+            </Box>
             <Divider></Divider>
             {
                 isLoading

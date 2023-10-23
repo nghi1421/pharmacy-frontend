@@ -8,6 +8,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { genders } from "../../utils/constants";
 import { yupResolver } from "@hookform/resolvers/yup";
+import * as Yup from 'yup'
 
 interface CustomerForm {
     name: string;
@@ -23,10 +24,9 @@ const defaultValues = {
     email: '',
 };
 
-const maxDate = new Date()
-maxDate.setFullYear(new Date().getFullYear() - 18)
-
-const customerFormValidate = yup.object({
+ // @ts-ignore
+const customerFormValidate: Yup.ObjectSchema<CustomerForm>
+    = yup.object({
     name: yup
         .string()
         .required('Tên nhân viên bắt buộc.')
@@ -34,6 +34,7 @@ const customerFormValidate = yup.object({
     phoneNumber: yup
         .string()
         .required('Số điện thoại bắt buộc.')
+         // @ts-ignore
         .phoneNumber('Số điện thoại không hợp lệ.'),
     email: yup
         .string()
@@ -47,8 +48,8 @@ const customerFormValidate = yup.object({
 const CreateCustomer: React.FC = () => {
     const navigate = useNavigate()
     const [address, setAddress] = useState<string>('')
-
-    const { handleSubmit, watch, reset, control, setValue } = useForm<CustomerForm>({
+    const [counter, setCounter] = useState(Math.random())
+    const { handleSubmit, reset, control } = useForm<CustomerForm>({
         defaultValues: defaultValues,
         resolver: yupResolver(customerFormValidate)
     });
@@ -90,7 +91,7 @@ const CreateCustomer: React.FC = () => {
                     />
                 </Grid>
                     
-                <Address setAddress={setAddress} />  
+                <Address setAddress={setAddress} key={counter} />  
 
                 <Grid item xs={8} sm={2}>
                     <FormInputDropdown
@@ -118,6 +119,21 @@ const CreateCustomer: React.FC = () => {
                         onClick={handleSubmit(onSubmit)}
                     >
                         Thêm
+                    </Button>
+
+                    <Button
+                        variant="contained"
+                        color="success"
+                        sx={{
+                            textTransform: 'none',
+                        }}
+                        onClick={() => {
+                            reset();
+                            setCounter(counter + 1)
+                            setAddress('')
+                        }}
+                    >
+                        Làm mới
                     </Button>
 
                     <Button

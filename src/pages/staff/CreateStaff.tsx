@@ -9,7 +9,7 @@ import {
     Select,
     Typography
 } from "@mui/material"
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useReducer, useState } from "react"
 import { useNavigate } from "react-router-dom";
 import { useGetPositionsQuery } from "../../redux/api/positionApi";
 import { Position } from "../../types/Position";
@@ -22,6 +22,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import Address from "../../components/Address";
 import { FormInputDate } from "../../components/form/FormInputDate";
 import { FormInputCheckBox } from "../../components/form/FormInputCheckBox";
+import * as Yup from 'yup'
 
 interface StaffForm {
     name: string;
@@ -48,7 +49,8 @@ const defaultValues = {
 const maxDate = new Date()
 maxDate.setFullYear(new Date().getFullYear() - 18)
 
-const staffFormValidate = yup.object({
+//@ts-ignore
+const staffFormValidate: Yup.ObjectSchema<StaffForm> = yup.object({
     name: yup
         .string()
         .required('Tên nhân viên bắt buộc.')
@@ -56,6 +58,7 @@ const staffFormValidate = yup.object({
     phoneNumber: yup
         .string()
         .required('Số điện thoại bắt buộc.')
+        //@ts-ignore
         .phoneNumber('Số điện thoại không hợp lệ.'),
     email: yup
         .string()
@@ -70,19 +73,20 @@ const staffFormValidate = yup.object({
         .max(maxDate, 'Nhân viên phải trên 18 tuổi.'),
     identification: yup
         .string()
+        //@ts-ignore
         .onlyNumber('CCCD không hợp lệ.'),
 })
 
 const CreateStaff: React.FC = () => {
     const navigate = useNavigate()
     const [address, setAddress] = useState<string>('')
-    let { data, error, isLoading, isFetching } = useGetPositionsQuery()
+    let { data, isLoading } = useGetPositionsQuery()
+    const [counter, setCounter] = useState(Math.random())
 
-    const { handleSubmit, watch, reset, control, setValue } = useForm<StaffForm>({
+    const { handleSubmit, reset, control } = useForm<StaffForm>({
         defaultValues: defaultValues,
         resolver: yupResolver(staffFormValidate)
     });
-    const watchIsWorking = watch('isWorking')
 
     const onSubmit = (data: StaffForm) => console.log(data);
 
@@ -167,7 +171,7 @@ const CreateStaff: React.FC = () => {
                     </FormControl>
                 </Grid>
                     
-                <Address setAddress={setAddress} />  
+                <Address setAddress={setAddress} key={counter} />  
                     
                 <Grid item xs={8} sm={4}>
                     <FormInputDate
@@ -203,6 +207,21 @@ const CreateStaff: React.FC = () => {
                         onClick={handleSubmit(onSubmit)}
                     >
                         Thêm
+                    </Button>
+
+                    <Button
+                        variant="contained"
+                        color="success"
+                        sx={{
+                            textTransform: 'none',
+                        }}
+                        onClick={() => {
+                            reset();
+                            setCounter(counter + 1)
+                            setAddress('')
+                        }}
+                    >
+                        Làm mới
                     </Button>
 
                     <Button

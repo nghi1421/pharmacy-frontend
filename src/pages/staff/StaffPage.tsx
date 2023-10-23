@@ -1,4 +1,4 @@
-import { Box, Button, CircularProgress, Divider, IconButton, Paper, Stack, Typography } from "@mui/material";
+import { Box, Button, CircularProgress, Divider, Paper, Typography } from "@mui/material";
 import TableComponent from "../../components/table/TableComponent";
 import { Column } from "../../types/Column";
 import { Staff } from "../../types/Staff";
@@ -29,7 +29,7 @@ const columns: Column[] = [
 ]
 
 const StaffPage: React.FC<{}> = () => {
-    let { data, error, isLoading } = useGetStaffsQuery()
+    let { data, isLoading } = useGetStaffsQuery()
     const navigate = useNavigate()
 
     if (!isLoading) {
@@ -74,8 +74,6 @@ const StaffPage: React.FC<{}> = () => {
                         Thêm mới
                     </Typography>
                 </Button>
-               
-
             </Box>
 
             <Divider></Divider>
