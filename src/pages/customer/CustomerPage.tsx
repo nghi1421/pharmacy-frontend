@@ -70,8 +70,6 @@ const CustomerPage: React.FC<{}> = () => {
                         Thêm mới
                     </Typography>
                 </Button>
-               
-
             </Box>
             
             <Divider></Divider>

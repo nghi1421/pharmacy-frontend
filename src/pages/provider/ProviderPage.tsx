@@ -1,9 +1,11 @@
-import { Box, CircularProgress, Divider, Paper, Typography } from "@mui/material";
+import { Box, Button, CircularProgress, Divider, Paper, Typography } from "@mui/material";
 import TableComponent from "../../components/table/TableComponent";
 import { Column } from "../../types/Column";
 import { Provider } from "../../types/Provider";
 import { useGetProvidersQuery } from "../../redux/api/providerApi";
 import { formatDateTime } from "../../utils/format";
+import { Add } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
 
 function createData({id, name, address, createdAt, updatedAt, phoneNumber, email}: Provider) {
     return {
@@ -24,21 +26,53 @@ const columns: Column[] = [
 ]
 
 const ProviderPage: React.FC<{}> = () => {
-    let { data, error, isLoading } = useGetProvidersQuery()
+    let { data, isLoading } = useGetProvidersQuery()
+    const navigate = useNavigate()
+
     if (!isLoading) {
         data = {...data,data: data.data.map((provider: Provider) => {
             return createData(provider)
         })};
     }
+
+    const clickAdd = () => {
+        navigate('/providers/create')
+    }
     return (
         <Paper>
-            <Typography
+            
+            <Box sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'baseline',
+                p: 1,
+                m: 1,
+                bgcolor: 'background.paper',
+                borderRadius: 1,
+            }}
+            >
+                <Typography
                 variant="h4"
                 fontWeight='500'
                 sx={{ px:3, py: 2 }}
-            >
-                Quản lí nhà cung cấp
-            </Typography>
+                >
+                    Thêm công ty dược
+                </Typography>
+                <Button
+                    variant="contained"
+                    size="small"
+                    onClick={clickAdd}
+                >
+                    <Add></Add>
+                    <Typography
+                        color="inherit"
+                        fontSize='16px'
+                        marginLeft='4px'
+                    >
+                        Thêm mới
+                    </Typography>
+                </Button>
+            </Box>
             <Divider></Divider>
             {
                 isLoading

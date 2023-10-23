@@ -12,6 +12,7 @@ import { AttachMoney, ClearAll, Group, Handshake, ManageAccounts, Medication, Ve
 import PeopleIcon from '@mui/icons-material/People';
 import CreateStaff from "../pages/staff/CreateStaff";
 import CreateCustomer from "../pages/customer/CreateCustomer";
+import CreateProvider from "../pages/provider/CreateProvider";
 
 export const dashboardRoutes: Array<Route> = [
     {      
@@ -93,5 +94,12 @@ export const formRoutes: Array<Route> = [
         path: '/customers/create',
         icon: AttachMoney,
         element: CreateCustomer
+    },
+    {      
+        key: 'providers-create-form-route',
+        title: 'Form khách hàng',
+        path: '/providers/create',
+        icon: AttachMoney,
+        element: CreateProvider
     }
 ]
