@@ -27,7 +27,7 @@ const positionFormValidate: Yup.ObjectSchema<PositionForm> = yup.object({
         .required('Chi tiết công dụng bắt buộc.')
         .max(255, 'Chi tiết công dụng không quá 255 kí tự'),
 })
-const CreatePosition: React.FC = () => {
+const CreateType: React.FC = () => {
     const navigate = useNavigate()
 
     const { handleSubmit, reset, control } = useForm<PositionForm>({
@@ -109,4 +109,4 @@ const CreatePosition: React.FC = () => {
     )
 }
 
-export default CreatePosition
+export default CreateType

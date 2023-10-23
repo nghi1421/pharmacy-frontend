@@ -14,6 +14,8 @@ import CreateStaff from "../pages/staff/CreateStaff";
 import CreateCustomer from "../pages/customer/CreateCustomer";
 import CreateProvider from "../pages/provider/CreateProvider";
 import CreatePosition from "../pages/position/CreatePosition";
+import CreateType from "../pages/type-by-use/CreateType";
+import CreateDrugCategory from "../pages/drug-category/CreateDrugCategory";
 
 export const dashboardRoutes: Array<Route> = [
     {      
@@ -109,5 +111,19 @@ export const formRoutes: Array<Route> = [
         path: '/positions/create',
         icon: AttachMoney,
         element: CreatePosition
+    },
+    {      
+        key: 'type-by-uses-create-form-route',
+        title: 'Form công dụng',
+        path: '/type-by-uses/create',
+        icon: AttachMoney,
+        element: CreateType
+    },
+    {      
+        key: 'drug-category-create-form-route',
+        title: 'Form danh mục thuốc',
+        path: '/drug-categories/create',
+        icon: AttachMoney,
+        element: CreateDrugCategory
     }
 ]

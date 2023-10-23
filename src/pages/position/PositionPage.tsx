@@ -1,98 +1,94 @@
-import { Button, Grid, Paper, Typography } from "@mui/material"
-import { FormInputText } from "../../components/form/FormInputText"
-import yup from "../../utils/yup";
+import { Box, Button, CircularProgress, Divider, Paper, Typography } from "@mui/material";
+import TableComponent from "../../components/table/TableComponent";
+import { Column } from "../../types/Column";
+import { Position } from "../../types/Position";
+import { useGetPositionsQuery } from "../../redux/api/positionApi";
+import { formatDateTime } from "../../utils/format";
 import { useNavigate } from "react-router-dom";
-import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as Yup from 'yup'
+import { Add } from "@mui/icons-material";
 
-interface DrugCategoryForm {
-    name: string;
+function createData({id, name, createdAt, updatedAt}: Position) {
+    return {
+        id, name,
+        createdAt: formatDateTime(createdAt),
+        updatedAt: formatDateTime(updatedAt),
+    };
 }
 
-const defaultValues = {
-    name: "",
-};
+const columns: Column[] = [
+    { key: 'id', value: 'Mã chức vụ'},
+    { key: 'name', value: 'Tên' },
+    { key: 'createdAt', value: 'Thời gian tạo'},
+    { key: 'updatedAt', value: 'Cập nhật'},
+]
 
- // @ts-ignore
-const drugCategoryFormValidate: Yup.ObjectSchema<DrugCategoryForm>
-    = yup.object({
-    name: yup
-        .string()
-        .required('Tên chức vụ bắt buộc.')
-        .max(255),
-})
-const CreatePosition: React.FC = () => {
+const PositionPage: React.FC<{}> = () => {
+    let { data, isLoading } = useGetPositionsQuery()
     const navigate = useNavigate()
+    if (!isLoading) {
+        data = {...data,data: data.data.map((position: Position) => {
+            return createData(position)
+        })};
+    }
 
-    const { handleSubmit, reset, control } = useForm<DrugCategoryForm>({
-        defaultValues: defaultValues,
-        resolver: yupResolver(drugCategoryFormValidate)
-    });
-
-    const onSubmit = (data: DrugCategoryForm) => console.log(data);
-
-    const backToTable = () => {
-        navigate('/positions')
+    const clickAdd = () => {
+        navigate('/positions/create')
     }
     return (
-        <Paper sx={{ px:6, py:4 }}>
-            <Typography variant="h6" gutterBottom mb='20px'>
-                Thông tin chức vụ
-            </Typography>
-            <Grid container spacing={3}>
-                <Grid item xs={8} sm={6}>
-                    <FormInputText
-                        name="name"
-                        control={control}
-                        label="Tên chức vu"
-                        placeholder='Nhập tên chức vụ'
-                    />
-                </Grid>
-
-                <Grid item xs={12} sm={12} container 
-                    sx={{
-                        display: 'flex',
-                        justifyContent: "end",
-                        gap: 2
-                    }}
+        <Paper>
+            <Box sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'baseline',
+                p: 1,
+                m: 1,
+                bgcolor: 'background.paper',
+                borderRadius: 1,
+            }}
+            >
+                <Typography
+                variant="h4"
+                fontWeight='500'
+                sx={{ px:3, py: 2 }}
                 >
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        sx={{
-                            textTransform: 'none',
-                        }}
-                        onClick={handleSubmit(onSubmit)}
+                    Quản lí chức vụ
+                </Typography>
+                <Button
+                    variant="contained"
+                    size="small"
+                    onClick={clickAdd}
+                >
+                    <Add></Add>
+                    <Typography
+                        color="inherit"
+                        fontSize='16px'
+                        marginLeft='4px'
                     >
-                        Thêm
-                    </Button>
-
-                    <Button
-                        variant="contained"
-                        color="success"
-                        sx={{
-                            textTransform: 'none',
-                        }}
-                        onClick={() => reset()}
-                    >
-                        Làm mới
-                    </Button>
-
-                    <Button
-                        variant="contained"
-                        color="error"
-                        sx={{
-                            textTransform: 'none',
-                        }}
-                        onClick={backToTable}
-                    >
-                        Quay về
-                    </Button>
-                </Grid>
-            </Grid>
+                        Thêm mới
+                    </Typography>
+                </Button>
+            </Box>
+            <Divider></Divider>
+            {
+                isLoading
+                ?   <Box sx={{
+                        display: 'flex',
+                        backgroundColor: 'white',
+                        p: 4,
+                        justifyContent: 'center'
+                    }}>
+                        <CircularProgress />
+                    </Box> 
+                :
+                    <TableComponent
+                        rows={data.data}
+                        keyTable='provider-table'
+                        columns={columns}
+                    ></TableComponent>
+            }
         </Paper>
     )
+    
 }
 
-export default CreatePosition
+export default PositionPage;
