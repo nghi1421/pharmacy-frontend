@@ -5,6 +5,11 @@ import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from 'yup'
+import { useCreateTypeMutation } from "../../redux/api/typeByUseApi";
+import { useNotification } from "../../hooks/useNotification";
+import { AlertColor } from '@mui/material';
+import { enqueueSnackbar } from "notistack";
+import { MutationResponse } from "../../types/response.ts/MutationResponse";
 
 interface PositionForm {
     name: string;
@@ -29,13 +34,38 @@ const positionFormValidate: Yup.ObjectSchema<PositionForm> = yup.object({
 })
 const CreateType: React.FC = () => {
     const navigate = useNavigate()
+    // const { displayNotification } = useNotification();
+
+    const [createType, { isLoading, isSuccess, isError, error }] = useCreateTypeMutation();
 
     const { handleSubmit, reset, control } = useForm<PositionForm>({
         defaultValues: defaultValues,
         resolver: yupResolver(positionFormValidate)
     });
 
-    const onSubmit = (data: PositionForm) => console.log(data);
+    const onSubmit = async (data: PositionForm) => {
+        try {
+            const response = await createType(data)
+            if (response.data.message) {
+                navigate('/type-by-uses');
+                enqueueSnackbar(
+                    'Thêm phân loại công dụng thành công', {
+                    autoHideDuration: 3000,
+                    variant: 'success'
+                })
+            }
+            else {
+                enqueueSnackbar(
+                    response.data.errorMessage, {
+                    autoHideDuration: 3000,
+                    variant: 'error'
+                })
+            }
+        }
+        catch (error) {
+
+        }
+    };
 
     const backToTable = () => {
         navigate('/type-by-uses')
@@ -57,7 +87,7 @@ const CreateType: React.FC = () => {
 
                 <Grid item xs={8} sm={6}>
                     <FormInputText
-                        name="name"
+                        name="detail"
                         control={control}
                         label="Chi tiết"
                         placeholder='Nhập chi tiết công dụng thuốc'
@@ -74,6 +104,7 @@ const CreateType: React.FC = () => {
                     <Button
                         variant="contained"
                         color="primary"
+                        disabled={isLoading}
                         sx={{
                             textTransform: 'none',
                         }}
@@ -83,6 +114,7 @@ const CreateType: React.FC = () => {
                     </Button>
 
                     <Button
+                        disabled={isLoading}
                         variant="contained"
                         color="success"
                         sx={{

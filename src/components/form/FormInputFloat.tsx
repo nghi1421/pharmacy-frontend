@@ -10,7 +10,6 @@ export const FormInputFloat: React.FC<FormInputFloatProps> = ({name, label, cont
             render={({
                 field: { onChange, value },
                 fieldState: { error },
-                formState,
             }) => (
                 <TextField
                     helperText={error ? error.message : null}
