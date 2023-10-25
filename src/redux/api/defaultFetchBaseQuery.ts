@@ -2,7 +2,7 @@ import { fetchBaseQuery } from "@reduxjs/toolkit/query";
 import { RootState } from "../store/store";
 import { backendUrl } from "../../config/config";
 
-export const deFaultFetchBaseQuery = fetchBaseQuery({
+export const defaultFetchBaseQuery = fetchBaseQuery({
     baseUrl: backendUrl,
     prepareHeaders: (headers, { getState }) => {
         const token = (getState() as RootState).login.accessToken

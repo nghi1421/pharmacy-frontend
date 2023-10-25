@@ -1,9 +1,9 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
-import { deFaultFetchBaseQuery } from './defaultFetchBaseQuery';
+import { defaultFetchBaseQuery } from './defaultFetchBaseQuery';
 
 export const customerApi = createApi({
   reducerPath: 'customerApi',
-  baseQuery: deFaultFetchBaseQuery,
+  baseQuery: defaultFetchBaseQuery,
   endpoints: (builder) => ({
     getCustomers: builder.query<any,void>({
       query: () => `customers`,

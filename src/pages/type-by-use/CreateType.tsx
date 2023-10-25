@@ -6,12 +6,10 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from 'yup'
 import { useCreateTypeMutation } from "../../redux/api/typeByUseApi";
-import { useNotification } from "../../hooks/useNotification";
-import { AlertColor } from '@mui/material';
 import { enqueueSnackbar } from "notistack";
 import { MutationResponse } from "../../types/response.ts/MutationResponse";
 
-interface PositionForm {
+export interface PositionForm {
     name: string;
     detail: string;
 }
@@ -36,7 +34,7 @@ const CreateType: React.FC = () => {
     const navigate = useNavigate()
     // const { displayNotification } = useNotification();
 
-    const [createType, { isLoading, isSuccess, isError, error }] = useCreateTypeMutation();
+    const [createType, { isLoading }] = useCreateTypeMutation();
 
     const { handleSubmit, reset, control } = useForm<PositionForm>({
         defaultValues: defaultValues,
@@ -45,11 +43,12 @@ const CreateType: React.FC = () => {
 
     const onSubmit = async (data: PositionForm) => {
         try {
-            const response = await createType(data)
+            const response: any = await createType(data)
+            console.log(response)
             if (response.data.message) {
                 navigate('/type-by-uses');
                 enqueueSnackbar(
-                    'Thêm phân loại công dụng thành công', {
+                    response.data.message, {
                     autoHideDuration: 3000,
                     variant: 'success'
                 })

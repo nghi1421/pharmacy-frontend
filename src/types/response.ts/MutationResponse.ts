@@ -1,7 +1,5 @@
 export interface MutationResponse {
-    data: {
-        message?: string;
-        errorMessage?: string;
-        data: any;
-    }
+    message?: string;
+    errorMessage?: string;
+    data: any;
 }

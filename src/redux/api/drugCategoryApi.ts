@@ -1,9 +1,9 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
-import { deFaultFetchBaseQuery } from './defaultFetchBaseQuery';
+import { defaultFetchBaseQuery } from './defaultFetchBaseQuery';
 
 export const drugCategoryApi = createApi({
   reducerPath: 'drugCategoryApi',
-  baseQuery: deFaultFetchBaseQuery,
+  baseQuery: defaultFetchBaseQuery,
   endpoints: (builder) => ({
     getDrugs: builder.query<any,void>({
       query: () => `drug-categories`,
