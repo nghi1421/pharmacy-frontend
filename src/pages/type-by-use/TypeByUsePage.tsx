@@ -1,4 +1,4 @@
-import { Box, Button, CircularProgress, Divider, Paper, Typography } from "@mui/material";
+import { Box, Button, CircularProgress, Divider, IconButton, Paper, TableCell, Typography } from "@mui/material";
 import TableComponent from "../../components/table/TableComponent";
 import { Column } from "../../types/Column";
 import { TypeByUse } from "../../types/TypeByUse";
@@ -6,6 +6,8 @@ import { useGetTypesQuery } from "../../redux/api/typeByUseApi";
 import { formatDateTime } from "../../utils/format";
 import { Add } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
+import CreateIcon from '@mui/icons-material/Create';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 function createData({id, name, detail, createdAt, updatedAt}: TypeByUse) {
     return {
@@ -31,7 +33,7 @@ const TypeByUsePage: React.FC<{}> = () => {
             return createData(type)
         })};
     }
-    
+
     const clickAdd = () => {
         navigate('/type-by-uses/create')
     }
@@ -86,7 +88,29 @@ const TypeByUsePage: React.FC<{}> = () => {
                         rows={data.data}
                         keyTable='type-by-use-table'
                         columns={columns}
-                    ></TableComponent>
+                        hasAction={true}
+                        action={(rowValue: any) => 
+                                <TableCell
+                                    align="left"
+                                    key={`row-action-type-by-use-table-${rowValue.id}`}>
+                                    <Box sx={{ display: 'flex' }}>
+                                    <IconButton color='success' onClick={
+                                        () => { navigate({
+                                            pathname: `/type-by-uses/${rowValue.id}/edit`,
+                                        }) }    
+                                    }
+                                    >
+                                    <CreateIcon></CreateIcon>
+                                  </IconButton>
+                                  <IconButton color='error'>
+                                    <DeleteIcon></DeleteIcon>
+                                  </IconButton>
+                                </Box>
+                            </TableCell>
+                        }
+                    >
+
+                    </TableComponent>
             }
         </Paper>
     )

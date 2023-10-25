@@ -16,6 +16,7 @@ import CreateProvider from "../pages/provider/CreateProvider";
 import CreatePosition from "../pages/position/CreatePosition";
 import CreateType from "../pages/type-by-use/CreateType";
 import CreateDrugCategory from "../pages/drug-category/CreateDrugCategory";
+import EditType from "../pages/type-by-use/EditType";
 
 export const dashboardRoutes: Array<Route> = [
     {      
@@ -120,10 +121,18 @@ export const formRoutes: Array<Route> = [
         element: CreateType
     },
     {      
+        key: 'type-by-uses-edit-form-route',
+        title: 'Form công dụng',
+        path: '/type-by-uses/:typeId/edit',
+        icon: AttachMoney,
+        element: EditType
+    },
+    {      
         key: 'drug-category-create-form-route',
         title: 'Form danh mục thuốc',
         path: '/drug-categories/create',
         icon: AttachMoney,
         element: CreateDrugCategory
-    }
+    },
+    
 ]

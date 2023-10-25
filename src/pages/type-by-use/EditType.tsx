@@ -1,25 +1,27 @@
 import { Button, Grid, Paper, Typography } from "@mui/material"
 import { FormInputText } from "../../components/form/FormInputText"
 import yup from "../../utils/yup";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from 'yup'
-import { useCreateTypeMutation } from "../../redux/api/typeByUseApi";
+import { useCreateTypeMutation, useGetTypeQuery} from "../../redux/api/typeByUseApi";
 import { enqueueSnackbar } from "notistack";
 
-export interface TypeByUseForm {
+export interface TypeByUseEditForm {
+    id: string;
     name: string;
     detail: string;
 }
 
 const defaultValues = {
+    id: '',
     name: "",
     detail: '',
 };
 
  // @ts-ignore
-const typeFormValidate: Yup.ObjectSchema<TypeByUseForm> = yup.object({
+const typeFormValidate: Yup.ObjectSchema<TypeByUseEditForm> = yup.object({
     name: yup
         .string()
         .required('Tên công dụng bắt buộc.')
@@ -29,23 +31,34 @@ const typeFormValidate: Yup.ObjectSchema<TypeByUseForm> = yup.object({
         .required('Chi tiết công dụng bắt buộc.')
         .max(255, 'Chi tiết công dụng không quá 255 kí tự'),
 })
-const CreateType: React.FC = () => {
+const EditType: React.FC = () => {
+    const { typeId } = useParams()
     const navigate = useNavigate()
-    // const { displayNotification } = useNotification();
-
     const [createType, { isLoading }] = useCreateTypeMutation();
+    const { data, isError } = useGetTypeQuery(typeId)
 
-    const { handleSubmit, reset, control } = useForm<TypeByUseForm>({
+    // if (!data) {
+    //     return (
+    //         <div>Test</div>
+    //     )
+    // }
+    // useEffect(() => {
+    //     if (isFirstRender && params.typeId) {
+    //         const response = getType(params.typeId).then((data) => console.log(data));
+    //         console.log(response);
+    //     }
+    // }, [])
+
+    const { handleSubmit, reset, control, setValue } = useForm<TypeByUseEditForm>({
         defaultValues: defaultValues,
         resolver: yupResolver(typeFormValidate)
     });
 
-    const onSubmit = async (data: TypeByUseForm) => {
+    const onSubmit = async (data: TypeByUseEditForm) => {
         try {
             const response: any = await createType(data)
             console.log(response)
             if (response.data.message) {
-                navigate('/type-by-uses');
                 enqueueSnackbar(
                     response.data.message, {
                     autoHideDuration: 3000,
@@ -53,6 +66,9 @@ const CreateType: React.FC = () => {
                 })
             }
             else {
+                navigate('/type-by-uses');
+                console.log(123123123);
+
                 enqueueSnackbar(
                     response.data.errorMessage, {
                     autoHideDuration: 3000,
@@ -72,6 +88,12 @@ const CreateType: React.FC = () => {
     const backToTable = () => {
         navigate('/type-by-uses')
     }
+
+    if (!data) {
+       return  <div>Test</div>
+    }
+
+    console.log(data);
     return (
         <Paper sx={{ px:6, py:4 }}>
             <Typography variant="h6" gutterBottom mb='20px'>
@@ -143,4 +165,4 @@ const CreateType: React.FC = () => {
     )
 }
 
-export default CreateType
+export default EditType

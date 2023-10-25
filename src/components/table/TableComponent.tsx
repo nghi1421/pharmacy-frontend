@@ -1,4 +1,4 @@
-import { Divider, Paper, Table, TableBody, TableCell, TableContainer, TableFooter, TableHead, TablePagination, TableRow, Typography, styled, tableCellClasses } from "@mui/material"
+import { Box, Divider, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableFooter, TableHead, TablePagination, TableRow, Typography, styled, tableCellClasses } from "@mui/material"
 import { Column } from '../../types/Column'
 // import { TablePaginationActions } from "./TablePaginationActions";
 
@@ -6,6 +6,8 @@ interface TableProps<T> {
   rows: T[]
   columns: Column[]
   keyTable: string
+  action?: any
+  hasAction?: boolean
 }
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -29,7 +31,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-const TableComponent: React.FC<TableProps<any>> = ({ rows, keyTable, columns}) => {
+const TableComponent: React.FC<TableProps<any>> = ({ rows, keyTable, columns, action, hasAction }) => {
     // const [page, setPage] = useState<number>(0);
     // const [rowsPerPage, setRowsPerPage] = useState<number>(5);
 
@@ -64,6 +66,16 @@ const TableComponent: React.FC<TableProps<any>> = ({ rows, keyTable, columns}) =
                             {column.value}
                           </StyledTableCell>
                         ))}
+                    {
+                      hasAction
+                        ? <StyledTableCell
+                            align="left"
+                            key={`header-cell-${keyTable}-${columns.length +1}`}
+                          >
+                            Hành động
+                        </StyledTableCell>
+                        : ''
+                        }
                     </TableRow>
                 </TableHead>
 
@@ -80,6 +92,8 @@ const TableComponent: React.FC<TableProps<any>> = ({ rows, keyTable, columns}) =
                             {row[column.key]}
                           </TableCell>
                         ))}
+                        {hasAction ? action(row) : ''}
+                        
                     </StyledTableRow>
                     ))}
                 </TableBody>

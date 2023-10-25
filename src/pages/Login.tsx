@@ -1,19 +1,51 @@
-import React, { FormEvent, useState } from 'react'
-import TextInput from '../components/form/InputText.tsx'
+import React from 'react'
 import { Avatar, Box, Button, Container, CssBaseline, Grid, Link, Typography } from '@mui/material'
 import '../assets/styles/index.css'
-import { useAppDispatch } from '../redux/store/hooks.ts'
-import { authenticate } from '../redux/async/Authenticate.ts'
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as Yup from 'yup'
+import { FormInputText } from '../components/form/FormInputText.tsx'
+import { useForm } from 'react-hook-form'
+import yup from '../utils/yup.ts'
+import { enqueueSnackbar } from 'notistack';
+import { login } from '../api/auth.ts';
 
-const Login: React.FC<{}> = () => {
-    const dispatch = useAppDispatch()
-    const [username, setUsername] = useState('')
-    const [password, setPassword] = useState('')
-    
-    const handleSubmit = (event: FormEvent) => {
-        event.preventDefault();
-        dispatch(authenticate({ username, password }))
-    }
+interface AuthForm {
+    username: string
+    password: string
+}
+
+const defaultValues: AuthForm = {
+    username: '',
+    password: '',
+}
+
+ // @ts-ignore
+const authFormValidate: Yup.ObjectSchema<TypeByUseEditForm> = yup.object({
+    username: yup
+        .string()
+        .required('Tên đăng nhập bắt buộc.')
+        .max(255, 'Tên đăng nhập không quá 255 kí tự'),
+    password: yup
+        .string()
+        .required('Mật khẩu bắt buộc.')
+        .max(255, 'mật khẩu không quá 255 kí tự')
+})
+
+const Login: React.FC = () => {
+    const { handleSubmit, reset, control, setValue } = useForm<AuthForm>({
+        defaultValues: defaultValues,
+        resolver: yupResolver(authFormValidate)
+    });
+
+    const onSubmit = async (data) => {
+        const resp = await login(data.username, data.password);
+        console.log(resp);
+        enqueueSnackbar(
+                'Hahaha', {
+                autoHideDuration: 3000,
+                variant: 'success'
+            })
+    };
         
     return (
         <Container component="main" maxWidth="xs">
@@ -33,20 +65,28 @@ const Login: React.FC<{}> = () => {
                 <Typography component="h1" variant="h5">
                     Đăng nhập
                 </Typography>
-                <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-                    <TextInput
-                        label='Tên đăng nhập'
-                        placeHolder='Nhập tên đăng nhập'
-                        value={username}
-                        onChange={setUsername} />
-                    <TextInput
-                        label='Mật khẩu'
-                        placeHolder='Nhập mật khẩu'
-                        type='password'
-                        value={password}
-                        onChange={setPassword}
+                <Box component="form"  noValidate sx={{ mt: 1 }}>
+                    <Grid container spacing={4}>
+                        <Grid item xs={8} sm={12}>
+                            <FormInputText
+                        name="username"
+                        control={control}
+                        label="Tên đăng nhập"
+                        placeholder='Nhập tên đăng nhập của bạn'
                     />
+                        </Grid>
+                        <Grid item xs={8} sm={12}>
+                        <FormInputText
+                            name="password"
+                            control={control}
+                            label="Mật khẩu"
+                            placeholder='Nhập mật khẩu của bạn'
+                        />
+                        </Grid>
+                    </Grid>
+                    
                     <Button
+                        onClick={handleSubmit(onSubmit)}
                         type="submit"
                         fullWidth
                         variant="contained"
