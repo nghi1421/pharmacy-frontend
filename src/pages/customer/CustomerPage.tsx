@@ -2,11 +2,11 @@ import { Box, Button, CircularProgress, Divider, Paper, Typography } from "@mui/
 import TableComponent from "../../components/table/TableComponent";
 import { Column } from "../../types/Column";
 import { Customer } from "../../types/Customer";
-import { useGetCustomersQuery } from "../../redux/api/customerApi";
 import { GenderEnum } from "../../types/GenderEnum";
 import { formatDate } from "../../utils/format";
 import { Add } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
+import { useGetCustomers } from "../../api/customerApi";
 
 function createData({id, name, gender, dob, phoneNumber, email}: Customer) {
     return {
@@ -27,7 +27,7 @@ const columns: Column[] = [
 
 const CustomerPage: React.FC<{}> = () => {
     const navigate = useNavigate()
-    let { data, error, isLoading } = useGetCustomersQuery()
+    let { data, isLoading } = useGetCustomers()
     if (!isLoading) {
         data = {...data,data: data.data.map((customer: Customer) => {
             return createData(customer)

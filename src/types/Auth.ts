@@ -1,8 +1,13 @@
-import { User } from "./User"
+import { Role } from "./Role"
+import { Staff } from "./Staff"
 
 export type Auth = {
     message: string
-    data: User | null
+    data: {
+        id: number
+        username: string
+        staff: Staff
+        role: Role
+    }
     accessToken: string
-    refreshToken: string
 }

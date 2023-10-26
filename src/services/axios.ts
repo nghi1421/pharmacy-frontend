@@ -11,7 +11,8 @@ if (token) {
 }
 
 const axiosClient = axios.create({
-    baseURL : backendUrl,
+    withCredentials: true,
+    baseURL: backendUrl,
     headers : config
 }) 
 

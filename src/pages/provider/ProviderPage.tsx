@@ -2,10 +2,10 @@ import { Box, Button, CircularProgress, Divider, Paper, Typography } from "@mui/
 import TableComponent from "../../components/table/TableComponent";
 import { Column } from "../../types/Column";
 import { Provider } from "../../types/Provider";
-import { useGetProvidersQuery } from "../../redux/api/providerApi";
 import { formatDateTime } from "../../utils/format";
 import { Add } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
+import { useGetProviders } from "../../api/providerApi";
 
 function createData({id, name, address, createdAt, updatedAt, phoneNumber, email}: Provider) {
     return {
@@ -26,7 +26,7 @@ const columns: Column[] = [
 ]
 
 const ProviderPage: React.FC<{}> = () => {
-    let { data, isLoading } = useGetProvidersQuery()
+    let { data, isLoading } = useGetProviders()
     const navigate = useNavigate()
 
     if (!isLoading) {

@@ -2,6 +2,7 @@ import { API_LOGIN } from '../utils/constants';
 import { Auth } from '../types/Auth';
 import { useFetch } from '../utils/reactQuery';
 import { api } from '../utils/api';
+
 export const login = (username: string, password: string) =>
   api.post<Auth>(API_LOGIN, {
     username,

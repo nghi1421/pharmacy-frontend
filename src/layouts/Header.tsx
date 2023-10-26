@@ -4,6 +4,11 @@ import MuiAppBar, { AppBarProps as MuiAppBarProps  } from '@mui/material/AppBar'
 import { useState } from "react";
 import MenuIcon from '@mui/icons-material/Menu';
 
+interface HeaderProps {
+  open: boolean;
+  setOpen: (newOpen: boolean) => void
+}
+
 interface AppBarProps extends MuiAppBarProps {
   open?: boolean;
 }
@@ -28,7 +33,7 @@ const AppBar = styled(MuiAppBar, {
   }),
 }));
 
-const Header: React.FC = () => {
+const Header: React.FC<HeaderProps> = ({ open, setOpen }) => {
   const [avatarEl, setAvatarEl] = useState<HTMLButtonElement|null>(null);
   const openSetting = Boolean(avatarEl);
 
@@ -40,7 +45,6 @@ const Header: React.FC = () => {
     setAvatarEl(null);
   };
 
-  const [open, setOpen] = useState(true);
   const toggleDrawer = () => {
       setOpen(!open);
   };

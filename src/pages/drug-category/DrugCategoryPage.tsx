@@ -1,11 +1,11 @@
 import { Box, Button, CircularProgress, Divider, Paper, Typography } from "@mui/material";
 import TableComponent from "../../components/table/TableComponent";
 import { Column } from "../../types/Column";
-import { useGetDrugsQuery } from "../../redux/api/drugCategoryApi";
 import { formatCurrency } from "../../utils/format";
 import { DrugCategory } from "../../types/DrugCategory";
 import { Add } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
+import { useGetDrugCategories } from "../../api/drugCategoryApi";
 
 function createData({id, name, price, form, unit, vat, type, minimalUnit}: DrugCategory) {
     return {
@@ -28,7 +28,7 @@ const columns: Column[] = [
 ]
 
 const DrugCategoryPage: React.FC<{}> = () => {
-    let { data, isLoading } = useGetDrugsQuery()
+    let { data, isLoading } = useGetDrugCategories()
     const navigate = useNavigate()
     if (!isLoading) {
         data = {...data,data: data.data.map((drugCategory: DrugCategory) => {

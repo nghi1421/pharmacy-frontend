@@ -7,6 +7,7 @@ import { GenderEnum } from "../../types/GenderEnum";
 import { formatDate } from "../../utils/format";
 import { Add } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
+import { useGetStaffs } from "../../api/staffApi";
 
 function createData({id, name, gender, dob, phoneNumber, email, isWorking}: Staff) {
     return {
@@ -29,7 +30,7 @@ const columns: Column[] = [
 ]
 
 const StaffPage: React.FC<{}> = () => {
-    let { data, isLoading } = useGetStaffsQuery()
+    let { data, isLoading } = useGetStaffs()
     const navigate = useNavigate()
 
     if (!isLoading) {

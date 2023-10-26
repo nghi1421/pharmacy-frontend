@@ -7,7 +7,9 @@ import { FormInputText } from '../components/form/FormInputText.tsx'
 import { useForm } from 'react-hook-form'
 import yup from '../utils/yup.ts'
 import { enqueueSnackbar } from 'notistack';
-import { login } from '../api/auth.ts';
+import { login } from '../api/authApi.ts';
+import { useNavigate } from 'react-router-dom';
+import { setAccessToken, setStaff } from '../store/auth.ts';
 
 interface AuthForm {
     username: string
@@ -32,19 +34,32 @@ const authFormValidate: Yup.ObjectSchema<TypeByUseEditForm> = yup.object({
 })
 
 const Login: React.FC = () => {
-    const { handleSubmit, reset, control, setValue } = useForm<AuthForm>({
+    const navigate = useNavigate()
+    const { handleSubmit, control } = useForm<AuthForm>({
         defaultValues: defaultValues,
         resolver: yupResolver(authFormValidate)
     });
 
-    const onSubmit = async (data) => {
-        const resp = await login(data.username, data.password);
-        console.log(resp);
-        enqueueSnackbar(
-                'Hahaha', {
+    const onSubmit = async (data: AuthForm) => {
+        const response = await login(data.username, data.password);
+        console.log(response);
+        if (response.data.message) {
+            setStaff(response.data.data.staff)
+            setAccessToken(response.data.accessToken);
+            enqueueSnackbar(
+                response.data.message, {
                 autoHideDuration: 3000,
                 variant: 'success'
             })
+            navigate('/users')
+        }
+        else {
+            enqueueSnackbar(
+                response.data.errorMessage, {
+                autoHideDuration: 3000,
+                variant: 'error'
+            })
+        }
     };
         
     return (

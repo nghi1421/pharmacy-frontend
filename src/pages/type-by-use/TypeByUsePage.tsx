@@ -8,6 +8,7 @@ import { Add } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import CreateIcon from '@mui/icons-material/Create';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { useGetTypeByUses } from "../../api/typeByUseApi";
 
 function createData({id, name, detail, createdAt, updatedAt}: TypeByUse) {
     return {
@@ -26,7 +27,7 @@ const columns: Column[] = [
 ]
 
 const TypeByUsePage: React.FC<{}> = () => {
-    let { data, isLoading } = useGetTypesQuery()
+    let { data, isLoading } = useGetTypeByUses()
     const navigate = useNavigate()
     if (!isLoading) {
         data = {...data,data: data.data.map((type: TypeByUse) => {
