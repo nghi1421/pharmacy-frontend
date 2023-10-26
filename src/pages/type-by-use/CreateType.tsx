@@ -5,8 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from 'yup'
-import { useCreateTypeMutation } from "../../redux/api/typeByUseApi";
-import { enqueueSnackbar } from "notistack";
+import { useCreateTypeByUse } from "../../api/typeByUseApi";
 
 export interface TypeByUseForm {
     name: string;
@@ -31,9 +30,7 @@ const typeFormValidate: Yup.ObjectSchema<TypeByUseForm> = yup.object({
 })
 const CreateType: React.FC = () => {
     const navigate = useNavigate()
-    // const { displayNotification } = useNotification();
-
-    const [createType, { isLoading }] = useCreateTypeMutation();
+    const createTypeByUse = useCreateTypeByUse();
 
     const { handleSubmit, reset, control } = useForm<TypeByUseForm>({
         defaultValues: defaultValues,
@@ -41,32 +38,7 @@ const CreateType: React.FC = () => {
     });
 
     const onSubmit = async (data: TypeByUseForm) => {
-        try {
-            const response: any = await createType(data)
-            console.log(response)
-            if (response.data.message) {
-                navigate('/type-by-uses');
-                enqueueSnackbar(
-                    response.data.message, {
-                    autoHideDuration: 3000,
-                    variant: 'success'
-                })
-            }
-            else {
-                enqueueSnackbar(
-                    response.data.errorMessage, {
-                    autoHideDuration: 3000,
-                    variant: 'error'
-                })
-            }
-        }
-        catch (error: unknown) {
-            enqueueSnackbar(
-                error, {
-                autoHideDuration: 3000,
-                variant: 'error'
-            })
-        }
+        createTypeByUse.mutate(data);
     };
 
     const backToTable = () => {
@@ -106,7 +78,6 @@ const CreateType: React.FC = () => {
                     <Button
                         variant="contained"
                         color="primary"
-                        disabled={isLoading}
                         sx={{
                             textTransform: 'none',
                         }}
@@ -116,7 +87,6 @@ const CreateType: React.FC = () => {
                     </Button>
 
                     <Button
-                        disabled={isLoading}
                         variant="contained"
                         color="success"
                         sx={{

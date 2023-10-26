@@ -1,22 +1,12 @@
 import { Box, Button, CircularProgress, Divider, IconButton, Paper, TableCell, Typography } from "@mui/material";
 import TableComponent from "../../components/table/TableComponent";
 import { Column } from "../../types/Column";
-import { TypeByUse } from "../../types/TypeByUse";
-import { useGetTypesQuery } from "../../redux/api/typeByUseApi";
-import { formatDateTime } from "../../utils/format";
 import { Add } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import CreateIcon from '@mui/icons-material/Create';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { useGetTypeByUses } from "../../api/typeByUseApi";
+import { useGetTypeByUse, useGetTypeByUses } from "../../api/typeByUseApi";
 
-function createData({id, name, detail, createdAt, updatedAt}: TypeByUse) {
-    return {
-        id, name, detail, 
-        createdAt: formatDateTime(createdAt),
-        updatedAt: formatDateTime(updatedAt),
-    };
-}
 
 const columns: Column[] = [
     { key: 'id', value: 'Mã chức vụ'},
@@ -27,13 +17,9 @@ const columns: Column[] = [
 ]
 
 const TypeByUsePage: React.FC<{}> = () => {
-    let { data, isLoading } = useGetTypeByUses()
+    const { data, isLoading } = useGetTypeByUses()
     const navigate = useNavigate()
-    if (!isLoading) {
-        data = {...data,data: data.data.map((type: TypeByUse) => {
-            return createData(type)
-        })};
-    }
+    const getTypeByUse = useGetTypeByUse()
 
     const clickAdd = () => {
         navigate('/type-by-uses/create')
@@ -86,7 +72,7 @@ const TypeByUsePage: React.FC<{}> = () => {
                     </Box> 
                 :
                     <TableComponent
-                        rows={data.data}
+                        rows={data}
                         keyTable='type-by-use-table'
                         columns={columns}
                         hasAction={true}
@@ -96,9 +82,7 @@ const TypeByUsePage: React.FC<{}> = () => {
                                     key={`row-action-type-by-use-table-${rowValue.id}`}>
                                     <Box sx={{ display: 'flex' }}>
                                     <IconButton color='success' onClick={
-                                        () => { navigate({
-                                            pathname: `/type-by-uses/${rowValue.id}/edit`,
-                                        }) }    
+                                        () => { getTypeByUse.mutate(rowValue.id) }    
                                     }
                                     >
                                     <CreateIcon></CreateIcon>
