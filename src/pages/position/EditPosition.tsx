@@ -35,7 +35,7 @@ const EditPosition: React.FC = () => {
     };
 
     const backToTable = () => {
-        navigate('/type-by-uses')
+        navigate('/positions')
     }
     return (
         <Paper sx={{ px: 6, py: 4 }}>
