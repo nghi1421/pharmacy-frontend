@@ -5,7 +5,7 @@ import { Position } from "../../types/Position";
 import { formatDateTime } from "../../utils/format";
 import { useNavigate } from "react-router-dom";
 import { Add } from "@mui/icons-material";
-import { useGetPositions } from "../../api/postionApi";
+import { useGetPositions } from "../../hooks/usePosition";
 
 function createData({id, name, createdAt, updatedAt}: Position) {
     return {
@@ -25,11 +25,6 @@ const columns: Column[] = [
 const PositionPage: React.FC<{}> = () => {
     let { data, isLoading } = useGetPositions()
     const navigate = useNavigate()
-    if (!isLoading) {
-        data = {...data,data: data.data.map((position: Position) => {
-            return createData(position)
-        })};
-    }
 
     const clickAdd = () => {
         navigate('/positions/create')
@@ -81,7 +76,7 @@ const PositionPage: React.FC<{}> = () => {
                     </Box> 
                 :
                     <TableComponent
-                        rows={data.data}
+                        rows={data}
                         keyTable='provider-table'
                         columns={columns}
                     ></TableComponent>

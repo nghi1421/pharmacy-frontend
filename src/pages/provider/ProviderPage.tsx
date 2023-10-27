@@ -1,19 +1,9 @@
 import { Box, Button, CircularProgress, Divider, Paper, Typography } from "@mui/material";
 import TableComponent from "../../components/table/TableComponent";
 import { Column } from "../../types/Column";
-import { Provider } from "../../types/Provider";
-import { formatDateTime } from "../../utils/format";
 import { Add } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
-import { useGetProviders } from "../../api/providerApi";
-
-function createData({id, name, address, createdAt, updatedAt, phoneNumber, email}: Provider) {
-    return {
-        id, name, phoneNumber, email, address,
-        createdAt: formatDateTime(createdAt),
-        updatedAt: formatDateTime(updatedAt),
-    };
-}
+import { useGetProviders } from "../../hooks/useProvider";
 
 const columns: Column[] = [
     { key: 'id', value: 'Mã chức vụ'},
@@ -28,12 +18,6 @@ const columns: Column[] = [
 const ProviderPage: React.FC<{}> = () => {
     let { data, isLoading } = useGetProviders()
     const navigate = useNavigate()
-
-    if (!isLoading) {
-        data = {...data,data: data.data.map((provider: Provider) => {
-            return createData(provider)
-        })};
-    }
 
     const clickAdd = () => {
         navigate('/providers/create')
@@ -86,7 +70,7 @@ const ProviderPage: React.FC<{}> = () => {
                     </Box> 
                 :
                     <TableComponent
-                        rows={data.data}
+                        rows={data}
                         keyTable='provider-table'
                         columns={columns}
                     ></TableComponent>

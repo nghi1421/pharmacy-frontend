@@ -1,26 +1,7 @@
 import { Box, CircularProgress, Divider, Paper, Typography } from "@mui/material";
 import TableComponent from "../../components/table/TableComponent";
-import { useGetUsersQuery } from "../../redux/api/userApi";
 import { Column } from "../../types/Column";
-import { User } from '../../types/User';
-import { formatDateTime } from "../../utils/format";
-import { Role } from "../../types/Role";
-import { useGetUsers } from "../../api/userApi";
-
-function createData(
-    id: number,
-    username: string,
-    role: Role, 
-    createdAt: string,
-    updatedAt: string,
-) {
-    return {
-        id, username,
-        role: role.name,
-        createdAt: formatDateTime(createdAt),
-        updatedAt: formatDateTime(updatedAt),
-    };
-}
+import { useGetUsers } from "../../hooks/userApi";
 
 const columns: Column[] = [
   { key: 'id', value: 'Mã tài khoản'},
@@ -33,11 +14,6 @@ const columns: Column[] = [
 const UserPage: React.FC<{}> = () => {
     let { data, isLoading } = useGetUsers()
 
-    if (!isLoading) {
-        data = {...data,data: data.data.map((user: User) => {
-            return createData(user.id, user.username, user.role, user.createdAt, user.updatedAt)
-        })};
-    }
     return (
         <Paper>
             <Typography
@@ -60,7 +36,7 @@ const UserPage: React.FC<{}> = () => {
                     </Box> 
                 :
                     <TableComponent
-                        rows={data.data}
+                        rows={data}
                         keyTable='user-table'
                         columns={columns}
                     ></TableComponent>

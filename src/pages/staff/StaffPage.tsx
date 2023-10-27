@@ -1,23 +1,9 @@
 import { Box, Button, CircularProgress, Divider, Paper, Typography } from "@mui/material";
 import TableComponent from "../../components/table/TableComponent";
 import { Column } from "../../types/Column";
-import { Staff } from "../../types/Staff";
-import { useGetStaffsQuery } from "../../redux/api/staffApi";
-import { GenderEnum } from "../../types/GenderEnum";
-import { formatDate } from "../../utils/format";
 import { Add } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
-import { useGetStaffs } from "../../api/staffApi";
-
-function createData({id, name, gender, dob, phoneNumber, email, isWorking}: Staff) {
-    return {
-        id, name, phoneNumber,
-        gender: GenderEnum[gender],
-        email,
-        dob: formatDate(dob),
-        isWorking: isWorking ? '✔️' : '❌'
-    };
-}
+import { useGetStaffs } from "../../hooks/useStaff";
 
 const columns: Column[] = [
     { key: 'id', value: 'Mã nhân viên'},
@@ -32,12 +18,6 @@ const columns: Column[] = [
 const StaffPage: React.FC<{}> = () => {
     let { data, isLoading } = useGetStaffs()
     const navigate = useNavigate()
-
-    if (!isLoading) {
-        data = {...data,data: data.data.map((staff: Staff) => {
-            return createData(staff)
-        })};
-    }
 
     const clickAdd = () => {
         navigate('/staffs/create')
@@ -90,7 +70,7 @@ const StaffPage: React.FC<{}> = () => {
                     </Box> 
                 :
                     <TableComponent
-                        rows={data.data}
+                        rows={data}
                         keyTable='staff-table'
                         columns={columns}
                     ></TableComponent>

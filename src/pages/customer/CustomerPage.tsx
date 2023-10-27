@@ -1,20 +1,9 @@
 import { Box, Button, CircularProgress, Divider, Paper, Typography } from "@mui/material";
 import TableComponent from "../../components/table/TableComponent";
 import { Column } from "../../types/Column";
-import { Customer } from "../../types/Customer";
-import { GenderEnum } from "../../types/GenderEnum";
-import { formatDate } from "../../utils/format";
 import { Add } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
-import { useGetCustomers } from "../../api/customerApi";
-
-function createData({id, name, gender, dob, phoneNumber, email}: Customer) {
-    return {
-        id, name, phoneNumber, email,
-        gender: GenderEnum[gender],
-        dob: !dob ? '_' : formatDate(dob),
-    };
-}
+import { useGetCustomers } from "../../hooks/useCustomer";
 
 const columns: Column[] = [
     { key: 'id', value: 'Mã khách hàng'},
@@ -28,11 +17,6 @@ const columns: Column[] = [
 const CustomerPage: React.FC<{}> = () => {
     const navigate = useNavigate()
     let { data, isLoading } = useGetCustomers()
-    if (!isLoading) {
-        data = {...data,data: data.data.map((customer: Customer) => {
-            return createData(customer)
-        })};
-    }
 
     const clickAdd = () => {
         navigate('/customers/create')
@@ -85,7 +69,7 @@ const CustomerPage: React.FC<{}> = () => {
                     </Box> 
                 :
                     <TableComponent
-                        rows={data.data}
+                        rows={data}
                         keyTable='customer-table'
                         columns={columns}
                     ></TableComponent>

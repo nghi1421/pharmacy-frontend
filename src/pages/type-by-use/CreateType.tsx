@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from 'yup'
-import { useCreateTypeByUse } from "../../api/typeByUseApi";
+import { useCreateTypeByUse } from "../../hooks/useTypeByUse";
 
 export interface TypeByUseForm {
     name: string;

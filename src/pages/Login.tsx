@@ -7,7 +7,7 @@ import { FormInputText } from '../components/form/FormInputText.tsx'
 import { useForm } from 'react-hook-form'
 import yup from '../utils/yup.ts'
 import { enqueueSnackbar } from 'notistack';
-import { login } from '../api/authApi.ts';
+import { login } from '../hooks/useAuth.ts';
 import { useNavigate } from 'react-router-dom';
 import { setAccessToken, setStaff } from '../store/auth.ts';
 

@@ -6,37 +6,32 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from 'yup'
 import React from "react";
-import { useUpdateTypeByUse } from "../../hooks/useTypeByUse";
+import { useUpdatePosition } from "../../hooks/usePosition";
 
-export interface TypeByUseEditForm {
+export interface PositionEditForm {
     id: string;
     name: string;
-    detail: string;
 }
 
  // @ts-ignore
-const typeFormValidate: Yup.ObjectSchema<TypeByUseEditForm> = yup.object({
+const typeFormValidate: Yup.ObjectSchema<PositionEditForm> = yup.object({
     name: yup
         .string()
-        .required('Tên công dụng bắt buộc.')
-        .max(100, 'Tên công dụng không quá 100 kí tự'),
-    detail: yup
-        .string()
-        .required('Chi tiết công dụng bắt buộc.')
-        .max(255, 'Chi tiết công dụng không quá 255 kí tự'),
+        .required('Tên chức vụ bắt buộc.')
+        .max(100, 'Tên chức vụ không quá 100 kí tự'),
 })
-const EditType: React.FC = () => {
+const EditPosition: React.FC = () => {
     const { state } = useLocation()
     const navigate = useNavigate()
-    const updateTypeByUse = useUpdateTypeByUse()
+    const updatePosition = useUpdatePosition()
 
-    const { handleSubmit, reset, control } = useForm<TypeByUseEditForm>({
-        defaultValues: state.typeByUseData,
+    const { handleSubmit, reset, control } = useForm<PositionEditForm>({
+        defaultValues: state.positionData,
         resolver: yupResolver(typeFormValidate)
     });
 
-    const onSubmit = async (data: TypeByUseEditForm) => {
-        updateTypeByUse.mutate(data);
+    const onSubmit = async (data: PositionEditForm) => {
+        updatePosition.mutate(data);
     };
 
     const backToTable = () => {
@@ -45,7 +40,7 @@ const EditType: React.FC = () => {
     return (
         <Paper sx={{ px: 6, py: 4 }}>
             {
-                state.typeByUseData ? 
+                state.positionData ? 
                     <React.Fragment>
                         <Typography variant="h6" gutterBottom mb='20px'>
                             Thông tin công dụng thuốc
@@ -118,4 +113,4 @@ const EditType: React.FC = () => {
     )
 }
 
-export default EditType
+export default EditPosition

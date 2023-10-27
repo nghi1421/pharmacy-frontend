@@ -5,7 +5,7 @@ import { Add } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import CreateIcon from '@mui/icons-material/Create';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { useDeleteTypeByUse, useGetTypeByUse, useGetTypeByUses } from "../../api/typeByUseApi";
+import { useDeleteTypeByUse, useGetTypeByUse, useGetTypeByUses } from "../../hooks/useTypeByUse";
 import ConfirmDialog from "../../components/ConfirmDialog";
 import { useConfirmDialog } from "../../hooks/useConfirmDialog";
 
