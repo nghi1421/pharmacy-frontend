@@ -1,23 +1,18 @@
 import { Button, Grid, Paper, Typography } from "@mui/material"
 import { FormInputText } from "../../components/form/FormInputText"
 import yup from "../../utils/yup";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from 'yup'
 import React from "react";
+import { useUpdateTypeByUse } from "../../api/typeByUseApi";
 
 export interface TypeByUseEditForm {
     id: string;
     name: string;
     detail: string;
 }
-
-const defaultValues = {
-    id: '',
-    name: "",
-    detail: '',
-};
 
  // @ts-ignore
 const typeFormValidate: Yup.ObjectSchema<TypeByUseEditForm> = yup.object({
@@ -33,6 +28,7 @@ const typeFormValidate: Yup.ObjectSchema<TypeByUseEditForm> = yup.object({
 const EditType: React.FC = () => {
     const { state } = useLocation()
     const navigate = useNavigate()
+    const createUpdateTypeByUse = useUpdateTypeByUse()
 
     const { handleSubmit, reset, control, setValue } = useForm<TypeByUseEditForm>({
         defaultValues: state.typeByUseData,
@@ -40,7 +36,7 @@ const EditType: React.FC = () => {
     });
 
     const onSubmit = async (data: TypeByUseEditForm) => {
-        
+        createUpdateTypeByUse.mutate(data);
     };
 
     const backToTable = () => {

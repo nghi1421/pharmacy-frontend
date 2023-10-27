@@ -7,6 +7,7 @@ import { enqueueSnackbar } from 'notistack';
 import { TypeByUse } from '../types/TypeByUse';
 import { formatDateTime } from '../utils/format';
 import { useNavigate } from 'react-router-dom';
+import { TypeByUseEditForm } from '../pages/type-by-use/EditType';
 
 function createData({id, name, detail, createdAt, updatedAt}: TypeByUse) {
     return {
@@ -78,13 +79,13 @@ const useCreateTypeByUse = () => {
       else {
           enqueueSnackbar(response.data.errorMesage, {
             autoHideDuration: 3000,
-            variant: 'success'
+            variant: 'error'
           }) 
       }
     },
     onError: (error: any) => {
       console.log(error)
-      enqueueSnackbar('That bai roi thang lon',
+      enqueueSnackbar('Error here ',
         {
           autoHideDuration: 3000,
           variant: 'error'
@@ -94,8 +95,80 @@ const useCreateTypeByUse = () => {
   )
 }
 
+const useUpdateTypeByUse = () => {
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+
+  return useMutation({
+    mutationFn: async (data: TypeByUseEditForm) => {
+      return await axiosClient.put(pathToUrl(API_TYPE_BY_USE_WITH_ID, { typeId: data.id }), data)
+    },
+    onSuccess: (response: any) => {
+      if (response.data.message) {
+        queryClient.invalidateQueries('type-by-uses', { refetchInactive: true })
+        navigate('/type-by-uses')
+        enqueueSnackbar(response.data.message, {
+          autoHideDuration: 3000,
+          variant: 'success'
+        })  
+      }
+      else {
+          enqueueSnackbar(response.data.errorMesage, {
+            autoHideDuration: 3000,
+            variant: 'error'
+          }) 
+      }
+    },
+    onError: (error: any) => {
+      console.log(error)
+      enqueueSnackbar('Error here.',
+        {
+          autoHideDuration: 3000,
+          variant: 'error'
+        })
+    }
+  }
+  ) 
+}
+
+const useDeleteTypeByUse = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (typeId: string) => {
+      return await axiosClient.delete(pathToUrl(API_TYPE_BY_USE_WITH_ID, { typeId }))
+    },
+    onSuccess: (response: any) => {
+      if (response.data.message) {
+        queryClient.invalidateQueries('type-by-uses', { refetchInactive: true })
+        enqueueSnackbar(response.data.message, {
+          autoHideDuration: 3000,
+          variant: 'success'
+        })  
+      }
+      else {
+          enqueueSnackbar(response.data.errorMesage, {
+            autoHideDuration: 3000,
+            variant: 'error'
+          }) 
+      }
+    },
+    onError: (error: any) => {
+      console.log(error)
+      enqueueSnackbar('Error here.',
+        {
+          autoHideDuration: 3000,
+          variant: 'error'
+        })
+    }
+  }
+  ) 
+}
+
 export {
   useGetTypeByUses,
   useGetTypeByUse,
-  useCreateTypeByUse
+  useCreateTypeByUse,
+  useUpdateTypeByUse,
+  useDeleteTypeByUse
 }

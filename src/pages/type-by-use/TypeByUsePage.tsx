@@ -5,8 +5,9 @@ import { Add } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import CreateIcon from '@mui/icons-material/Create';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { useGetTypeByUse, useGetTypeByUses } from "../../api/typeByUseApi";
-
+import { useDeleteTypeByUse, useGetTypeByUse, useGetTypeByUses } from "../../api/typeByUseApi";
+import ConfirmDialog from "../../components/ConfirmDialog";
+import { useConfirmDialog } from "../../hooks/useConfirmDialog";
 
 const columns: Column[] = [
     { key: 'id', value: 'Mã chức vụ'},
@@ -20,12 +21,19 @@ const TypeByUsePage: React.FC<{}> = () => {
     const { data, isLoading } = useGetTypeByUses()
     const navigate = useNavigate()
     const getTypeByUse = useGetTypeByUse()
-
+    const deleteTypeByUse = useDeleteTypeByUse()
+    const [openConfirmDialog, props] = useConfirmDialog(deleteTypeByUse.mutate)
+    
     const clickAdd = () => {
         navigate('/type-by-uses/create')
     }
     return (
         <Paper>
+            <ConfirmDialog
+                content="Vui lòng cân nhắc trước khi xóa dữ liệu. Nếu bạn đồng ý xóa phân loại công dụng thuốc bạn hãy nhấn Xác nhận."
+                title="Bạn có thật sự muốn xóa công dụng?"
+                { ...props }
+            />
             <Box sx={{
                 display: 'flex',
                 justifyContent: 'space-between',
@@ -81,15 +89,18 @@ const TypeByUsePage: React.FC<{}> = () => {
                                     align="left"
                                     key={`row-action-type-by-use-table-${rowValue.id}`}>
                                     <Box sx={{ display: 'flex' }}>
-                                    <IconButton color='success' onClick={
-                                        () => { getTypeByUse.mutate(rowValue.id) }    
-                                    }
+                                    <IconButton
+                                        color='success'
+                                        onClick={() => { getTypeByUse.mutate(rowValue.id) }}
                                     >
-                                    <CreateIcon></CreateIcon>
-                                  </IconButton>
-                                  <IconButton color='error'>
-                                    <DeleteIcon></DeleteIcon>
-                                  </IconButton>
+                                        <CreateIcon></CreateIcon>
+                                    </IconButton>
+                                    <IconButton
+                                        color='error'
+                                        onClick={() => { openConfirmDialog(rowValue.id) }}
+                                    >
+                                        <DeleteIcon></DeleteIcon>
+                                    </IconButton>
                                 </Box>
                             </TableCell>
                         }
