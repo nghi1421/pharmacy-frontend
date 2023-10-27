@@ -41,12 +41,12 @@ const useGetDrugCategory = () => {
   const navigate = useNavigate();
 
   return useMutation({
-    mutationFn: (typeId: string) => axiosClient
-      .get(pathToUrl(API_DRUG_CATEGORY_WITH_ID, { typeId }))
+    mutationFn: (drugId: string) => axiosClient
+      .get(pathToUrl(API_DRUG_CATEGORY_WITH_ID, { drugId }))
       .then((response) => {
-        navigate( `/drug-categories/${typeId}/edit`,
+        navigate( `/drug-categories/${drugId}/edit`,
           {
-            state: { DrugCategoryData: response.data.data }
+            state: { drugCategoryData: response.data.data }
           }
         )
 
@@ -84,7 +84,7 @@ const useCreateDrugCategory = () => {
           }) 
       }
     },
-    onError: (error: any) => {
+    onError: () => {
       enqueueSnackbar('Error here ',
         {
           autoHideDuration: 3000,
@@ -101,8 +101,8 @@ const useUpdateDrugCategory = () => {
 
   return useMutation({
     mutationFn: async (data: DrugCategoryEditForm) => {
-      return await axiosClient.put(pathToUrl(API_DRUG_CATEGORY_WITH_ID, { typeId: data.id }), data)
-    },
+      return await axiosClient.put(pathToUrl(API_DRUG_CATEGORY_WITH_ID, { drugId: data.id }), data)
+    },  
     onSuccess: (response: any) => {
       if (response.data.message) {
         queryClient.invalidateQueries('drug-categories', { refetchInactive: true })
@@ -134,8 +134,8 @@ const useDeleteDrugCategory = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (typeId: string) => {
-      return await axiosClient.delete(pathToUrl(API_DRUG_CATEGORY_WITH_ID, { typeId }))
+    mutationFn: async (drugId: string) => {
+      return await axiosClient.delete(pathToUrl(API_DRUG_CATEGORY_WITH_ID, { drugId }))
     },
     onSuccess: (response: any) => {
       if (response.data.message) {

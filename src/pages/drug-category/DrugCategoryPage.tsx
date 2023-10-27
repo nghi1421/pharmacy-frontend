@@ -1,10 +1,13 @@
-import { Box, Button, CircularProgress, Divider, Paper, Typography } from "@mui/material";
+import { Box, Button, CircularProgress, Divider, IconButton, Paper, TableCell, Typography } from "@mui/material";
 import TableComponent from "../../components/table/TableComponent";
 import { Column } from "../../types/Column";
 import { Add } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
+import CreateIcon from '@mui/icons-material/Create';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { useGetDrugCategories, useGetDrugCategory, useDeleteDrugCategory } from "../../hooks/useDrugCategory";
 import { useConfirmDialog } from "../../hooks/useConfirmDialog";
+import ConfirmDialog from "../../components/ConfirmDialog";
 
 const columns: Column[] = [
     { key: 'id', value: 'Mã thuốc'},
@@ -29,7 +32,11 @@ const DrugCategoryPage: React.FC<{}> = () => {
     }
     return (
         <Paper>
-            
+            <ConfirmDialog
+                content="Vui lòng cân nhắc trước khi xóa dữ liệu. Nếu bạn đồng ý xóa danh mục thuốc bạn hãy nhấn Xác nhận."
+                title="Bạn có thật sự muốn xóa danh mục thuốc này không?"
+                { ...props }
+            />
             <Box sx={{
                 display: 'flex',
                 justifyContent: 'space-between',
@@ -78,7 +85,28 @@ const DrugCategoryPage: React.FC<{}> = () => {
                         rows={data}
                         keyTable='drug-category-table'
                         columns={columns}
-                    ></TableComponent>
+                        hasAction={true}
+                        action={(rowValue: any) => 
+                                <TableCell
+                                    align="left"
+                                    key={`row-action-drug-category-table-${rowValue.id}`}>
+                                    <Box sx={{ display: 'flex' }}>
+                                    <IconButton
+                                        color='success'
+                                        onClick={() => { getDrugCategory.mutate(rowValue.id) }}
+                                    >
+                                        <CreateIcon></CreateIcon>
+                                    </IconButton>
+                                    <IconButton
+                                        color='error'
+                                        onClick={() => { openConfirmDialog(rowValue.id) }}
+                                    >
+                                        <DeleteIcon></DeleteIcon>
+                                    </IconButton>
+                                </Box>
+                            </TableCell>
+                        }
+                    />
             }
         </Paper>
     )

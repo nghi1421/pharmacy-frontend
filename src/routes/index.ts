@@ -18,6 +18,7 @@ import CreateType from "../pages/type-by-use/CreateType";
 import CreateDrugCategory from "../pages/drug-category/CreateDrugCategory";
 import EditType from "../pages/type-by-use/EditType";
 import EditPosition from "../pages/position/EditPosition";
+import EditDrugCategory from "../pages/drug-category/EditDrugCategory";
 
 export const dashboardRoutes: Array<Route> = [
     {      
@@ -142,5 +143,11 @@ export const formRoutes: Array<Route> = [
         icon: AttachMoney,
         element: CreateDrugCategory
     },
-    
+    {      
+        key: 'drug-category-update-form-route',
+        title: 'Form danh mục thuốc',
+        path: '/drug-categories/:drugdrCategoryId/edit',
+        icon: AttachMoney,
+        element: EditDrugCategory
+    },
 ]
