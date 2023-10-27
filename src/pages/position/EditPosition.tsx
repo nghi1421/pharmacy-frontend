@@ -43,24 +43,15 @@ const EditPosition: React.FC = () => {
                 state.positionData ? 
                     <React.Fragment>
                         <Typography variant="h6" gutterBottom mb='20px'>
-                            Thông tin công dụng thuốc
+                            Thông tin chức vụ thuốc
                         </Typography>
                         <Grid container spacing={3}>
                             <Grid item xs={8} sm={6}>
                                 <FormInputText
                                     name="name"
                                     control={control}
-                                    label="Tên công dụng"
-                                    placeholder='Nhập tên công dụng thuốc'
-                                />
-                            </Grid>
-
-                            <Grid item xs={8} sm={6}>
-                                <FormInputText
-                                    name="detail"
-                                    control={control}
-                                    label="Chi tiết"
-                                    placeholder='Nhập chi tiết công dụng thuốc'
+                                    label="Tên chức vụ"
+                                    placeholder='Nhập tên chức vụ'
                                 />
                             </Grid>
 

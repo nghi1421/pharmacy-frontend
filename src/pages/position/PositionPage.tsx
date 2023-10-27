@@ -1,19 +1,13 @@
-import { Box, Button, CircularProgress, Divider, Paper, Typography } from "@mui/material";
+import { Box, Button, CircularProgress, Divider, IconButton, Paper, TableCell, Typography } from "@mui/material";
 import TableComponent from "../../components/table/TableComponent";
 import { Column } from "../../types/Column";
-import { Position } from "../../types/Position";
-import { formatDateTime } from "../../utils/format";
+import CreateIcon from '@mui/icons-material/Create';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { useNavigate } from "react-router-dom";
 import { Add } from "@mui/icons-material";
-import { useGetPositions } from "../../hooks/usePosition";
-
-function createData({id, name, createdAt, updatedAt}: Position) {
-    return {
-        id, name,
-        createdAt: formatDateTime(createdAt),
-        updatedAt: formatDateTime(updatedAt),
-    };
-}
+import { useDeletePosition, useGetPosition, useGetPositions } from "../../hooks/usePosition";
+import { useConfirmDialog } from "../../hooks/useConfirmDialog";
+import ConfirmDialog from "../../components/ConfirmDialog";
 
 const columns: Column[] = [
     { key: 'id', value: 'Mã chức vụ'},
@@ -24,6 +18,9 @@ const columns: Column[] = [
 
 const PositionPage: React.FC<{}> = () => {
     let { data, isLoading } = useGetPositions()
+    const getPosition = useGetPosition()
+    const deletePosition = useDeletePosition()
+    const [openConfirmDialog, props] = useConfirmDialog(deletePosition.mutate)
     const navigate = useNavigate()
 
     const clickAdd = () => {
@@ -31,6 +28,11 @@ const PositionPage: React.FC<{}> = () => {
     }
     return (
         <Paper>
+            <ConfirmDialog
+                content="Vui lòng cân nhắc trước khi xóa dữ liệu. Nếu bạn đồng ý xóa phân chức vụ bạn hãy nhấn Xác nhận."
+                title="Bạn có thật sự muốn xóa chức vụ?"
+                { ...props }
+            />
             <Box sx={{
                 display: 'flex',
                 justifyContent: 'space-between',
@@ -74,11 +76,32 @@ const PositionPage: React.FC<{}> = () => {
                     }}>
                         <CircularProgress />
                     </Box> 
-                :
+                : 
                     <TableComponent
                         rows={data}
                         keyTable='provider-table'
                         columns={columns}
+                        hasAction={true}
+                        action={(rowValue: any) => 
+                                <TableCell
+                                    align="left"
+                                    key={`row-action-type-by-use-table-${rowValue.id}`}>
+                                    <Box sx={{ display: 'flex' }}>
+                                    <IconButton
+                                        color='success'
+                                        onClick={() => { getPosition.mutate(rowValue.id) }}
+                                    >
+                                        <CreateIcon></CreateIcon>
+                                    </IconButton>
+                                    <IconButton
+                                        color='error'
+                                        onClick={() => { openConfirmDialog(rowValue.id) }}
+                                    >
+                                        <DeleteIcon></DeleteIcon>
+                                    </IconButton>
+                                </Box>
+                            </TableCell>
+                        }
                     ></TableComponent>
             }
         </Paper>

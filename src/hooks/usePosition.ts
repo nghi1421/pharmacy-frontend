@@ -45,7 +45,7 @@ const useGetPosition = () => {
       .then((response) => {
         navigate( `/positions/${positionId}/edit`,
           {
-            state: { PositionData: response.data.data }
+            state: { positionData: response.data.data }
           }
         )
 

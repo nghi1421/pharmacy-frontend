@@ -17,6 +17,7 @@ import CreatePosition from "../pages/position/CreatePosition";
 import CreateType from "../pages/type-by-use/CreateType";
 import CreateDrugCategory from "../pages/drug-category/CreateDrugCategory";
 import EditType from "../pages/type-by-use/EditType";
+import EditPosition from "../pages/position/EditPosition";
 
 export const dashboardRoutes: Array<Route> = [
     {      
@@ -112,6 +113,13 @@ export const formRoutes: Array<Route> = [
         path: '/positions/create',
         icon: AttachMoney,
         element: CreatePosition
+    },
+    {      
+        key: 'positions-edit-form-route',
+        title: 'Form công dụng',
+        path: '/positions/:positionId/edit',
+        icon: AttachMoney,
+        element: EditPosition
     },
     {      
         key: 'type-by-uses-create-form-route',

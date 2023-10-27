@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from 'yup'
+import { useCreatePosition } from "../../hooks/usePosition";
 
 export interface PositionForm {
     name: string;
@@ -24,17 +25,20 @@ const positionFormValidate: Yup.ObjectSchema<PositionForm>
 })
 const CreatePosition: React.FC = () => {
     const navigate = useNavigate()
-
+    const createPosition = useCreatePosition();
     const { handleSubmit, reset, control } = useForm<PositionForm>({
         defaultValues: defaultValues,
         resolver: yupResolver(positionFormValidate)
     });
 
-    const onSubmit = (data: PositionForm) => console.log(data);
+    const onSubmit = (data: PositionForm) => {
+        createPosition.mutate(data)
+    };
 
     const backToTable = () => {
         navigate('/positions')
     }
+    
     return (
         <Paper sx={{ px:6, py:4 }}>
             <Typography variant="h6" gutterBottom mb='20px'>
