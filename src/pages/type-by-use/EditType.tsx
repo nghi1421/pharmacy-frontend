@@ -30,7 +30,7 @@ const EditType: React.FC = () => {
     const navigate = useNavigate()
     const createUpdateTypeByUse = useUpdateTypeByUse()
 
-    const { handleSubmit, reset, control, setValue } = useForm<TypeByUseEditForm>({
+    const { handleSubmit, reset, control } = useForm<TypeByUseEditForm>({
         defaultValues: state.typeByUseData,
         resolver: yupResolver(typeFormValidate)
     });
@@ -84,7 +84,7 @@ const EditType: React.FC = () => {
                                     }}
                                     onClick={handleSubmit(onSubmit)}
                                 >
-                                    Thêm
+                                    Cập nhật
                                 </Button>
 
                                 <Button
