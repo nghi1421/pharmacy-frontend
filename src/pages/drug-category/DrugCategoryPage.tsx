@@ -3,7 +3,8 @@ import TableComponent from "../../components/table/TableComponent";
 import { Column } from "../../types/Column";
 import { Add } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
-import { useGetDrugCategories } from "../../hooks/useDrugCategory";
+import { useGetDrugCategories, useGetDrugCategory, useDeleteDrugCategory } from "../../hooks/useDrugCategory";
+import { useConfirmDialog } from "../../hooks/useConfirmDialog";
 
 const columns: Column[] = [
     { key: 'id', value: 'Mã thuốc'},
@@ -19,6 +20,9 @@ const columns: Column[] = [
 const DrugCategoryPage: React.FC<{}> = () => {
     let { data, isLoading } = useGetDrugCategories()
     const navigate = useNavigate()
+    const getDrugCategory = useGetDrugCategory()
+    const deleteDrugCategory = useDeleteDrugCategory()
+    const [openConfirmDialog, props] = useConfirmDialog(deleteDrugCategory.mutate)
     
     const clickAdd = () => {
         navigate('/drug-categories/create')

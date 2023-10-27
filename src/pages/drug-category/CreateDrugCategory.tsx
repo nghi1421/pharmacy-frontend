@@ -1,14 +1,15 @@
-import { Button, CircularProgress, FormControl, Grid, InputLabel, MenuItem, Paper, Select, TextField, Typography } from "@mui/material"
+import { Button, CircularProgress, FormControl, Grid, InputLabel, MenuItem, Paper, Select, Typography } from "@mui/material"
 import { FormInputText } from "../../components/form/FormInputText"
 import yup from "../../utils/yup";
 import { useNavigate } from "react-router-dom";
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from 'yup'
-import { useGetTypesQuery } from "../../redux/api/typeByUseApi";
 import { FormInputFloat } from "../../components/form/FormInputFloat";
+import { useGetTypeByUses } from "../../hooks/useTypeByUse";
+import { useCreateDrugCategory } from "../../hooks/useDrugCategory";
 
-interface PositionForm {
+export interface DrugCategoryForm {
     name: string;
     unit: string;
     minimalUnit: string;
@@ -18,6 +19,7 @@ interface PositionForm {
     preserved: string;
     typeId: string;
     form: string;
+    price: number;
 }
 
 const defaultValues = {
@@ -30,10 +32,11 @@ const defaultValues = {
     preserved: '',
     typeId: '1',
     form: 'viên',
+    price: 0,
 };
 
  // @ts-ignore
-const positionFormValidate: Yup.ObjectSchema<PositionForm> = yup.object({
+const drugCategoryVaidate: Yup.ObjectSchema<DrugCategoryForm> = yup.object({
     name: yup
         .string()
         .required('Tên công dụng bắt buộc.')
@@ -47,7 +50,7 @@ const positionFormValidate: Yup.ObjectSchema<PositionForm> = yup.object({
     vat: yup
         .number()
         .min(0, 'VAT phải lớn hơn 0')
-        .max(1, 'VAT phải là nhỏ hơn 1'),
+        .max(100, 'VAT phải là nhỏ hơn 100'),
     quantityConversion: yup
         .number()
         .min(1, 'Số lượng quy đổi phải lớn hơn 0'),
@@ -61,18 +64,22 @@ const positionFormValidate: Yup.ObjectSchema<PositionForm> = yup.object({
         .string()
         .required('Dạng thuốc thuốc bắt buộc.'),
 })
+
 const CreateDrugCategory: React.FC = () => {
     const navigate = useNavigate()
-    const { data, isLoading } = useGetTypesQuery();
-
-    const { handleSubmit, watch, reset, control } = useForm<PositionForm>({
+    const { data, isLoading } = useGetTypeByUses();
+    const createDrugCategory = useCreateDrugCategory()
+    const { handleSubmit, watch, reset, control } = useForm<DrugCategoryForm>({
         defaultValues: defaultValues,
-        resolver: yupResolver(positionFormValidate)
+        resolver: yupResolver(drugCategoryVaidate)
     });
     const watchUnit = watch('unit')
     const watchMinimalUnit = watch('minimalUnit')
 
-    const onSubmit = (data: PositionForm) => console.log(data);
+    const onSubmit = (data: DrugCategoryForm) => {
+        console.log(data);
+        createDrugCategory.mutate(data)
+    };
 
     const backToTable = () => {
         navigate('/drug-categories')
@@ -129,6 +136,7 @@ const CreateDrugCategory: React.FC = () => {
                         <Controller
                             render={({ field: { onChange, value } }) => (
                                     <Select
+                                        key='type-by-uses-select'
                                         onChange={onChange}
                                         value={value}
                                         label='Phân loại công dụng'
@@ -138,7 +146,11 @@ const CreateDrugCategory: React.FC = () => {
                                                 ?
                                                 <CircularProgress sx={{ margin: 'auto' }} />
                                                 :
-                                                data.data.map((typeByUse: any) => (<MenuItem value={typeByUse.id}>
+                                                data.map((typeByUse: any) => (
+                                                    <MenuItem
+                                                        key={`type-by-uses-${typeByUse.id}`}
+                                                        value={typeByUse.id}
+                                                    >
                                                         {typeByUse.name}
                                                     </MenuItem>)
                                                 )
