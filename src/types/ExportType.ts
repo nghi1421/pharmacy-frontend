@@ -1,7 +1,7 @@
 import { Customer } from "./Customer"
 import { Staff } from "./Staff"
 
-export type TypeExport = {
+export type ExportType = {
     id: number
     exportDate: string
     note: string
