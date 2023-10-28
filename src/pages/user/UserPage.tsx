@@ -1,7 +1,7 @@
 import { Box, CircularProgress, Divider, Paper, Typography } from "@mui/material";
 import TableComponent from "../../components/table/TableComponent";
 import { Column } from "../../types/Column";
-import { useGetUsers } from "../../hooks/userApi";
+import { useGetUsers } from "../../hooks/useAccount";
 
 const columns: Column[] = [
   { key: 'id', value: 'Mã tài khoản'},

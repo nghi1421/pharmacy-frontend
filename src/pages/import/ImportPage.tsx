@@ -1,123 +1,101 @@
-// import { Typography } from "@mui/material";
+import { Box, Button, CircularProgress, Divider, IconButton, Paper, TableCell, Tooltip, Typography } from "@mui/material";
+import TableComponent from "../../components/table/TableComponent";
+import { Column } from "../../types/Column";
+import { Add } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
+import CreateIcon from '@mui/icons-material/Create';
+import { useGetImport, useGetImports } from "../../hooks/useImport";
 
-// const ImportPage: React.FC<{}> = () => {
-//     return (
-//         <Typography
-//             color='red'
-//         >
-//             This is import page
-//         </Typography>
-//     )
-// }
+const columns: Column[] = [
+    { key: 'id', value: 'Mã phiếu nhập'},
+    { key: 'staffName', value: 'Được tạo bởi' },
+    { key: 'providerName', value: 'Đối tác'},
+    { key: 'note', value: 'Ghi chú'},
+    { key: 'paid', value: 'Đã thanh toán'},
+    { key: 'maturityDate', value: 'Ngày đáo hạn'},
+    { key: 'importDate', value: 'Ngày nhập hàng'},
+]
 
-// export default ImportPage;
+const ImportPage: React.FC<{}> = () => {
+    let { data, isLoading } = useGetImports()
+    const navigate = useNavigate()
+    const getStaff = useGetImport()
+    const clickAdd = () => {
+        navigate('/imports/create')
+    }
+    return (
+        <Paper>
+            <Box sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'baseline',
+                p: 1,
+                m: 1,
+                bgcolor: 'background.paper',
+                borderRadius: 1,
+            }}
+            >
+                <Typography
+                    variant="h4"
+                    fontWeight='500'
+                    sx={{ px:3, py: 2 }}
+                >
+                    Quản lí nhập thuốc
+                </Typography>
+                <Button
+                    variant="contained"
+                    size="small"
+                    onClick={clickAdd}
+                >
+                    <Add></Add>
+                    <Typography
+                        color="inherit"
+                        fontSize='16px'
+                        marginLeft='4px'
+                    >
+                        Thêm mới
+                    </Typography>
+                </Button>
+            </Box>
 
-import { Button, Paper, Typography } from "@mui/material";
-import { useForm } from "react-hook-form";
-import { FormInputText } from "../../components/form/FormInputText";
-import { FormInputMultiCheckbox } from "../../components/form/FormInputMultiCheckbox";
-import { FormInputDropdown } from "../../components/form/FormInputDropdown";
-import { FormInputDate } from "../../components/form/FormInputDate";
-import { FormInputRadio } from "../../components/form/FormInputRadio";
-
-interface IFormInput {
-  textValue: string;
-  radioValue: string;
-  checkboxValue: string[];
-  dateValue: Date;
-  dropdownValue: string;
-  sliderValue: number;
+            <Divider></Divider>
+            {
+                isLoading
+                ?   <Box sx={{
+                        display: 'flex',
+                        backgroundColor: 'white',
+                        p: 4,
+                        justifyContent: 'center'
+                    }}>
+                        <CircularProgress />
+                    </Box> 
+                :
+                    <TableComponent
+                        rows={data}
+                        keyTable='import-table'
+                        columns={columns}
+                        hasAction={true}
+                        action={(rowValue: any) => 
+                                <TableCell
+                                    align="left"
+                                    key={`row-action-provider-table-${rowValue.id}`}>
+                                    <Box sx={{ display: 'flex' }}>
+                                        <Tooltip title="Xem thông tin chi tiết">
+                                            <IconButton
+                                                color='success'
+                                                onClick={() => { getStaff.mutate(rowValue.id) }}
+                                            >
+                                                <CreateIcon></CreateIcon>
+                                            </IconButton>
+                                        </Tooltip>
+                                </Box>
+                            </TableCell>
+                        }
+                    ></TableComponent>
+            }
+        </Paper>
+    )
+    
 }
 
-const defaultValues = {
-  textValue: "",
-  radioValue: "",
-  checkboxValue: [],
-  dateValue: new Date(),
-  dropdownValue: "",
-  sliderValue: 0,
-};
-
-const radioList = [{
-    value: '1',
-    label: 'List item 1'
-},
-{
-    value: '2',
-    label: 'List item 2'
-}]
-
-const dropdownList = [{
-    value: '1',
-    label: 'Dropdown item 1'
-},
-{
-    value: '2',
-    label: 'Dropdown item 2'
-}]
-
-const checkBoxList = [{
-    value: '1',
-    label: 'Checkbox item 1'
-},
-{
-    value: '2',
-    label: 'Checkbox item 2'
-}]
-
-dropdownList
-
-
-export default () => {
-  const { handleSubmit, watch, reset, control, setValue } = useForm<IFormInput>({
-    defaultValues: defaultValues,
-  });
-    const watchTextValue = watch('textValue');
-
-    const onSubmit = (data: IFormInput) => console.log(data);
-    
-  return (
-    <Paper
-      style={{
-        display: "grid",
-        gridRowGap: "20px",
-        padding: "20px",
-        margin: "10px 300px",
-      }}
-    >
-    <Typography variant="h4"> Form Demo</Typography>
-        <Typography variant="h6">{watchTextValue}</Typography>
-          
-      <FormInputText name="textValue" control={control} label="Text Input" placeholder='This is my holder'/>
-      <FormInputRadio
-        name={"radioValue"}
-        control={control}
-        label={"Radio Input"}
-        list={radioList}
-        placeholder='This is my holder'
-      />
-      <FormInputDropdown
-        name="dropdownValue"
-        control={control}
-        label="Dropdown Input"
-        list={dropdownList}
-        placeholder='This is my holder'
-      />
-        <FormInputDate name="dateValue" control={control} label="Date Input" placeholder='This is my holder' />
-      <FormInputMultiCheckbox
-        control={control}
-        setValue={setValue}
-        name={"checkboxValue"}
-        label={"Checkbox Input"}
-        list={checkBoxList}
-        placeholder='This is my holder'
-      />
-      <Button onClick={handleSubmit(onSubmit)} variant={"contained"}>
-        Submit
-      </Button>
-      <Button onClick={() => reset()} variant={"outlined"}>
-        Reset
-      </Button>
-    </Paper>
-  );
-};
+export default ImportPage;
