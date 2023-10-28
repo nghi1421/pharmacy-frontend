@@ -9,10 +9,8 @@ import {
     Select,
     Typography
 } from "@mui/material"
-import React, { useEffect, useReducer, useState } from "react"
+import React, { useState } from "react"
 import { useNavigate } from "react-router-dom";
-import { useGetPositionsQuery } from "../../redux/api/positionApi";
-import { Position } from "../../types/Position";
 import { FormInputText } from "../../components/form/FormInputText";
 import { Controller, useForm } from "react-hook-form";
 import { genders } from '../../utils/constants'
@@ -23,12 +21,15 @@ import Address from "../../components/Address";
 import { FormInputDate } from "../../components/form/FormInputDate";
 import { FormInputCheckBox } from "../../components/form/FormInputCheckBox";
 import * as Yup from 'yup'
+import { useGetPositions } from "../../hooks/usePosition";
+import { useCreateStaff } from "../../hooks/useStaff";
 
-interface StaffForm {
+export interface StaffForm {
     name: string;
     phoneNumber: string;
     gender: string;
-    dob: Date|null;
+    dob: Date | null;
+    address: string;
     email: string,
     identification: string;
     positionId: string;
@@ -43,7 +44,8 @@ const defaultValues = {
     email: '',
     identification: '',
     positionId: '1',
-    isWorking: true
+    isWorking: true,
+    address: '',
 };
 
 const maxDate = new Date()
@@ -80,7 +82,8 @@ const staffFormValidate: Yup.ObjectSchema<StaffForm> = yup.object({
 const CreateStaff: React.FC = () => {
     const navigate = useNavigate()
     const [address, setAddress] = useState<string>('')
-    let { data, isLoading } = useGetPositionsQuery()
+    let { data, isLoading } = useGetPositions()
+    const createStaff = useCreateStaff()
     const [counter, setCounter] = useState(Math.random())
 
     const { handleSubmit, reset, control } = useForm<StaffForm>({
@@ -88,7 +91,7 @@ const CreateStaff: React.FC = () => {
         resolver: yupResolver(staffFormValidate)
     });
 
-    const onSubmit = (data: StaffForm) => console.log(data);
+    const onSubmit = (data: StaffForm) => createStaff.mutate({...data, address: address})
 
     const backToTable = () => {
         navigate('/staffs')
@@ -157,7 +160,9 @@ const CreateStaff: React.FC = () => {
                                                 ?
                                                 <CircularProgress sx={{ margin: 'auto' }} />
                                                 :
-                                                data.data.map((position: any) => (<MenuItem value={position.id}>
+                                            data.map((position: any) => (<MenuItem
+                                                key={`position-${position.id}`}
+                                                value={position.id}>
                                                         {position.name}
                                                     </MenuItem>)
                                                 )

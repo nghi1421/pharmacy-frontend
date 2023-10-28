@@ -21,6 +21,7 @@ import EditPosition from "../pages/position/EditPosition";
 import EditDrugCategory from "../pages/drug-category/EditDrugCategory";
 import EditProvider from "../pages/provider/EditProvider";
 import EditCustomer from "../pages/customer/EditCustomer";
+import EditStaff from "../pages/staff/EditStaff";
 
 export const dashboardRoutes: Array<Route> = [
     {      
@@ -95,6 +96,13 @@ export const formRoutes: Array<Route> = [
         path: '/staffs/create',
         icon: AttachMoney,
         element: CreateStaff
+    },
+    {      
+        key: 'staff-edit-form-route',
+        title: 'Form nhân viên',
+        path: '/staffs/:staffId/edit',
+        icon: AttachMoney,
+        element: EditStaff
     },
     {      
         key: 'customer-create-form-route',
