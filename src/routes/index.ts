@@ -19,6 +19,7 @@ import CreateDrugCategory from "../pages/drug-category/CreateDrugCategory";
 import EditType from "../pages/type-by-use/EditType";
 import EditPosition from "../pages/position/EditPosition";
 import EditDrugCategory from "../pages/drug-category/EditDrugCategory";
+import EditProvider from "../pages/provider/EditProvider";
 
 export const dashboardRoutes: Array<Route> = [
     {      
@@ -107,6 +108,13 @@ export const formRoutes: Array<Route> = [
         path: '/providers/create',
         icon: AttachMoney,
         element: CreateProvider
+    },
+    {      
+        key: 'providers-update-form-route',
+        title: 'Form khách hàng',
+        path: '/providers/:providerId/edit',
+        icon: AttachMoney,
+        element: EditProvider
     },
     {      
         key: 'positions-create-form-route',

@@ -39,8 +39,8 @@ const defaultValues = {
 const drugCategoryVaidate: Yup.ObjectSchema<DrugCategoryForm> = yup.object({
     name: yup
         .string()
-        .required('Tên công dụng bắt buộc.')
-        .max(100, 'Tên công dụng không quá 100 kí tự'),
+        .required('Tên danh mục thuốc bắt buộc.')
+        .max(100, 'Tên danh mục thuốc không quá 100 kí tự'),
     minimalUnit: yup
         .string()
         .required('Đơn bị bán bắt buộc.'),

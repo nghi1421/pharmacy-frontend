@@ -85,7 +85,7 @@ const useCreatePosition = () => {
     },
     onError: (error: any) => {
       console.log(error)
-      enqueueSnackbar('Error here ',
+      enqueueSnackbar('Lỗi server.',
         {
           autoHideDuration: 3000,
           variant: 'error'
@@ -121,7 +121,7 @@ const useUpdatePosition = () => {
     },
     onError: (error: any) => {
       console.log(error)
-      enqueueSnackbar('Error here.',
+      enqueueSnackbar('Lỗi server.',
         {
           autoHideDuration: 3000,
           variant: 'error'
@@ -155,7 +155,7 @@ const useDeletePosition = () => {
     },
     onError: (error: any) => {
       console.log(error)
-      enqueueSnackbar('Error here.',
+      enqueueSnackbar('Lỗi server.',
         {
           autoHideDuration: 3000,
           variant: 'error'

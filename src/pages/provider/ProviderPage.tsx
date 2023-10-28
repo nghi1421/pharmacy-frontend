@@ -1,9 +1,13 @@
-import { Box, Button, CircularProgress, Divider, Paper, Typography } from "@mui/material";
+import { Box, Button, CircularProgress, Divider, IconButton, Paper, TableCell, Typography } from "@mui/material";
 import TableComponent from "../../components/table/TableComponent";
 import { Column } from "../../types/Column";
 import { Add } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
-import { useGetProviders } from "../../hooks/useProvider";
+import CreateIcon from '@mui/icons-material/Create';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { useDeleteProvider, useGetProvider, useGetProviders } from "../../hooks/useProvider";
+import { useConfirmDialog } from "../../hooks/useConfirmDialog";
+import ConfirmDialog from "../../components/ConfirmDialog";
 
 const columns: Column[] = [
     { key: 'id', value: 'Mã chức vụ'},
@@ -18,13 +22,20 @@ const columns: Column[] = [
 const ProviderPage: React.FC<{}> = () => {
     let { data, isLoading } = useGetProviders()
     const navigate = useNavigate()
+    const getProvider = useGetProvider()
+    const deleteProvider = useDeleteProvider()
+    const [openConfirmDialog, props] = useConfirmDialog(deleteProvider.mutate)
 
     const clickAdd = () => {
         navigate('/providers/create')
     }
     return (
         <Paper>
-            
+            <ConfirmDialog
+                content="Vui lòng cân nhắc trước khi xóa dữ liệu. Nếu bạn đồng ý xóa thông tin công ty dược bạn hãy nhấn Xác nhận."
+                title="Bạn có thật sự muốn xóa thông tin công ti dược này không?"
+                { ...props }
+            />
             <Box sx={{
                 display: 'flex',
                 justifyContent: 'space-between',
@@ -73,6 +84,27 @@ const ProviderPage: React.FC<{}> = () => {
                         rows={data}
                         keyTable='provider-table'
                         columns={columns}
+                         hasAction={true}
+                        action={(rowValue: any) => 
+                                <TableCell
+                                    align="left"
+                                    key={`row-action-provider-table-${rowValue.id}`}>
+                                    <Box sx={{ display: 'flex' }}>
+                                    <IconButton
+                                        color='success'
+                                        onClick={() => { getProvider.mutate(rowValue.id) }}
+                                    >
+                                        <CreateIcon></CreateIcon>
+                                    </IconButton>
+                                    <IconButton
+                                        color='error'
+                                        onClick={() => { openConfirmDialog(rowValue.id) }}
+                                    >
+                                        <DeleteIcon></DeleteIcon>
+                                    </IconButton>
+                                </Box>
+                            </TableCell>
+                        }
                     ></TableComponent>
             }
         </Paper>

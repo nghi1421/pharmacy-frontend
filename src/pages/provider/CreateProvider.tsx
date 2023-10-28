@@ -7,24 +7,27 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from 'yup'
+import { useCreateProvider } from "../../hooks/useProvider";
 
-interface ProviderForm {
+export interface ProviderForm {
     name: string;
     phoneNumber: string;
     email: string;
+    address: string;
 }
 
 const defaultValues = {
     name: "",
     phoneNumber: "",
     email: '',
+    address: ''
 };
 
 //@ts-ignore
 const providerFormValidate: Yup.ObjectSchema<ProviderForm> = yup.object({
     name: yup
         .string()
-        .required('Tên nhân viên bắt buộc.')
+        .required('Công ti dược bắt buộc.')
         .max(255),
     phoneNumber: yup
         .string()
@@ -39,6 +42,7 @@ const providerFormValidate: Yup.ObjectSchema<ProviderForm> = yup.object({
 const CreateProvider: React.FC = () => {
     const navigate = useNavigate()
     const [counter, setCounter] = useState(Math.random())
+    const createProvider = useCreateProvider()
     const [address, setAddress] = useState<string>('')
 
     const { handleSubmit, reset, control } = useForm<ProviderForm>({
@@ -46,7 +50,7 @@ const CreateProvider: React.FC = () => {
         resolver: yupResolver(providerFormValidate)
     });
 
-    const onSubmit = (data: ProviderForm) => console.log(data);
+    const onSubmit = (data: ProviderForm) => createProvider.mutate({...data, address: address});
 
     const backToTable = () => {
         navigate('/providers')
@@ -62,8 +66,8 @@ const CreateProvider: React.FC = () => {
                     <FormInputText
                         name="name"
                         control={control}
-                        label="Họ và tên"
-                        placeholder='Nhập họ và tên công ty dược'
+                        label="Tên công ty dược"
+                        placeholder='Nhập tên công ty dược'
                     />
                 </Grid>
                 <Grid item xs={8} sm={4}>
@@ -84,7 +88,7 @@ const CreateProvider: React.FC = () => {
                     />
                 </Grid>
                     
-                <Address setAddress={setAddress} key={counter} />  
+                <Address setAddress={setAddress} address={address} key={counter} />  
 
                 <Grid item xs={12} sm={12} container 
                     sx={{
