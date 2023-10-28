@@ -9,12 +9,14 @@ import { useForm } from "react-hook-form";
 import { genders } from "../../utils/constants";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from 'yup'
+import { useCreateCustomer } from "../../hooks/useCustomer";
 
-interface CustomerForm {
+export interface CustomerForm {
     name: string;
     phoneNumber: string;
     gender: string;
     email: string;
+    address: string;
 }
 
 const defaultValues = {
@@ -22,6 +24,7 @@ const defaultValues = {
     phoneNumber: "",
     gender: '1',
     email: '',
+    address: ''
 };
 
  // @ts-ignore
@@ -49,12 +52,15 @@ const CreateCustomer: React.FC = () => {
     const navigate = useNavigate()
     const [address, setAddress] = useState<string>('')
     const [counter, setCounter] = useState(Math.random())
+    const createCustomer = useCreateCustomer()
     const { handleSubmit, reset, control } = useForm<CustomerForm>({
         defaultValues: defaultValues,
         resolver: yupResolver(customerFormValidate)
     });
 
-    const onSubmit = (data: CustomerForm) => console.log(data);
+    const onSubmit = (data: CustomerForm) => {
+        createCustomer.mutate({...data, address: address})
+    };
 
     const backToTable = () => {
         navigate('/customers')

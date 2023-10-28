@@ -1,9 +1,13 @@
-import { Box, Button, CircularProgress, Divider, Paper, Typography } from "@mui/material";
+import { Box, Button, CircularProgress, Divider, IconButton, Paper, TableCell, Typography } from "@mui/material";
 import TableComponent from "../../components/table/TableComponent";
 import { Column } from "../../types/Column";
 import { Add } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
-import { useGetCustomers } from "../../hooks/useCustomer";
+import CreateIcon from '@mui/icons-material/Create';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { useDeleteCustomer, useGetCustomer, useGetCustomers } from "../../hooks/useCustomer";
+import { useConfirmDialog } from "../../hooks/useConfirmDialog";
+import ConfirmDialog from "../../components/ConfirmDialog";
 
 const columns: Column[] = [
     { key: 'id', value: 'Mã khách hàng'},
@@ -16,6 +20,9 @@ const columns: Column[] = [
 
 const CustomerPage: React.FC<{}> = () => {
     const navigate = useNavigate()
+    const getCustomer = useGetCustomer()
+    const deleteCustomer = useDeleteCustomer()
+    const [openConfirmDialog, props] = useConfirmDialog(deleteCustomer.mutate)
     let { data, isLoading } = useGetCustomers()
 
     const clickAdd = () => {
@@ -23,6 +30,11 @@ const CustomerPage: React.FC<{}> = () => {
     }
     return (
         <Paper>
+            <ConfirmDialog
+                content="Vui lòng cân nhắc trước khi xóa dữ liệu. Nếu bạn đồng ý xóa thông tin khách hàng bạn hãy nhấn Xác nhận."
+                title="Bạn có thật sự muốn xóa thông tin khách hàng này không?"
+                { ...props }
+            />
             <Box sx={{
                 display: 'flex',
                 justifyContent: 'space-between',
@@ -72,6 +84,27 @@ const CustomerPage: React.FC<{}> = () => {
                         rows={data}
                         keyTable='customer-table'
                         columns={columns}
+                        hasAction={true}
+                        action={(rowValue: any) => 
+                                <TableCell
+                                    align="left"
+                                    key={`row-action-customer-table-${rowValue.id}`}>
+                                    <Box sx={{ display: 'flex' }}>
+                                    <IconButton
+                                        color='success'
+                                        onClick={() => { getCustomer.mutate(rowValue.id) }}
+                                    >
+                                        <CreateIcon></CreateIcon>
+                                    </IconButton>
+                                    <IconButton
+                                        color='error'
+                                        onClick={() => { openConfirmDialog(rowValue.id) }}
+                                    >
+                                        <DeleteIcon></DeleteIcon>
+                                    </IconButton>
+                                </Box>
+                            </TableCell>
+                        }
                     ></TableComponent>
             }
         </Paper>

@@ -84,7 +84,7 @@ const ProviderPage: React.FC<{}> = () => {
                         rows={data}
                         keyTable='provider-table'
                         columns={columns}
-                         hasAction={true}
+                        hasAction={true}
                         action={(rowValue: any) => 
                                 <TableCell
                                     align="left"

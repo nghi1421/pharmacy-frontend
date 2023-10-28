@@ -7,9 +7,9 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from 'yup'
-import { useUpdateProvider } from "../../hooks/useProvider";
+import { useUpdateCustomer } from "../../hooks/useCustomer";
 
-export interface ProviderEditForm {
+export interface CustomerEditForm {
     id: string;
     name: string;
     phoneNumber: string;
@@ -18,10 +18,10 @@ export interface ProviderEditForm {
 }
 
 //@ts-ignore
-const providerFormValidate: Yup.ObjectSchema<ProviderEditForm> = yup.object({
+const customerFormValidate: Yup.ObjectSchema<CustomerEditForm> = yup.object({
     name: yup
         .string()
-        .required('Tên công ty dược bắt buộc.')
+        .required('Tên khách hàng bắt buộc.')
         .max(255),
     phoneNumber: yup
         .string()
@@ -33,20 +33,20 @@ const providerFormValidate: Yup.ObjectSchema<ProviderEditForm> = yup.object({
         .required('Email bắt buộc.')
         .email('Email không hợp lệ.'),
 })
-const EditProvider: React.FC = () => {
+const EditCustomer: React.FC = () => {
     const { state } = useLocation()
     const navigate = useNavigate()
-    const updateProvider = useUpdateProvider()
+    const updateCustomer = useUpdateCustomer()
     const [counter, setCounter] = useState(Math.random())
     const [address, setAddress] = useState<string>('')
 
-    const { handleSubmit, reset, control } = useForm<ProviderEditForm>({
-        defaultValues: {...state.providerData, id: state.providerData.id},
-        resolver: yupResolver(providerFormValidate)
+    const { handleSubmit, reset, control } = useForm<CustomerEditForm>({
+        defaultValues: {...state.customerData, id: state.customerData.id},
+        resolver: yupResolver(customerFormValidate)
     });
 
-    const onSubmit = (data: ProviderEditForm) =>
-        updateProvider.mutate({ ...data, address: address });
+    const onSubmit = (data: CustomerEditForm) =>
+        updateCustomer.mutate({ ...data, address: address });
 
     const backToTable = () => {
         navigate('/providers')
@@ -54,7 +54,7 @@ const EditProvider: React.FC = () => {
     return (
         <Paper sx={{ px:6, py:4 }}>
             {
-                state.providerData ? 
+                state.customerData ? 
                     <React.Fragment>
                         <Typography variant="h6" gutterBottom mb='20px'>
                             Thông tin chức vụ thuốc
@@ -140,4 +140,4 @@ const EditProvider: React.FC = () => {
     )
 }
 
-export default EditProvider
+export default EditCustomer

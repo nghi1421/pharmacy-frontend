@@ -35,7 +35,6 @@ const useGetProviders = () => {
   })
 };
 
-
 const useGetProvider = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();

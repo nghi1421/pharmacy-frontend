@@ -20,6 +20,7 @@ import EditType from "../pages/type-by-use/EditType";
 import EditPosition from "../pages/position/EditPosition";
 import EditDrugCategory from "../pages/drug-category/EditDrugCategory";
 import EditProvider from "../pages/provider/EditProvider";
+import EditCustomer from "../pages/customer/EditCustomer";
 
 export const dashboardRoutes: Array<Route> = [
     {      
@@ -101,6 +102,13 @@ export const formRoutes: Array<Route> = [
         path: '/customers/create',
         icon: AttachMoney,
         element: CreateCustomer
+    },
+    {      
+        key: 'customer-edit-form-route',
+        title: 'Form khách hàng',
+        path: '/customers/:customerId/edit',
+        icon: AttachMoney,
+        element: EditCustomer
     },
     {      
         key: 'providers-create-form-route',
