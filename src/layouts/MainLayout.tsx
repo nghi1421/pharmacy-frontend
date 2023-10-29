@@ -20,8 +20,6 @@ const Layout: React.FC<LayoutProps> = ({ children }): ReactElement => {
   };
 
   const token = getAccessToken();
-  console.log(token)
-  console.log(getStaff())
   if (!token) {
     return (
       <Navigate replace to="/login" />

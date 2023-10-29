@@ -17,14 +17,26 @@ function createData({id, name, address, createdAt, updatedAt, phoneNumber, email
     };
 }
 
-const useGetProviders = () => {
+function createDataForAutocomplete({id, name, address, phoneNumber, email}: Provider) {
+    return {
+        id, label: name, phoneNumber, email, address,
+    };
+}
+
+const useGetProviders = (option: number = 1) => {
   return useQuery({
     queryKey: ['providers'],
     queryFn: () => axiosClient
       .get(API_PROVIDER)
       .then((response) => {
         if (response.data.message) {
-          return response.data.data.map((provider: Provider) => createData(provider))
+          switch (option) {
+            case 1: 
+              return response.data.data.map((provider: Provider) => createData(provider))
+            case 2: 
+              return response.data.data.map((provider: Provider) => createDataForAutocomplete(provider))
+            default: response.data.data
+          }
         }
         enqueueSnackbar(response.data.errorMessage, {
           autoHideDuration: 3000,

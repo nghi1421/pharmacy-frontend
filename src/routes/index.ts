@@ -22,6 +22,7 @@ import EditDrugCategory from "../pages/drug-category/EditDrugCategory";
 import EditProvider from "../pages/provider/EditProvider";
 import EditCustomer from "../pages/customer/EditCustomer";
 import EditStaff from "../pages/staff/EditStaff";
+import CreateImport from "../pages/import/CreateImport";
 
 export const dashboardRoutes: Array<Route> = [
     {      
@@ -173,5 +174,12 @@ export const formRoutes: Array<Route> = [
         path: '/drug-categories/:drugdrCategoryId/edit',
         icon: AttachMoney,
         element: EditDrugCategory
+    },
+    {      
+        key: 'import-create-form-route',
+        title: 'Form danh phieu nhap hang',
+        path: '/imports/create',
+        icon: AttachMoney,
+        element: CreateImport
     },
 ]

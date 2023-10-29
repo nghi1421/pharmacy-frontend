@@ -42,7 +42,6 @@ const Login: React.FC = () => {
 
     const onSubmit = async (data: AuthForm) => {
         const response = await login(data.username, data.password);
-        console.log(response);
         if (response.data.message) {
             setStaff(response.data.data.staff)
             setAccessToken(response.data.accessToken);
