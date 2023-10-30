@@ -12,7 +12,7 @@ import { CustomerEditForm } from '../pages/customer/EditCustomer';
 
 function createData({id, name, gender, dob, address,  phoneNumber, email}: Customer) {
     return {
-        id, name, phoneNumber, email, address
+        id, name, phoneNumber, email, address,
         gender: GenderEnum[gender],
         dob: !dob ? '_' : formatDate(dob),
     };
