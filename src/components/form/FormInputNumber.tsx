@@ -9,16 +9,18 @@ interface FormInputNumberProps {
     placeholder: string
     suffix?: string
     prefix?: string
+    size?: 'medium' | 'max' | 'small'
 }
 
 export const FormInputNumber: React.FC<FormInputNumberProps> =
-    ({ control, name, label, placeholder, prefix, suffix }) => {
+    ({ control, name, label, placeholder, prefix, suffix, size }) => {
     return (
         <Controller
             control={control}
             name={name}
             render={({ field: { onChange, name, value } }) => (
                 <NumericFormat 
+                    size={size ? size : 'max'}
                     sx={{ width: '100%' }}
                     label={label}
                     placeholder={placeholder}

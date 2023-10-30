@@ -1,6 +1,6 @@
 import { Box, Button, CircularProgress, Grid, Paper, Typography } from "@mui/material"
 import { useNavigate } from "react-router-dom"
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FormAutocomplete } from "../../components/form/FormAutocomplete";
 import { useForm } from "react-hook-form";
 import { useGetProviders } from "../../hooks/useProvider";
@@ -9,22 +9,25 @@ import { FormInputText } from "../../components/form/FormInputText";
 import { FormInputDate } from "../../components/form/FormInputDate";
 import { FormInputCurrency } from "../../components/form/FormInputCurrency";
 import { Column } from "../../types/Column";
-import { useGetDataDrugCategories, useGetDrugCategories } from "../../hooks/useDrugCategory";
+import { useGetDataDrugCategories } from "../../hooks/useDrugCategory";
 import TableAction from "../../components/table/TableAction";
 import TableSelectDrugCategory from "../../components/table/TableSelectDrugCategory";
+
 
 export interface ImportForm {
     provider: any;
     note: string;
     importDate: string
     paid: string
+    importDetails: []
 }
 
 const columns: Column[] = [
     { key: 'id', value: 'Mã thuốc'},
     { key: 'name', value: 'Tên thuốc' },
-    { key: 'formatedPrice', value: 'Giá' },
-    { key: 'vat', value: 'VAT'},
+    { key: 'unit', value: 'Đơn vị nhập' },
+    { key: 'formatedPrice', value: 'Đơn giá bán' },
+    { key: 'minimalUnit', value: 'Đơn vị bán' },
     { key: 'use', value: 'Công dụng'},
 ]
 
@@ -34,6 +37,7 @@ const CreateImport: React.FC = () => {
     const { isLoading: drugCategoryLoading, data: drugCategories } = useGetDataDrugCategories()
     const [drugs, setDrugs] = useState<any[]>([])
     const [selectedDrugs, setSelectedDrugs] = useState<any[]>([])
+    const [pay, setPay] = useState<number[]>([0 , 0, 0])
     const { data: providers, isLoading: providerLoading } = useGetProviders(2)
     const { handleSubmit, reset, control, watch } = useForm<ImportForm>({
     });
@@ -48,8 +52,24 @@ const CreateImport: React.FC = () => {
         }
     }, [drugCategories])
 
+    useEffect(() => {
+        if (selectedDrugs.length > 0) {
+            const withoutVat = selectedDrugs.reduce((value, drug) => {
+                return value + drug.quantity * drug.unitPrice
+            }, 0)
+
+            const vat = selectedDrugs.reduce((value, drug) => {
+                return value + drug.rawVat*drug.quantity * drug.unitPrice
+            }, 0)
+
+            const total = vat + withoutVat;
+
+            setPay([withoutVat, vat, total])
+        }
+    }, [selectedDrugs])
+
     const onSubmit = (data: ImportForm) => { 
-        // const paid = removePatternFormat(data.paid, {thousandSeparator: true});
+        console.log(selectedDrugs)
         console.log(data)
     };
 
@@ -57,7 +77,7 @@ const CreateImport: React.FC = () => {
         setDrugs(drugs.map(drug => {
             return drug.id === drugCategory.id ? {...drug, checked: true} : drug
         }))
-        selectedDrugs.push({...drugCategory, checked: false, quantity: 0})
+        selectedDrugs.push({...drugCategory, checked: false, quantity: 0, unitPrice: 0, expiryDate: new Date()})
     }
 
     const unCheckDrugCategory = (drugCategory: any) => {
@@ -66,6 +86,12 @@ const CreateImport: React.FC = () => {
         }))
         const index = selectedDrugs.indexOf(drugCategory);
         selectedDrugs.splice(index, 1);
+    }
+
+    const updateQuantity = (drugCategory: any) => {
+        setSelectedDrugs(selectedDrugs.map(drug => {
+            return drug.id === drugCategory.id ?  drugCategory : drug
+        }))
     }
 
     const backToTable = () => {
@@ -252,7 +278,28 @@ const CreateImport: React.FC = () => {
                         tooltip='Nhấn để bỏ chọn thuốc'
                         keyTable='selected-drug-category-table-key'
                         action={unCheckDrugCategory}
+                        update={updateQuantity}
                     /> 
+                </Grid>
+
+                <Grid item xs={12} sm={12} container 
+                    sx={{
+                        display: 'flex',
+                        justifyContent: "end",
+                        gap: 4
+                    }}
+                >
+                    <Typography variant="subtitle2" sx={{  }}>
+                        Tổng tiền (chưa tính VAT): { pay[0] ? pay[0].toLocaleString() : '_'} VND
+                    </Typography>
+
+                    <Typography variant="subtitle2" sx={{  }}>
+                        Tiền thuế VAT: { pay[1] ? pay[1].toLocaleString() : '_'} VND
+                    </Typography>
+
+                    <Typography variant="subtitle2" sx={{ color: "#148c07"  }}>
+                        Tổng tiền: { pay[2] ? pay[2].toLocaleString() : '_'} VND
+                    </Typography>
                 </Grid>
 
                 <Grid item xs={12} sm={12} container 

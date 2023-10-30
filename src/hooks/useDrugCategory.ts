@@ -12,6 +12,7 @@ import { DrugCategoryForm } from '../pages/drug-category/CreateDrugCategory';
 function createData({id, name, price, form, unit, vat, type, minimalUnit}: DrugCategory) {
     return {
         id, name, price, form, unit, minimalUnit,
+        rawVat: vat,
         vat: `${vat*100}%`,
         use: type.name,
         formatedPrice: formatCurrency(parseFloat(price))
