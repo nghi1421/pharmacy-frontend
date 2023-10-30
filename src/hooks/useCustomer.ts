@@ -10,17 +10,46 @@ import { pathToUrl } from '../utils/path';
 import { CustomerForm } from '../pages/customer/CreateCustomer';
 import { CustomerEditForm } from '../pages/customer/EditCustomer';
 
-function createData({id, name, gender, dob, phoneNumber, email}: Customer) {
+function createData({id, name, gender, dob, address,  phoneNumber, email}: Customer) {
     return {
-        id, name, phoneNumber, email,
+        id, name, phoneNumber, email, address
         gender: GenderEnum[gender],
         dob: !dob ? '_' : formatDate(dob),
     };
 }
 
-const useGetCustomers = () => {
+function createDataForAutocomplete({id, name, address, phoneNumber, email}: Customer) {
+    return {
+        id, label: name, phoneNumber, email, address,
+    };
+}
+
+const useGetCustomers = (option: number = 1) => {
   return useQuery({
     queryKey: ['customers'],
+    queryFn: () => axiosClient
+      .get(API_CUSTOMER)
+      .then((response) => {
+        if (response.data.message) {
+          switch (option) {
+            case 1: 
+              return response.data.data.map((customer: Customer) => createData(customer))
+            case 2: 
+              return response.data.data.map((customer: Customer) => createDataForAutocomplete(customer))
+            default: response.data.data
+          }
+        }
+        enqueueSnackbar(response.data.errorMessage, {
+          autoHideDuration: 3000,
+          variant: 'error'
+        })
+        return []
+      })
+  })
+};
+
+const useGetDataCustomers = () => {
+  return useQuery({
     queryFn: () => axiosClient
       .get(API_CUSTOMER)
       .then((response) => {
@@ -32,7 +61,8 @@ const useGetCustomers = () => {
           variant: 'error'
         })
         return []
-      })
+      }),
+    select: (res) => res
   })
 };
 
@@ -168,6 +198,7 @@ const useDeleteCustomer = () => {
 
 export {
   useGetCustomers,
+  useGetDataCustomers,
   useGetCustomer,
   useCreateCustomer,
   useUpdateCustomer,
