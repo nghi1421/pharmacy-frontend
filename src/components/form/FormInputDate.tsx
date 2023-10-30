@@ -16,6 +16,7 @@ export const FormInputDate: React.FC<FormInputProps> = ({ name, control, label }
             render={({ field: { onChange, value }, fieldState: { error }, }) => (
             
               <DatePicker
+                  sx={{ width: '100%' }}
                   value={dayjs(value)}
                   onChange={onChange}
                   disableFuture
