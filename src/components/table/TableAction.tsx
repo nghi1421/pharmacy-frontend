@@ -60,12 +60,12 @@ const TableAction: React.FC<TableProps<any>> = ({ rows, keyTable, columns, actio
               <TableRow key='empty-row'>
                 <TableCell key='cell-empty' colSpan={columns.length}>
                   <Grid
-                  container
-                  spacing={0}
-                  direction="column"
-                  alignItems="center"
-                  justifyContent="center"
-                >
+                    container
+                    spacing={0}
+                    direction="column"
+                    alignItems="center"
+                    justifyContent="center"
+                  >
                   <Grid item xs={3}>
                     <Box
                       component="img"

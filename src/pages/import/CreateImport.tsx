@@ -11,6 +11,7 @@ import { FormInputCurrency } from "../../components/form/FormInputCurrency";
 import { Column } from "../../types/Column";
 import { useGetDataDrugCategories, useGetDrugCategories } from "../../hooks/useDrugCategory";
 import TableAction from "../../components/table/TableAction";
+import TableSelectDrugCategory from "../../components/table/TableSelectDrugCategory";
 
 export interface ImportForm {
     provider: any;
@@ -246,10 +247,9 @@ const CreateImport: React.FC = () => {
                     <Typography mb='20px' variant="subtitle2" sx={{ fontWeight: 'fontWeightBold', mt: 2 }}>
                         Thuốc đã chọn
                     </Typography>
-                    <TableAction
+                    <TableSelectDrugCategory
                         rows={selectedDrugs}
                         tooltip='Nhấn để bỏ chọn thuốc'
-                        columns={columns}
                         keyTable='selected-drug-category-table-key'
                         action={unCheckDrugCategory}
                     /> 
