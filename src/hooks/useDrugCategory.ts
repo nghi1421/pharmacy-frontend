@@ -36,6 +36,24 @@ const useGetDrugCategories = () => {
   })
 };
 
+const useGetDataDrugCategories = () => {
+  return useQuery({
+    queryFn: () => axiosClient
+      .get(API_DRUG_CATEGORY)
+      .then((response) => {
+        if (response.data.message) {
+          return response.data.data.map((drugCategory: DrugCategory) => createData(drugCategory))
+        }
+        enqueueSnackbar(response.data.errorMessage, {
+          autoHideDuration: 3000,
+          variant: 'error'
+        })
+        return []
+      }),
+    select: (res) => res
+  })
+};
+
 const useGetDrugCategory = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
@@ -165,6 +183,7 @@ const useDeleteDrugCategory = () => {
 
 export {
   useGetDrugCategories,
+  useGetDataDrugCategories,
   useGetDrugCategory,
   useCreateDrugCategory,
   useUpdateDrugCategory,

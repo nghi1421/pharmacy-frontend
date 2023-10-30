@@ -1,6 +1,6 @@
 import { Box, Button, CircularProgress, Grid, Paper, Typography } from "@mui/material"
 import { useNavigate } from "react-router-dom"
-import React from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { FormAutocomplete } from "../../components/form/FormAutocomplete";
 import { useForm } from "react-hook-form";
 import { useGetProviders } from "../../hooks/useProvider";
@@ -8,6 +8,9 @@ import { getStaff } from "../../store/auth";
 import { FormInputText } from "../../components/form/FormInputText";
 import { FormInputDate } from "../../components/form/FormInputDate";
 import { FormInputCurrency } from "../../components/form/FormInputCurrency";
+import { Column } from "../../types/Column";
+import { useGetDataDrugCategories, useGetDrugCategories } from "../../hooks/useDrugCategory";
+import TableAction from "../../components/table/TableAction";
 
 export interface ImportForm {
     provider: any;
@@ -16,18 +19,53 @@ export interface ImportForm {
     paid: string
 }
 
+const columns: Column[] = [
+    { key: 'id', value: 'Mã thuốc'},
+    { key: 'name', value: 'Tên thuốc' },
+    { key: 'formatedPrice', value: 'Giá' },
+    { key: 'vat', value: 'VAT'},
+    { key: 'use', value: 'Công dụng'},
+]
+
 const CreateImport: React.FC = () => {
     const navigate = useNavigate()
     const staff = getStaff();
+    const { isLoading: drugCategoryLoading, data: drugCategories } = useGetDataDrugCategories()
+    const [drugs, setDrugs] = useState<any[]>([])
+    const [selectedDrugs, setSelectedDrugs] = useState<any[]>([])
     const { data: providers, isLoading: providerLoading } = useGetProviders(2)
     const { handleSubmit, reset, control, watch } = useForm<ImportForm>({
     });
+
     const watchProvider = watch('provider')
+
+    useEffect(() => {
+        if (drugCategories && drugCategories.length > 0) {
+            setDrugs(drugCategories.map((drug: any) => {
+                return {...drug, checked: false}
+            }))
+        }
+    }, [drugCategories])
 
     const onSubmit = (data: ImportForm) => { 
         // const paid = removePatternFormat(data.paid, {thousandSeparator: true});
         console.log(data)
     };
+
+    const checkDrugCategory = (drugCategory: any) => {
+        setDrugs(drugs.map(drug => {
+            return drug.id === drugCategory.id ? {...drug, checked: true} : drug
+        }))
+        selectedDrugs.push({...drugCategory, checked: false, quantity: 0})
+    }
+
+    const unCheckDrugCategory = (drugCategory: any) => {
+        setDrugs(drugs.map(drug => {
+            return drug.id === drugCategory.id ? {...drug, checked: false} : drug
+        }))
+        const index = selectedDrugs.indexOf(drugCategory);
+        selectedDrugs.splice(index, 1);
+    }
 
     const backToTable = () => {
         navigate('/imports')
@@ -203,6 +241,40 @@ const CreateImport: React.FC = () => {
                         placeholder='Nhập mã lô hàng'
                     />
                 </Grid>
+                
+                <Grid item xs={12} sm={12} container>
+                    <Typography mb='20px' variant="subtitle2" sx={{ fontWeight: 'fontWeightBold', mt: 2 }}>
+                        Thuốc đã chọn
+                    </Typography>
+                    <TableAction
+                        rows={selectedDrugs}
+                        tooltip='Nhấn để bỏ chọn thuốc'
+                        columns={columns}
+                        keyTable='selected-drug-category-table-key'
+                        action={unCheckDrugCategory}
+                    /> 
+                </Grid>
+
+                <Grid item xs={12} sm={12} container 
+                >
+                    <Typography mb='20px' variant="subtitle2" sx={{ fontWeight: 'fontWeightBold', mt: 2 }}>
+                        Danh mục thuốc
+                    </Typography>
+                    {
+                        drugCategoryLoading
+                        ?
+                            <CircularProgress sx={{ margin: 'auto' }} />
+                        :
+                            <TableAction
+                                rows={drugs}
+                                tooltip='Nhấn để chọn thuốc'
+                                columns={columns}
+                                keyTable='drug-category-table-key'
+                                action={checkDrugCategory}
+                            />
+                    }  
+                </Grid>
+               
 
                 <Grid item xs={12} sm={12} container 
                     sx={{
@@ -219,7 +291,7 @@ const CreateImport: React.FC = () => {
                         }}
                         onClick={handleSubmit(onSubmit)}
                     >
-                        Thêm
+                        Tạo phiếu
                     </Button>
 
                     <Button
@@ -234,7 +306,6 @@ const CreateImport: React.FC = () => {
                     </Button>
                 </Grid>
             </Grid>
-            
         </Paper>
     )
 }

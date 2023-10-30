@@ -57,42 +57,6 @@ const TableComponent: React.FC<TableProps<any>> = ({ rows, keyTable, columns, ac
   return (
       <TableContainer component={Paper}>
       <Divider />
-          {
-            rows.length === 0
-            ?
-          <React.Fragment>
-            <Grid
-            container
-            spacing={0}
-            direction="column"
-            alignItems="center"
-            justifyContent="center"
-            >
-              <Grid item xs={3}>
-                  <Box
-                    component="img"
-                      sx={{
-                      
-                      height: 200,
-                      width: 200,
-                    }}
-                    alt="No data."
-                    src={EmptyImage}
-                  />
-              </Grid>
-              <Grid item xs={4}>
-                  <Typography
-                    variant="h6"
-                    fontWeight='500'
-                    
-                  sx={{ opacity: '0.3', pb: 4}}
-                >
-                  Không có dữ liệu
-                </Typography>
-              </Grid>      
-              </Grid>
-              </React.Fragment>
-            :
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
                     <TableHead>
                         <TableRow key={keyTable}>
@@ -114,7 +78,46 @@ const TableComponent: React.FC<TableProps<any>> = ({ rows, keyTable, columns, ac
                             </StyledTableCell>
                             : ''
                             }
-                        </TableRow>
+              </TableRow>
+              {
+                rows.length === 0
+                  ?
+              <TableRow key='empty-row'>
+                <TableCell colSpan={columns.length + 1}>
+                  <Grid
+                        container
+                        spacing={0}
+                        direction="column"
+                        alignItems="center"
+                        justifyContent="center"
+                      >
+                        <Grid item xs={3}>
+                            <Box
+                              component="img"
+                                sx={{
+                                
+                                height: 150,
+                                width: 150,
+                              }}
+                              alt="No data."
+                              src={EmptyImage}
+                            />
+                        </Grid>
+                        <Grid item xs={4}>
+                            <Typography
+                              variant="h6"
+                              fontWeight='500'
+                              
+                            sx={{ opacity: '0.3', pb: 4}}
+                          >
+                            Không có dữ liệu
+                          </Typography>
+                        </Grid>      
+                        </Grid>
+                  </TableCell>
+                </TableRow>
+                  : ''
+                }
                     </TableHead>
 
                     <TableBody>
@@ -157,8 +160,6 @@ const TableComponent: React.FC<TableProps<any>> = ({ rows, keyTable, columns, ac
                           </TableRow>
                         </TableFooter> */}
                 </Table>
-          }
-            
         </TableContainer>
     )
 }
