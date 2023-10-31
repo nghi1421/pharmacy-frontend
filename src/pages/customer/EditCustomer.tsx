@@ -49,7 +49,7 @@ const EditCustomer: React.FC = () => {
         updateCustomer.mutate({ ...data, address: address });
 
     const backToTable = () => {
-        navigate('/providers')
+        navigate('/customers')
     }
     return (
         <Paper sx={{ px:6, py:4 }}>

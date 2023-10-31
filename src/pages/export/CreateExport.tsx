@@ -3,23 +3,22 @@ import { useNavigate } from "react-router-dom"
 import React, { useEffect, useState } from "react";
 import { FormAutocomplete } from "../../components/form/FormAutocomplete";
 import { useForm } from "react-hook-form";
-import { useGetProviders } from "../../hooks/useProvider";
 import { getStaff } from "../../store/auth";
 import { FormInputText } from "../../components/form/FormInputText";
 import { FormInputDate } from "../../components/form/FormInputDate";
-import { FormInputCurrency } from "../../components/form/FormInputCurrency";
 import { Column } from "../../types/Column";
-import { useGetDataDrugCategories } from "../../hooks/useDrugCategory";
 import TableAction from "../../components/table/TableAction";
-import TableSelectDrugCategory from "../../components/table/TableSelectDrugCategory";
+import { useGetCustomers } from "../../hooks/useCustomer";
+import TableExportSelectDrug from "../../components/table/TableExportSelectDrug";
+import { useGetDataDrugCategories } from "../../hooks/useDrugCategory";
 
 
 export interface ImportForm {
-    provider: any;
+    customer: any;
     note: string;
-    importDate: string
-    paid: string
-    importDetails: []
+    exportDate: string
+    precriptionId: string
+    exportDetails: []
 }
 
 const columns: Column[] = [
@@ -27,6 +26,7 @@ const columns: Column[] = [
     { key: 'name', value: 'Tên thuốc' },
     { key: 'formatedPrice', value: 'Đơn giá bán' },
     { key: 'minimalUnit', value: 'Đơn vị bán' },
+    { key: 'vat', value: 'Thuế VAT' },
     { key: 'use', value: 'Công dụng'},
 ]
 
@@ -37,11 +37,11 @@ const CreateExport: React.FC = () => {
     const [drugs, setDrugs] = useState<any[]>([])
     const [selectedDrugs, setSelectedDrugs] = useState<any[]>([])
     const [pay, setPay] = useState<number[]>([0 , 0, 0])
-    const { data: providers, isLoading: providerLoading } = useGetProviders(2)
-    const { handleSubmit, reset, control, watch } = useForm<ImportForm>({
+    const { data: customer, isLoading: customerLoading } = useGetCustomers(2)
+    const { handleSubmit, control, watch } = useForm<ImportForm>({
     });
 
-    const watchProvider = watch('provider')
+    const watchCustomer = watch('customer')
 
     useEffect(() => {
         if (drugCategories && drugCategories.length > 0) {
@@ -54,16 +54,19 @@ const CreateExport: React.FC = () => {
     useEffect(() => {
         if (selectedDrugs.length > 0) {
             const withoutVat = selectedDrugs.reduce((value, drug) => {
-                return value + drug.quantity * drug.unitPrice
+                return value + drug.quantity * drug.price
             }, 0)
 
             const vat = selectedDrugs.reduce((value, drug) => {
-                return value + drug.rawVat*drug.quantity * drug.unitPrice
+                return value + drug.rawVat * drug.quantity * drug.price
             }, 0)
 
             const total = vat + withoutVat;
 
             setPay([withoutVat, vat, total])
+        }
+        else {
+            setPay([0, 0, 0])
         }
     }, [selectedDrugs])
 
@@ -76,15 +79,15 @@ const CreateExport: React.FC = () => {
         setDrugs(drugs.map(drug => {
             return drug.id === drugCategory.id ? {...drug, checked: true} : drug
         }))
-        selectedDrugs.push({...drugCategory, checked: false, quantity: 0, unitPrice: 0, expiryDate: new Date()})
+        selectedDrugs.push({...drugCategory, checked: false, quantity: 0})
     }
 
     const unCheckDrugCategory = (drugCategory: any) => {
         setDrugs(drugs.map(drug => {
             return drug.id === drugCategory.id ? {...drug, checked: false} : drug
         }))
-        const index = selectedDrugs.indexOf(drugCategory);
-        selectedDrugs.splice(index, 1);
+        const newSelectedDrugs = selectedDrugs.filter((drug) => drug.id !== drugCategory.id);
+        setSelectedDrugs(newSelectedDrugs);
     }
 
     const updateQuantity = (drugCategory: any) => {
@@ -100,7 +103,7 @@ const CreateExport: React.FC = () => {
     return (
         <Paper sx={{ px:6, py:4 }}>
             <Typography variant="h4" gutterBottom mb='20px'>
-                Thông tin phiếu nhập thuốc
+                Thông tin phiếu xuất hàng
             </Typography>
             <Grid container spacing={3}>
                 <Grid item xs={8} sm={6} >
@@ -109,7 +112,7 @@ const CreateExport: React.FC = () => {
                             Khách hàng
                         </Typography>
                         {
-                                providerLoading
+                                customerLoading
                             ?
                                 <CircularProgress sx={{ margin: 'auto' }} />
                             :
@@ -117,8 +120,8 @@ const CreateExport: React.FC = () => {
                                     control={control}
                                     label='Tên khách hàng'
                                     placeholder='Chọn khách hàng'
-                                    name='provider'
-                                    options={providers}
+                                    name='customer'
+                                    options={customer}
                                 />    
                         }
 
@@ -131,7 +134,7 @@ const CreateExport: React.FC = () => {
                             </Typography>
 
                             <Typography display="inline" sx={{ pl:1, textDecoration: 'none'}}>
-                                {watchProvider?.phoneNumber ? watchProvider.phoneNumber : ''}
+                                {watchCustomer?.phoneNumber ? watchCustomer.phoneNumber : ''}
                             </Typography>
                         </Typography>
 
@@ -144,7 +147,7 @@ const CreateExport: React.FC = () => {
                             </Typography>
 
                             <Typography display="inline" sx={{ pl:1, textDecoration: 'none'}}>
-                                {watchProvider?.email ? watchProvider.email : ''}
+                                {watchCustomer?.email ? watchCustomer.email : ''}
                             </Typography>
                         </Typography>
 
@@ -157,7 +160,7 @@ const CreateExport: React.FC = () => {
                             </Typography>
 
                             <Typography display="inline" sx={{ pl:1, textDecoration: 'none'}}>
-                                {watchProvider?.address ? watchProvider.address : ''}
+                                {watchCustomer?.address ? watchCustomer.address : ''}
                             </Typography>
                         </Typography>
                     </Box>
@@ -225,14 +228,23 @@ const CreateExport: React.FC = () => {
 
                 <Grid item xs={8} sm={3}>
                     <FormInputDate
-                        name="importDate"
+                        name="exportDate"
                         control={control}
-                        label="Ngày nhập hàng"
+                        label="Ngày xuất hàng"
                         placeholder='x'
                     />
                 </Grid>
 
-                <Grid item xs={8} sm={9}>
+                <Grid item xs={8} sm={3}>
+                    <FormInputText
+                        name="precriptionId"
+                        control={control}
+                        label="Mã đơn thuốc"
+                        placeholder='Nhập mã đơn thuốc/toa thuốc'
+                    />
+                </Grid>
+
+                <Grid item xs={8} sm={6}>
                     <FormInputText
                         name="note"
                         control={control}
@@ -241,41 +253,16 @@ const CreateExport: React.FC = () => {
                     />
                 </Grid>
 
-                <Grid item xs={8} sm={4}>
-                    <FormInputCurrency
-                        control={control}
-                        name='paid'
-                        label='Đã thanh toán'
-                        placeholder='Nhập số tiền đã thanh toán'
-                    />
-                </Grid>
-
-                <Grid item xs={8} sm={4}>
-                    <FormInputDate
-                        name="maturityDate"
-                        control={control}
-                        label="Ngày đáo hạn"
-                        placeholder='x'
-                    />
-                </Grid>
-
-                <Grid item xs={8} sm={4}>
-                    <FormInputText
-                        name="patchId"
-                        control={control}
-                        label="Mã lô hàng"
-                        placeholder='Nhập mã lô hàng'
-                    />
-                </Grid>
+                
                 
                 <Grid item xs={12} sm={12} container>
                     <Typography mb='20px' variant="subtitle2" sx={{ fontWeight: 'fontWeightBold', mt: 2 }}>
                         Thuốc đã chọn
                     </Typography>
-                    <TableSelectDrugCategory
+                    <TableExportSelectDrug
                         rows={selectedDrugs}
                         tooltip='Nhấn để bỏ chọn thuốc'
-                        keyTable='selected-drug-category-table-key'
+                        keyTable='selected-drug-export-category-table-key'
                         action={unCheckDrugCategory}
                         update={updateQuantity}
                     /> 

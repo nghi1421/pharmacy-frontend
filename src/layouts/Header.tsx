@@ -3,6 +3,7 @@ import { Divider, IconButton, Menu, MenuItem, Toolbar, Typography, styled } from
 import MuiAppBar, { AppBarProps as MuiAppBarProps  } from '@mui/material/AppBar';
 import { useState } from "react";
 import MenuIcon from '@mui/icons-material/Menu';
+import { getStaff } from "../store/auth";
 
 interface HeaderProps {
   open: boolean;
@@ -34,7 +35,9 @@ const AppBar = styled(MuiAppBar, {
 }));
 
 const Header: React.FC<HeaderProps> = ({ open, setOpen }) => {
-  const [avatarEl, setAvatarEl] = useState<HTMLButtonElement|null>(null);
+  const [avatarEl, setAvatarEl] = useState<HTMLButtonElement | null>(null);
+  const staff = getStaff();
+
   const openSetting = Boolean(avatarEl);
 
   const handleAvatarClick = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -75,6 +78,14 @@ const Header: React.FC<HeaderProps> = ({ open, setOpen }) => {
               sx={{ flexGrow: 1 }}
             >
               Trang quản lí
+          </Typography>
+
+          <Typography
+              variant="body2"
+              color="inherit"
+              noWrap
+            >
+              {staff.name}
           </Typography>
           <IconButton
             id="basic-button"

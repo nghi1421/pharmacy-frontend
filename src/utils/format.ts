@@ -8,5 +8,8 @@ export const formatDate = (date: string) => {
     return moment(date).format('DD/MM/YYYY')
 }
 
+// export const formatCurrency = (money: number) => 
+//     new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(money);
+
 export const formatCurrency = (money: number) => 
-    new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(money);
+    `${money.toLocaleString()} VND`;

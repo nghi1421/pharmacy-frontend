@@ -66,6 +66,9 @@ const CreateImport: React.FC = () => {
 
             setPay([withoutVat, vat, total])
         }
+        else {
+            setPay([0, 0, 0])
+        }
     }, [selectedDrugs])
 
     const onSubmit = (data: ImportForm) => { 
@@ -84,8 +87,8 @@ const CreateImport: React.FC = () => {
         setDrugs(drugs.map(drug => {
             return drug.id === drugCategory.id ? {...drug, checked: false} : drug
         }))
-        const index = selectedDrugs.indexOf(drugCategory);
-        selectedDrugs.splice(index, 1);
+        const newSelectedDrugs = selectedDrugs.filter((drug) => drug.id !== drugCategory.id);
+        setSelectedDrugs(newSelectedDrugs);
     }
 
     const updateQuantity = (drugCategory: any) => {

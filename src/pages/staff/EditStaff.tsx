@@ -75,7 +75,7 @@ const EditStaff: React.FC = () => {
         updateStaff.mutate({ ...data, address: address });
 
     const backToTable = () => {
-        navigate('/providers')
+        navigate('/staffs')
     }
     return (
         <Paper sx={{ px:6, py:4 }}>
