@@ -61,18 +61,18 @@ const staffFormValidate: Yup.ObjectSchema<StaffForm> = yup.object({
 const EditStaff: React.FC = () => {
     const { state } = useLocation()
     const navigate = useNavigate()
-    const updateStaff = useUpdateStaff()
     let { data, isLoading } = useGetPositions()
     const [counter, setCounter] = useState(Math.random())
     const [address, setAddress] = useState<string>('')
-
-    const { handleSubmit, reset, control } = useForm<StaffEditForm>({
+    const { handleSubmit, reset, control, setError } = useForm<StaffEditForm>({
         defaultValues: {...state.staffData, positionId: state.staffData.position.id},
         resolver: yupResolver(staffFormValidate)
     });
+    const updateStaff = useUpdateStaff(setError)
 
-    const onSubmit = (data: StaffEditForm) =>
+    const onSubmit = (data: StaffEditForm) => {
         updateStaff.mutate({ ...data, address: address });
+    }
 
     const backToTable = () => {
         navigate('/staffs')

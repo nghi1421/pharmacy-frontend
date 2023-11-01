@@ -83,13 +83,12 @@ const CreateStaff: React.FC = () => {
     const navigate = useNavigate()
     const [address, setAddress] = useState<string>('')
     let { data, isLoading } = useGetPositions()
-    const createStaff = useCreateStaff()
     const [counter, setCounter] = useState(Math.random())
-
-    const { handleSubmit, reset, control } = useForm<StaffForm>({
+    const { handleSubmit, reset, control, setError } = useForm<StaffForm>({
         defaultValues: defaultValues,
         resolver: yupResolver(staffFormValidate)
     });
+    const createStaff = useCreateStaff(setError)
 
     const onSubmit = (data: StaffForm) => createStaff.mutate({...data, address: address})
 

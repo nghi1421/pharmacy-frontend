@@ -1,4 +1,5 @@
 import { enqueueSnackbar } from "notistack"
+import { UseFormSetError } from "react-hook-form";
 import { QueryClient } from "react-query";
 
 export const defaultOnSuccessHandle = (
@@ -24,21 +25,23 @@ export const defaultOnSuccessHandle = (
     }
 }
 
-export const defaultOnErrorHandle = (
+export const defaultCatchErrorHandle = (
     error: any,
+    setError: UseFormSetError<any>
 ) => {
-    if (error.response.status === 400) {
+    if (error.response.data.validateError) {
+        error.response.data.validateError.forEach((validate: any) => {
+            setError(validate.key, { type: 'custom', message: validate.value[0]})
+        })
         enqueueSnackbar('Vui lòng kiểm tra dữ liệu.', {
             autoHideDuration: 3000,
             variant: 'warning'
-            }
-        ) 
+        })
     }
     else {
         enqueueSnackbar('Lỗi server.', {
             autoHideDuration: 3000,
             variant: 'error'
-            }
-        )  
+        })  
     }
 }

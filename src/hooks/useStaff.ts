@@ -9,7 +9,8 @@ import { pathToUrl } from '../utils/path';
 import { useNavigate } from 'react-router-dom';
 import { StaffForm } from '../pages/staff/CreateStaff';
 import { StaffEditForm } from '../pages/staff/EditStaff';
-import { defaultOnErrorHandle, defaultOnSuccessHandle } from '../utils/helper';
+import { defaultCatchErrorHandle, defaultOnSuccessHandle } from '../utils/helper';
+import { UseFormSetError } from 'react-hook-form';
 
 function createData({id, name, gender, dob, phoneNumber, email, isWorking, position}: Staff) {
     return {
@@ -82,36 +83,39 @@ const useGetStaff = (option: number = 1) => {
   })
 }
 
-const useCreateStaff = () => {
+const useCreateStaff = (setError: UseFormSetError<any>) => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
   return useMutation({
     mutationFn: async (data: StaffForm) => {
       return await axiosClient.post(API_STAFF, data)
+        .then(response => response)
+        .catch(error => {
+          defaultCatchErrorHandle(error, setError)
+        }) 
     },
     onSuccess: (response: any) => {
       defaultOnSuccessHandle(queryClient, navigate, response, 'staffs', '/staffs')
-    },
-    onError: (error: any) => {
-      defaultOnErrorHandle(error)
     }
   })
 }
 
-const useUpdateStaff = () => {
+const useUpdateStaff =
+  (setError: UseFormSetError<any>) => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
   return useMutation({
     mutationFn: async (data: StaffEditForm) => {
       return await axiosClient.put(pathToUrl(API_STAFF_WITH_ID, { staffId: data.id }), data)
+        .then(response => response)
+        .catch(error => {
+          defaultCatchErrorHandle(error, setError)
+        }) 
     },
     onSuccess: (response: any) => {
       defaultOnSuccessHandle(queryClient, navigate,response, 'staffs', '/staffs')
-    },
-    onError: (error: any) => {
-      defaultOnErrorHandle(error)
     }
   }) 
 }
@@ -126,9 +130,6 @@ const useDeleteStaff = () => {
     },
     onSuccess: (response: any) => {
       defaultOnSuccessHandle(queryClient, navigate, response, 'staffs', '/staffs')
-    },
-    onError: (error: any) => {
-      defaultOnErrorHandle(error)
     }
   }) 
 }
@@ -139,13 +140,11 @@ const useUpdateStaffStatus = () => {
 
   return useMutation({
     mutationFn: async (staffId: string) => {
-      return await axiosClient.post(pathToUrl(API_STAFF_UPDATE_STATUS, { staffId }))
+      return await axiosClient
+        .post(pathToUrl(API_STAFF_UPDATE_STATUS, { staffId }))
     },
     onSuccess: (response: any) => {
       defaultOnSuccessHandle(queryClient, navigate, response, 'staffs', '/staffs')
-    },
-    onError: (error: any) => {
-      defaultOnErrorHandle(error)
     }
   }) 
 }
