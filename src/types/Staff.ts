@@ -1,3 +1,5 @@
+import { Position } from "./Position"
+
 export type Staff = {
     id: number,
     name: string
@@ -6,4 +8,5 @@ export type Staff = {
     dob: string
     gender: number
     isWorking: boolean
+    position: Position
 }

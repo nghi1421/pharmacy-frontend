@@ -7,7 +7,7 @@ import CreateIcon from '@mui/icons-material/Create';
 import DeleteIcon from '@mui/icons-material/Delete';
 import WorkOffIcon from '@mui/icons-material/WorkOff';
 import WorkOnIcon from '@mui/icons-material/Work';
-import { useDeleteStaff, useGetStaff, useGetStaffs } from "../../hooks/useStaff";
+import { useDeleteStaff, useGetStaff, useGetStaffs, useUpdateStaffStatus } from "../../hooks/useStaff";
 import { useConfirmDialog } from "../../hooks/useConfirmDialog";
 import ConfirmDialog from "../../components/ConfirmDialog";
 
@@ -25,6 +25,7 @@ const StaffPage: React.FC<{}> = () => {
     let { data, isLoading } = useGetStaffs()
     const navigate = useNavigate()
     const getStaff = useGetStaff()
+    const updateStaffStatus = useUpdateStaffStatus()
     const deleteStaff = useDeleteStaff()
     const [openConfirmDialog, props] = useConfirmDialog(deleteStaff.mutate)
     const clickAdd = () => {
@@ -105,7 +106,9 @@ const StaffPage: React.FC<{}> = () => {
                                             <Tooltip title="Cho nghỉ việc">
                                                 <IconButton
                                                     color='error'
-                                                    onClick={() => { getStaff.mutate(rowValue.id) }}
+                                                    onClick={() => {
+                                                        updateStaffStatus.mutate(rowValue.id)
+                                                    }}
                                                 >
                                                     <WorkOffIcon></WorkOffIcon>
                                                 </IconButton>
@@ -115,7 +118,9 @@ const StaffPage: React.FC<{}> = () => {
                                             <Tooltip title="Làm việc">
                                                 <IconButton
                                                     color='success'
-                                                    onClick={() => { getStaff.mutate(rowValue.id) }}
+                                                    onClick={() => {
+                                                        updateStaffStatus.mutate(rowValue.id)
+                                                    }}
                                                 >
                                                 <WorkOnIcon></WorkOnIcon>
                                                 </IconButton>

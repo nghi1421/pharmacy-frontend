@@ -194,7 +194,7 @@ const EditStaff: React.FC = () => {
                                     }}
                                     onClick={handleSubmit(onSubmit)}
                                 >
-                                    Thêm
+                                    Cập nhật
                                 </Button>
 
                                 <Button

@@ -1,5 +1,4 @@
 import * as yup from 'yup'
-import { AnyObject, Maybe } from "yup/lib/types";
 
 const REGEX_PASSWORD= /^(?=.*\d)(?=.*[a-zA-Z])[\da-zA-Z_.\-@]{8,}$/
 const REGEX_ONLY_NUMBER = /^\d+$/

@@ -9,11 +9,13 @@ import { pathToUrl } from '../utils/path';
 import { useNavigate } from 'react-router-dom';
 import { StaffForm } from '../pages/staff/CreateStaff';
 import { StaffEditForm } from '../pages/staff/EditStaff';
+import { defaultOnErrorHandle, defaultOnSuccessHandle } from '../utils/helper';
 
-function createData({id, name, gender, dob, phoneNumber, email, isWorking}: Staff) {
+function createData({id, name, gender, dob, phoneNumber, email, isWorking, position}: Staff) {
     return {
-        id, name, phoneNumber,
+        id, name, phoneNumber, position,
         gender: GenderEnum[gender],
+        positionName: position.name,
         email,
         dob: formatDate(dob),
         status: isWorking,
@@ -39,7 +41,7 @@ const useGetStaffs = () => {
   })
 };
 
-const useGetStaff = () => {
+const useGetStaff = (option: number = 1) => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
@@ -47,18 +49,35 @@ const useGetStaff = () => {
     mutationFn: (staffId: string) => axiosClient
       .get(pathToUrl(API_STAFF_WITH_ID, { staffId }))
       .then((response) => {
-        navigate( `/staffs/${staffId}/edit`,
-          {
-            state: { staffData: response.data.data }
-          }
-        )
+        switch (option) {
+          case 1: {
+            navigate( `/staffs/${staffId}/edit`,
+              {
+                state: { staffData: response.data.data }
+              }
+            )
 
-        if (response.data.message) {
-          return response.data.data
+            if (response.data.message) {
+              return response.data.data
+            }
+            else {
+              queryClient.invalidateQueries('staffs', { refetchInactive: true })
+            }
+            break;
+          }
+            
+          case 2: {
+              if (response.data.message) {
+                return response.data.data
+              }
+              else {
+                queryClient.invalidateQueries('staffs', { refetchInactive: true })
+            } 
+            break;
+          }
         }
-        else {
-          queryClient.invalidateQueries('staffs', { refetchInactive: true })
-        }
+
+        return {}
       }),
   })
 }
@@ -72,31 +91,12 @@ const useCreateStaff = () => {
       return await axiosClient.post(API_STAFF, data)
     },
     onSuccess: (response: any) => {
-      if (response.data.message) {
-        queryClient.invalidateQueries('staffs', { refetchInactive: true })
-        navigate('/staffs')
-        enqueueSnackbar(response.data.message, {
-          autoHideDuration: 3000,
-          variant: 'success'
-        })  
-      }
-      else {
-          enqueueSnackbar(response.data.errorMessage, {
-            autoHideDuration: 3000,
-            variant: 'error'
-          }) 
-      }
+      defaultOnSuccessHandle(queryClient, navigate, response, 'staffs', '/staffs')
     },
     onError: (error: any) => {
-      console.log(error)
-      enqueueSnackbar('Lỗi server.',
-        {
-          autoHideDuration: 3000,
-          variant: 'error'
-        })
+      defaultOnErrorHandle(error)
     }
-  }
-  )
+  })
 }
 
 const useUpdateStaff = () => {
@@ -108,65 +108,29 @@ const useUpdateStaff = () => {
       return await axiosClient.put(pathToUrl(API_STAFF_WITH_ID, { staffId: data.id }), data)
     },
     onSuccess: (response: any) => {
-      if (response.data.message) {
-        queryClient.invalidateQueries('staffs', { refetchInactive: true })
-        navigate('/staffs')
-        enqueueSnackbar(response.data.message, {
-          autoHideDuration: 3000,
-          variant: 'success'
-        })  
-      }
-      else {
-          enqueueSnackbar(response.data.errorMessage, {
-            autoHideDuration: 3000,
-            variant: 'error'
-          }) 
-      }
+      defaultOnSuccessHandle(queryClient, navigate,response, 'staffs', '/staffs')
     },
     onError: (error: any) => {
-      console.log(error)
-      enqueueSnackbar('Lỗi server.',
-        {
-          autoHideDuration: 3000,
-          variant: 'error'
-        })
+      defaultOnErrorHandle(error)
     }
-  }
-  ) 
+  }) 
 }
 
 const useDeleteStaff = () => {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   return useMutation({
     mutationFn: async (staffId: string) => {
       return await axiosClient.delete(pathToUrl(API_STAFF_WITH_ID, { staffId }))
     },
     onSuccess: (response: any) => {
-      if (response.data.message) {
-        queryClient.invalidateQueries('staffs', { refetchInactive: true })
-        enqueueSnackbar(response.data.message, {
-          autoHideDuration: 3000,
-          variant: 'success'
-        })  
-      }
-      else {
-          enqueueSnackbar(response.data.errorMessage, {
-            autoHideDuration: 3000,
-            variant: 'error'
-          }) 
-      }
+      defaultOnSuccessHandle(queryClient, navigate, response, 'staffs', '/staffs')
     },
     onError: (error: any) => {
-      console.log(error)
-      enqueueSnackbar('Lỗi server.',
-        {
-          autoHideDuration: 3000,
-          variant: 'error'
-        })
+      defaultOnErrorHandle(error)
     }
-  }
-  ) 
+  }) 
 }
 
 const useUpdateStaffStatus = () => {
@@ -174,35 +138,16 @@ const useUpdateStaffStatus = () => {
   const navigate = useNavigate();
 
   return useMutation({
-    mutationFn: async (data: StaffEditForm) => {
-      return await axiosClient.post(pathToUrl(API_STAFF_UPDATE_STATUS, { staffId: data.id }))
+    mutationFn: async (staffId: string) => {
+      return await axiosClient.post(pathToUrl(API_STAFF_UPDATE_STATUS, { staffId }))
     },
     onSuccess: (response: any) => {
-      if (response.data.message) {
-        queryClient.invalidateQueries('staffs', { refetchInactive: true })
-        navigate('/staffs')
-        enqueueSnackbar(response.data.message, {
-          autoHideDuration: 3000,
-          variant: 'success'
-        })  
-      }
-      else {
-          enqueueSnackbar(response.data.errorMessage, {
-            autoHideDuration: 3000,
-            variant: 'error'
-          }) 
-      }
+      defaultOnSuccessHandle(queryClient, navigate, response, 'staffs', '/staffs')
     },
     onError: (error: any) => {
-      console.log(error)
-      enqueueSnackbar('Lỗi server.',
-        {
-          autoHideDuration: 3000,
-          variant: 'error'
-        })
+      defaultOnErrorHandle(error)
     }
-  }
-  ) 
+  }) 
 }
 
 export {
