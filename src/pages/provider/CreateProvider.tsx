@@ -42,13 +42,12 @@ const providerFormValidate: Yup.ObjectSchema<ProviderForm> = yup.object({
 const CreateProvider: React.FC = () => {
     const navigate = useNavigate()
     const [counter, setCounter] = useState(Math.random())
-    const createProvider = useCreateProvider()
     const [address, setAddress] = useState<string>('')
-
-    const { handleSubmit, reset, control } = useForm<ProviderForm>({
+    const { handleSubmit, reset, control, setError } = useForm<ProviderForm>({
         defaultValues: defaultValues,
         resolver: yupResolver(providerFormValidate)
     });
+    const createProvider = useCreateProvider(setError)
 
     const onSubmit = (data: ProviderForm) => createProvider.mutate({...data, address: address});
 
@@ -88,7 +87,7 @@ const CreateProvider: React.FC = () => {
                     />
                 </Grid>
                     
-                <Address setAddress={setAddress} address={address} key={counter} />  
+                <Address setAddress={setAddress} key={counter} />  
 
                 <Grid item xs={12} sm={12} container 
                     sx={{

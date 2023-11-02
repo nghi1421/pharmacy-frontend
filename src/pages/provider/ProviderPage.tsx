@@ -51,7 +51,7 @@ const ProviderPage: React.FC<{}> = () => {
                 fontWeight='500'
                 sx={{ px:3, py: 2 }}
                 >
-                    Thêm công ty dược
+                    Quản lí công ty dược
                 </Typography>
                 <Button
                     variant="contained"

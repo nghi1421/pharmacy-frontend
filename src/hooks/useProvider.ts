@@ -8,6 +8,8 @@ import { pathToUrl } from '../utils/path';
 import { useNavigate } from 'react-router-dom';
 import { ProviderForm } from '../pages/provider/CreateProvider';
 import { ProviderEditForm } from '../pages/provider/EditProvider';
+import { defaultCatchErrorHandle, defaultOnSuccessHandle } from '../utils/helper';
+import { UseFormSetError } from 'react-hook-form';
 
 function createData({id, name, address, createdAt, updatedAt, phoneNumber, email}: Provider) {
     return {
@@ -71,108 +73,57 @@ const useGetProvider = () => {
   })
 }
 
-const useCreateProvider = () => {
+const useCreateProvider = (setError: UseFormSetError<any>) => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
   return useMutation({
     mutationFn: async (data: ProviderForm) => {
       return await axiosClient.post(API_PROVIDER, data)
+        .then(response => response)
+        .catch(error => {
+          defaultCatchErrorHandle(error, setError)
+        })
     },
     onSuccess: (response: any) => {
-      if (response.data.message) {
-        queryClient.invalidateQueries('providers', { refetchInactive: true })
-        navigate('/providers')
-        enqueueSnackbar(response.data.message, {
-          autoHideDuration: 3000,
-          variant: 'success'
-        })  
-      }
-      else {
-          enqueueSnackbar(response.data.errorMessage, {
-            autoHideDuration: 3000,
-            variant: 'error'
-          }) 
-      }
-    },
-    onError: (error: any) => {
-      console.log(error)
-      enqueueSnackbar('Lỗi server.',
-        {
-          autoHideDuration: 3000,
-          variant: 'error'
-        })
+      defaultOnSuccessHandle(queryClient, navigate, response, 'providers', '/providers')
     }
-  }
-  )
+  })
 }
 
-const useUpdateProvider = () => {
+const useUpdateProvider = (setError: UseFormSetError<any>) => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
   return useMutation({
     mutationFn: async (data: ProviderEditForm) => {
       return await axiosClient.put(pathToUrl(API_PROVIDER_WITH_ID, { providerId: data.id }), data)
-    },
-    onSuccess: (response: any) => {
-      if (response.data.message) {
-        queryClient.invalidateQueries('providers', { refetchInactive: true })
-        navigate('/providers')
-        enqueueSnackbar(response.data.message, {
-          autoHideDuration: 3000,
-          variant: 'success'
-        })  
+          .then(response => response)
+          .catch(error => {
+            defaultCatchErrorHandle(error, setError)
+          })
+      },
+      onSuccess: (response: any) => {
+        defaultOnSuccessHandle(queryClient, navigate, response, 'providers', '/providers')
       }
-      else {
-          enqueueSnackbar(response.data.errorMessage, {
-            autoHideDuration: 3000,
-            variant: 'error'
-          }) 
-      }
-    },
-    onError: (error: any) => {
-      console.log(error)
-      enqueueSnackbar('Lỗi server.',
-        {
-          autoHideDuration: 3000,
-          variant: 'error'
-        })
-    }
-  }
-  ) 
+  }) 
 }
 
 const useDeleteProvider = () => {
   const queryClient = useQueryClient();
+  const navigate = useNavigate()
 
   return useMutation({
     mutationFn: async (providerId: string) => {
       return await axiosClient.delete(pathToUrl(API_PROVIDER_WITH_ID, { providerId }))
-    },
-    onSuccess: (response: any) => {
-      if (response.data.message) {
-        queryClient.invalidateQueries('providers', { refetchInactive: true })
-        enqueueSnackbar(response.data.message, {
-          autoHideDuration: 3000,
-          variant: 'success'
-        })  
+          .then(response => response)
+          .catch(error => {
+            defaultCatchErrorHandle(error)
+          })
+      },
+      onSuccess: (response: any) => {
+        defaultOnSuccessHandle(queryClient, navigate, response, 'providers', '/providers')
       }
-      else {
-          enqueueSnackbar(response.data.errorMessage, {
-            autoHideDuration: 3000,
-            variant: 'error'
-          }) 
-      }
-    },
-    onError: (error: any) => {
-      console.log(error)
-      enqueueSnackbar('Lỗi server.',
-        {
-          autoHideDuration: 3000,
-          variant: 'error'
-        })
-    }
   }
   ) 
 }

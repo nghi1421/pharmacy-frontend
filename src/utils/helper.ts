@@ -11,7 +11,9 @@ export const defaultOnSuccessHandle = (
 ) => {
     if (response.data.message) {
         queryClient.invalidateQueries(queryKey, { refetchInactive: true })
-        navigate(nextLink)
+        if (navigate) {
+            navigate(nextLink)
+        }
         enqueueSnackbar(response.data.message, {
             autoHideDuration: 3000,
             variant: 'success'

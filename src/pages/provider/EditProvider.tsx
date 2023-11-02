@@ -36,14 +36,13 @@ const providerFormValidate: Yup.ObjectSchema<ProviderEditForm> = yup.object({
 const EditProvider: React.FC = () => {
     const { state } = useLocation()
     const navigate = useNavigate()
-    const updateProvider = useUpdateProvider()
     const [counter, setCounter] = useState(Math.random())
     const [address, setAddress] = useState<string>('')
-
-    const { handleSubmit, reset, control } = useForm<ProviderEditForm>({
+    const { handleSubmit, reset, control, setError } = useForm<ProviderEditForm>({
         defaultValues: {...state.providerData, id: state.providerData.id},
         resolver: yupResolver(providerFormValidate)
     });
+    const updateProvider = useUpdateProvider(setError)
 
     const onSubmit = (data: ProviderEditForm) =>
         updateProvider.mutate({ ...data, address: address });
