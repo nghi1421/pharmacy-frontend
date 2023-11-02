@@ -1,8 +1,11 @@
+import * as React from 'react';
 import { useTheme } from '@mui/material/styles';
-import { KeyboardArrowLeft, KeyboardArrowRight } from "@mui/icons-material";
-import { Box, IconButton } from "@mui/material";
-import LastPageIcon from '@mui/icons-material/LastPage';
+import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
 import FirstPageIcon from '@mui/icons-material/FirstPage';
+import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
+import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
+import LastPageIcon from '@mui/icons-material/LastPage';
 
 interface TablePaginationActionsProps {
   count: number;
@@ -14,7 +17,8 @@ interface TablePaginationActionsProps {
   ) => void;
 }
 
-export const TablePaginationActions: React.FC<TablePaginationActionsProps> = (props) => {
+export const TablePaginationActions: React.FC<TablePaginationActionsProps> =
+  (props: TablePaginationActionsProps) => {
   const theme = useTheme();
   const { count, page, rowsPerPage, onPageChange } = props;
 

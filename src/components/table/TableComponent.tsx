@@ -1,8 +1,22 @@
-import { Box, Divider, Grid, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableFooter, TableHead, TablePagination, TableRow, Typography, styled, tableCellClasses } from "@mui/material"
+import { Box,
+   Divider,
+   Grid,
+   Pagination,
+   Paper,
+   Table,
+   TableBody,
+   TableCell,
+   TableContainer,
+   TableFooter,
+   TableHead,
+   TableRow,
+   Typography,
+   styled,
+  tableCellClasses
+} from "@mui/material"
 import { Column } from '../../types/Column'
-import React from "react"
+import React from 'react'
 import EmptyImage from '../../assets/images/no-data.jpg'
-// import { TablePaginationActions } from "./TablePaginationActions";
 
 interface TableProps<T> {
   rows: T[]
@@ -10,6 +24,10 @@ interface TableProps<T> {
   keyTable: string
   action?: any
   hasAction?: boolean
+  hasPagination ?: boolean
+  page?: number
+  totalPage?: number
+  actionChangePage?: (n: number) => any
 }
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -33,26 +51,12 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-const TableComponent: React.FC<TableProps<any>> = ({ rows, keyTable, columns, action, hasAction }) => {
-    // const [page, setPage] = useState<number>(0);
-    // const [rowsPerPage, setRowsPerPage] = useState<number>(5);
-
-    // const emptyRows =
-    //   page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
-
-    // const handleChangePage = (
-    //   event: React.MouseEvent<HTMLButtonElement> | null,
-    //   newPage: number,
-    // ) => {
-    //   setPage(newPage);
-    // };
-
-    // const handleChangeRowsPerPage = (
-    //   event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    // ) => {
-    //     setRowsPerPage(parseInt(event.target.value, 10));
-    //     setPage(0);
-    // };
+const TableComponent: React.FC<TableProps<any>> =
+  ({ rows, keyTable, columns, action, hasAction, page, actionChangePage, totalPage, hasPagination }) => {
+  const handleChange = (_: any, value: number) => {
+      if (actionChangePage)
+        actionChangePage(value)
+  }; 
   
   return (
       <TableContainer component={Paper}>
@@ -115,7 +119,7 @@ const TableComponent: React.FC<TableProps<any>> = ({ rows, keyTable, columns, ac
                         </Grid>      
                         </Grid>
                   </TableCell>
-                </TableRow>
+                  </TableRow>
                   : ''
                 }
                     </TableHead>
@@ -138,28 +142,35 @@ const TableComponent: React.FC<TableProps<any>> = ({ rows, keyTable, columns, ac
                         </StyledTableRow>
                         ))}
                     </TableBody>
-            
-                        {/* <TableFooter>
-                          <TableRow>
-                            <TablePagination
-                              rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
-                              colSpan={3}
-                              count={rows.length}
-                              rowsPerPage={rowsPerPage}
-                              page={page}
-                              SelectProps={{
-                                inputProps: {
-                                  'aria-label': 'rows per page',
-                                },
-                                native: true,
-                              }}
-                              onPageChange={handleChangePage}
-                              onRowsPerPageChange={handleChangeRowsPerPage}
-                              // ActionsComponent={TablePaginationActions}
-                            />
-                          </TableRow>
-                        </TableFooter> */}
-                </Table>
+              {
+                hasPagination 
+                  ?
+                    <TableFooter>
+                      <TableRow>
+                        <TableCell colSpan={hasAction ? columns.length + 1 : columns.length}>
+                          <Box 
+                            sx={{ 
+                                margin: "auto", 
+                                width: "fit-content", 
+                                alignItems: "center", 
+                            }} 
+                          > 
+                              <Typography fontSize={24} align="center"> 
+                                  Page: {page} 
+                              </Typography> 
+                              <Pagination
+                                count={totalPage}
+                                page={page}  
+                                onChange={handleChange}
+                              /> 
+                          </Box>
+                        </TableCell> 
+                      </TableRow>
+                    </TableFooter>
+                  :
+                  ''
+              }
+            </Table>
         </TableContainer>
     )
 }
