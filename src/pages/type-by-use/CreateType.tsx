@@ -30,12 +30,11 @@ const typeFormValidate: Yup.ObjectSchema<TypeByUseForm> = yup.object({
 })
 const CreateType: React.FC = () => {
     const navigate = useNavigate()
-    const createTypeByUse = useCreateTypeByUse();
-
-    const { handleSubmit, reset, control } = useForm<TypeByUseForm>({
+    const { handleSubmit, reset, control, setError } = useForm<TypeByUseForm>({
         defaultValues: defaultValues,
         resolver: yupResolver(typeFormValidate)
     });
+    const createTypeByUse = useCreateTypeByUse(setError);
 
     const onSubmit = async (data: TypeByUseForm) => {
         createTypeByUse.mutate(data);

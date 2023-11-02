@@ -8,6 +8,8 @@ import { TypeByUse } from '../types/TypeByUse';
 import { formatDateTime } from '../utils/format';
 import { useNavigate } from 'react-router-dom';
 import { TypeByUseEditForm } from '../pages/type-by-use/EditType';
+import { defaultCatchErrorHandle, defaultOnSuccessHandle } from '../utils/helper';
+import { UseFormSetError } from 'react-hook-form';
 
 function createData({id, name, detail, createdAt, updatedAt}: TypeByUse) {
     return {
@@ -59,110 +61,58 @@ const useGetTypeByUse = () => {
   })
 }
 
-const useCreateTypeByUse = () => {
+const useCreateTypeByUse = (setError: UseFormSetError<any>) => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
   return useMutation({
     mutationFn: async (data: TypeByUseForm) => {
       return await axiosClient.post(API_TYPE_BY_USE, data)
+        .then(response => response)
+        .catch(error => {
+          defaultCatchErrorHandle(error, setError)
+        }) 
     },
     onSuccess: (response: any) => {
-      if (response.data.message) {
-        queryClient.invalidateQueries('type-by-uses', { refetchInactive: true })
-        navigate('/type-by-uses')
-        enqueueSnackbar(response.data.message, {
-          autoHideDuration: 3000,
-          variant: 'success'
-        })  
-      }
-      else {
-          enqueueSnackbar(response.data.errorMesage, {
-            autoHideDuration: 3000,
-            variant: 'error'
-          }) 
-      }
-    },
-    onError: (error: any) => {
-      console.log(error)
-      enqueueSnackbar('Error here ',
-        {
-          autoHideDuration: 3000,
-          variant: 'error'
-        })
+      defaultOnSuccessHandle(queryClient, navigate, response, 'staffs', '/staffs')
     }
-  }
-  )
+  })
 }
 
-const useUpdateTypeByUse = () => {
+const useUpdateTypeByUse = (setError: UseFormSetError<any>) => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
   return useMutation({
     mutationFn: async (data: TypeByUseEditForm) => {
       return await axiosClient.put(pathToUrl(API_TYPE_BY_USE_WITH_ID, { typeId: data.id }), data)
+        .then(response => response)
+        .catch(error => {
+          defaultCatchErrorHandle(error, setError)
+        }) 
     },
     onSuccess: (response: any) => {
-      if (response.data.message) {
-        queryClient.invalidateQueries('type-by-uses', { refetchInactive: true })
-        navigate('/type-by-uses')
-        enqueueSnackbar(response.data.message, {
-          autoHideDuration: 3000,
-          variant: 'success'
-        })  
-      }
-      else {
-          enqueueSnackbar(response.data.errorMesage, {
-            autoHideDuration: 3000,
-            variant: 'error'
-          }) 
-      }
-    },
-    onError: (error: any) => {
-      console.log(error)
-      enqueueSnackbar('Error here.',
-        {
-          autoHideDuration: 3000,
-          variant: 'error'
-        })
+      defaultOnSuccessHandle(queryClient, navigate, response, 'staffs', '/staffs')
     }
-  }
-  ) 
+  }) 
 }
 
 const useDeleteTypeByUse = () => {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   return useMutation({
     mutationFn: async (typeId: string) => {
       return await axiosClient.delete(pathToUrl(API_TYPE_BY_USE_WITH_ID, { typeId }))
+        .then(response => response)
+        .catch(error => {
+          defaultCatchErrorHandle(error)
+        }) 
     },
     onSuccess: (response: any) => {
-      if (response.data.message) {
-        queryClient.invalidateQueries('type-by-uses', { refetchInactive: true })
-        enqueueSnackbar(response.data.message, {
-          autoHideDuration: 3000,
-          variant: 'success'
-        })  
-      }
-      else {
-          enqueueSnackbar(response.data.errorMesage, {
-            autoHideDuration: 3000,
-            variant: 'error'
-          }) 
-      }
-    },
-    onError: (error: any) => {
-      console.log(error)
-      enqueueSnackbar('Error here.',
-        {
-          autoHideDuration: 3000,
-          variant: 'error'
-        })
+      defaultOnSuccessHandle(queryClient, navigate, response, 'staffs', '/staffs')
     }
-  }
-  ) 
+  }) 
 }
 
 export {

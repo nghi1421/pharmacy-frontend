@@ -28,12 +28,11 @@ const typeFormValidate: Yup.ObjectSchema<TypeByUseEditForm> = yup.object({
 const EditType: React.FC = () => {
     const { state } = useLocation()
     const navigate = useNavigate()
-    const updateTypeByUse = useUpdateTypeByUse()
-
-    const { handleSubmit, reset, control } = useForm<TypeByUseEditForm>({
+    const { handleSubmit, reset, control, setError } = useForm<TypeByUseEditForm>({
         defaultValues: state.typeByUseData,
         resolver: yupResolver(typeFormValidate)
     });
+    const updateTypeByUse = useUpdateTypeByUse(setError)
 
     const onSubmit = async (data: TypeByUseEditForm) => {
         updateTypeByUse.mutate(data);
