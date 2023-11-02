@@ -74,7 +74,7 @@ const useCreateTypeByUse = (setError: UseFormSetError<any>) => {
         }) 
     },
     onSuccess: (response: any) => {
-      defaultOnSuccessHandle(queryClient, navigate, response, 'staffs', '/staffs')
+      defaultOnSuccessHandle(queryClient, navigate, response, 'type-by-uses', '/type-by-uses')
     }
   })
 }
@@ -92,7 +92,7 @@ const useUpdateTypeByUse = (setError: UseFormSetError<any>) => {
         }) 
     },
     onSuccess: (response: any) => {
-      defaultOnSuccessHandle(queryClient, navigate, response, 'staffs', '/staffs')
+      defaultOnSuccessHandle(queryClient, navigate, response, 'type-by-uses', '/type-by-uses')
     }
   }) 
 }
@@ -110,7 +110,7 @@ const useDeleteTypeByUse = () => {
         }) 
     },
     onSuccess: (response: any) => {
-      defaultOnSuccessHandle(queryClient, navigate, response, 'staffs', '/staffs')
+      defaultOnSuccessHandle(queryClient, navigate, response, 'type-by-uses', '/type-by-uses')
     }
   }) 
 }
