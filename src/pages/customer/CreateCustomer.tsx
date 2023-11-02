@@ -52,11 +52,11 @@ const CreateCustomer: React.FC = () => {
     const navigate = useNavigate()
     const [address, setAddress] = useState<string>('')
     const [counter, setCounter] = useState(Math.random())
-    const createCustomer = useCreateCustomer()
-    const { handleSubmit, reset, control } = useForm<CustomerForm>({
+    const { handleSubmit, reset, control, setError } = useForm<CustomerForm>({
         defaultValues: defaultValues,
         resolver: yupResolver(customerFormValidate)
     });
+    const createCustomer = useCreateCustomer(setError)
 
     const onSubmit = (data: CustomerForm) => {
         createCustomer.mutate({...data, address: address})

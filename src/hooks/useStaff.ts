@@ -127,6 +127,10 @@ const useDeleteStaff = () => {
   return useMutation({
     mutationFn: async (staffId: string) => {
       return await axiosClient.delete(pathToUrl(API_STAFF_WITH_ID, { staffId }))
+        .then(response => response)
+        .catch(error => {
+          defaultCatchErrorHandle(error)
+        }) 
     },
     onSuccess: (response: any) => {
       defaultOnSuccessHandle(queryClient, navigate, response, 'staffs', '/staffs')

@@ -27,9 +27,9 @@ export const defaultOnSuccessHandle = (
 
 export const defaultCatchErrorHandle = (
     error: any,
-    setError: UseFormSetError<any>
+    setError?: UseFormSetError<any>
 ) => {
-    if (error.response.data.validateError) {
+    if (error.response.data.validateError && setError) {
         error.response.data.validateError.forEach((validate: any) => {
             setError(validate.key, { type: 'custom', message: validate.value[0]})
         })
@@ -39,9 +39,18 @@ export const defaultCatchErrorHandle = (
         })
     }
     else {
-        enqueueSnackbar('Lỗi server.', {
-            autoHideDuration: 3000,
-            variant: 'error'
-        })  
+        if (error.response.data.errorMessage) {
+            enqueueSnackbar(error.response.data.errorMessage, {
+                autoHideDuration: 3000,
+                variant: 'error'
+            }) 
+        }
+        else {
+            enqueueSnackbar('Lỗi server.', {
+                autoHideDuration: 3000,
+                variant: 'error'
+            })   
+        }
+         
     }
 }

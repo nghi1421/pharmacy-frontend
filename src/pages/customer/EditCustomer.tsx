@@ -36,14 +36,13 @@ const customerFormValidate: Yup.ObjectSchema<CustomerEditForm> = yup.object({
 const EditCustomer: React.FC = () => {
     const { state } = useLocation()
     const navigate = useNavigate()
-    const updateCustomer = useUpdateCustomer()
     const [counter, setCounter] = useState(Math.random())
     const [address, setAddress] = useState<string>('')
-
-    const { handleSubmit, reset, control } = useForm<CustomerEditForm>({
+    const { handleSubmit, reset, control, setError } = useForm<CustomerEditForm>({
         defaultValues: {...state.customerData, id: state.customerData.id},
         resolver: yupResolver(customerFormValidate)
     });
+    const updateCustomer = useUpdateCustomer(setError)
 
     const onSubmit = (data: CustomerEditForm) =>
         updateCustomer.mutate({ ...data, address: address });
