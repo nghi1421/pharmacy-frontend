@@ -68,11 +68,12 @@ const drugCategoryVaidate: Yup.ObjectSchema<DrugCategoryForm> = yup.object({
 const CreateDrugCategory: React.FC = () => {
     const navigate = useNavigate()
     const { data, isLoading } = useGetTypeByUses();
-    const createDrugCategory = useCreateDrugCategory()
-    const { handleSubmit, watch, reset, control } = useForm<DrugCategoryForm>({
+    const { handleSubmit, watch, reset, control, setError } = useForm<DrugCategoryForm>({
         defaultValues: defaultValues,
         resolver: yupResolver(drugCategoryVaidate)
     });
+    const createDrugCategory = useCreateDrugCategory(setError)
+
     const watchUnit = watch('unit')
     const watchMinimalUnit = watch('minimalUnit')
 

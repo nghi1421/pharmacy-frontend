@@ -58,8 +58,7 @@ const EditDrugCategory: React.FC = () => {
     const { state } = useLocation()
     const navigate = useNavigate()
     const { data, isLoading } = useGetTypeByUses();
-    const updateDrugCategory = useUpdateDrugCategory()
-    const { handleSubmit, reset, control, watch } = useForm<DrugCategoryEditForm>({
+    const { handleSubmit, reset, control, watch, setError } = useForm<DrugCategoryEditForm>({
         defaultValues: {
             ...state.drugCategoryData,
             vat: state.drugCategoryData.vat * 100,
@@ -67,6 +66,8 @@ const EditDrugCategory: React.FC = () => {
         },
         resolver: yupResolver(drugCategoryVaidate)
     });
+    const updateDrugCategory = useUpdateDrugCategory(setError)
+
     const watchUnit = watch('unit')
     const watchMinimalUnit = watch('minimalUnit')
 

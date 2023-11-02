@@ -8,6 +8,8 @@ import { useNavigate } from 'react-router-dom';
 import { pathToUrl } from '../utils/path';
 import { DrugCategoryEditForm } from '../pages/drug-category/EditDrugCategory';
 import { DrugCategoryForm } from '../pages/drug-category/CreateDrugCategory';
+import { defaultCatchErrorHandle, defaultOnSuccessHandle } from '../utils/helper';
+import { UseFormSetError } from 'react-hook-form';
 
 function createData({id, name, price, form, unit, vat, type, minimalUnit}: DrugCategory) {
     return {
@@ -79,107 +81,57 @@ const useGetDrugCategory = () => {
   })
 }
 
-const useCreateDrugCategory = () => {
+const useCreateDrugCategory = (setError: UseFormSetError<any>) => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
   return useMutation({
     mutationFn: async (data: DrugCategoryForm) => {
       return await axiosClient.post(API_DRUG_CATEGORY, data)
+        .then(response => response)
+        .catch(error => {
+          defaultCatchErrorHandle(error, setError)
+        }) 
     },
     onSuccess: (response: any) => {
-      if (response.data.message) {
-        queryClient.invalidateQueries('drug-categories', { refetchInactive: true })
-        navigate('/drug-categories')
-        enqueueSnackbar(response.data.message, {
-          autoHideDuration: 3000,
-          variant: 'success'
-        })  
-      }
-      else {
-          enqueueSnackbar(response.data.errorMessage, {
-            autoHideDuration: 3000,
-            variant: 'error'
-          }) 
-      }
-    },
-    onError: () => {
-      enqueueSnackbar('Error here ',
-        {
-          autoHideDuration: 3000,
-          variant: 'error'
-        })
+      defaultOnSuccessHandle(queryClient, navigate, response, 'drug-categories', '/drug-categories')
     }
-  }
-  )
+  })
 }
 
-const useUpdateDrugCategory = () => {
+const useUpdateDrugCategory = (setError: UseFormSetError<any>) => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
   return useMutation({
     mutationFn: async (data: DrugCategoryEditForm) => {
       return await axiosClient.put(pathToUrl(API_DRUG_CATEGORY_WITH_ID, { drugId: data.id }), data)
-    },  
-    onSuccess: (response: any) => {
-      if (response.data.message) {
-        queryClient.invalidateQueries('drug-categories', { refetchInactive: true })
-        navigate('/drug-categories')
-        enqueueSnackbar(response.data.message, {
-          autoHideDuration: 3000,
-          variant: 'success'
-        })  
-      }
-      else {
-          enqueueSnackbar(response.data.errorMesage, {
-            autoHideDuration: 3000,
-            variant: 'error'
-          }) 
-      }
+        .then(response => response)
+        .catch(error => {
+          defaultCatchErrorHandle(error, setError)
+        }) 
     },
-    onError: (_) => {
-      enqueueSnackbar('Error here.',
-        {
-          autoHideDuration: 3000,
-          variant: 'error'
-        })
+    onSuccess: (response: any) => {
+      defaultOnSuccessHandle(queryClient, navigate, response, 'drug-categories', '/drug-categories')
     }
-  }
-  ) 
+  }) 
 }
 
 const useDeleteDrugCategory = () => {
   const queryClient = useQueryClient();
-
+  const navigate = useNavigate()
   return useMutation({
     mutationFn: async (drugId: string) => {
       return await axiosClient.delete(pathToUrl(API_DRUG_CATEGORY_WITH_ID, { drugId }))
+        .then(response => response)
+        .catch(error => {
+          defaultCatchErrorHandle(error)
+        }) 
     },
     onSuccess: (response: any) => {
-      if (response.data.message) {
-        queryClient.invalidateQueries('drug-categories', { refetchInactive: true })
-        enqueueSnackbar(response.data.message, {
-          autoHideDuration: 3000,
-          variant: 'success'
-        })  
-      }
-      else {
-          enqueueSnackbar(response.data.errorMesage, {
-            autoHideDuration: 3000,
-            variant: 'error'
-          }) 
-      }
-    },
-    onError: (_) => {
-      enqueueSnackbar('Error here.',
-        {
-          autoHideDuration: 3000,
-          variant: 'error'
-        })
+      defaultOnSuccessHandle(queryClient, navigate, response, 'drug-categories', '/drug-categories')
     }
-  }
-  ) 
+  }) 
 }
 
 export {
