@@ -25,11 +25,11 @@ const positionFormValidate: Yup.ObjectSchema<PositionForm>
 })
 const CreatePosition: React.FC = () => {
     const navigate = useNavigate()
-    const createPosition = useCreatePosition();
-    const { handleSubmit, reset, control } = useForm<PositionForm>({
+    const { handleSubmit, reset, control, setError } = useForm<PositionForm>({
         defaultValues: defaultValues,
         resolver: yupResolver(positionFormValidate)
-    });
+    }); 
+    const createPosition = useCreatePosition(setError);
 
     const onSubmit = (data: PositionForm) => {
         createPosition.mutate(data)

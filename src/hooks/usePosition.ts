@@ -8,6 +8,8 @@ import { Position } from '../types/Position';
 import { formatDateTime } from '../utils/format';
 import { useNavigate } from 'react-router-dom';
 import { PositionEditForm } from '../pages/position/EditPosition';
+import { defaultCatchErrorHandle, defaultOnSuccessHandle } from '../utils/helper';
+import { UseFormSetError } from 'react-hook-form';
 
 function createData({id, name, createdAt, updatedAt}: Position) {
     return {
@@ -59,110 +61,58 @@ const useGetPosition = () => {
   })
 }
 
-const useCreatePosition = () => {
+const useCreatePosition = (setError: UseFormSetError<any>) => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
   return useMutation({
     mutationFn: async (data: PositionForm) => {
       return await axiosClient.post(API_POSITION, data)
+        .then(response => response)
+        .catch(error => {
+          defaultCatchErrorHandle(error, setError)
+        }) 
     },
     onSuccess: (response: any) => {
-      if (response.data.message) {
-        queryClient.invalidateQueries('positions', { refetchInactive: true })
-        navigate('/positions')
-        enqueueSnackbar(response.data.message, {
-          autoHideDuration: 3000,
-          variant: 'success'
-        })  
-      }
-      else {
-          enqueueSnackbar(response.data.errorMesage, {
-            autoHideDuration: 3000,
-            variant: 'error'
-          }) 
-      }
-    },
-    onError: (error: any) => {
-      console.log(error)
-      enqueueSnackbar('Lỗi server.',
-        {
-          autoHideDuration: 3000,
-          variant: 'error'
-        })
+      defaultOnSuccessHandle(queryClient, navigate, response, 'positions', '/positions')
     }
-  }
-  )
+  })
 }
 
-const useUpdatePosition = () => {
+const useUpdatePosition = (setError: UseFormSetError<any>) => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
   return useMutation({
     mutationFn: async (data: PositionEditForm) => {
       return await axiosClient.put(pathToUrl(API_POSITION_WITH_ID, { positionId: data.id }), data)
+        .then(response => response)
+        .catch(error => {
+          defaultCatchErrorHandle(error, setError)
+        }) 
     },
     onSuccess: (response: any) => {
-      if (response.data.message) {
-        queryClient.invalidateQueries('positions', { refetchInactive: true })
-        navigate('/positions')
-        enqueueSnackbar(response.data.message, {
-          autoHideDuration: 3000,
-          variant: 'success'
-        })  
-      }
-      else {
-          enqueueSnackbar(response.data.errorMesage, {
-            autoHideDuration: 3000,
-            variant: 'error'
-          }) 
-      }
-    },
-    onError: (error: any) => {
-      console.log(error)
-      enqueueSnackbar('Lỗi server.',
-        {
-          autoHideDuration: 3000,
-          variant: 'error'
-        })
+      defaultOnSuccessHandle(queryClient, navigate, response, 'positions', '/positions')
     }
-  }
-  ) 
+  }) 
 }
 
 const useDeletePosition = () => {
   const queryClient = useQueryClient();
-
+  const navigate = useNavigate();
+  
   return useMutation({
     mutationFn: async (positionId: string) => {
       return await axiosClient.delete(pathToUrl(API_POSITION_WITH_ID, { positionId }))
+    .then(response => response)
+        .catch(error => {
+          defaultCatchErrorHandle(error)
+        }) 
     },
     onSuccess: (response: any) => {
-      if (response.data.message) {
-        queryClient.invalidateQueries('positions', { refetchInactive: true })
-        enqueueSnackbar(response.data.message, {
-          autoHideDuration: 3000,
-          variant: 'success'
-        })  
-      }
-      else {
-          enqueueSnackbar(response.data.errorMesage, {
-            autoHideDuration: 3000,
-            variant: 'error'
-          }) 
-      }
-    },
-    onError: (error: any) => {
-      console.log(error)
-      enqueueSnackbar('Lỗi server.',
-        {
-          autoHideDuration: 3000,
-          variant: 'error'
-        })
+      defaultOnSuccessHandle(queryClient, navigate, response, 'positions', '/positions')
     }
-  }
-  ) 
+  }) 
 }
 
 export {

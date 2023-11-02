@@ -23,12 +23,11 @@ const typeFormValidate: Yup.ObjectSchema<PositionEditForm> = yup.object({
 const EditPosition: React.FC = () => {
     const { state } = useLocation()
     const navigate = useNavigate()
-    const updatePosition = useUpdatePosition()
-
-    const { handleSubmit, reset, control } = useForm<PositionEditForm>({
+    const { handleSubmit, reset, control, setError} = useForm<PositionEditForm>({
         defaultValues: state.positionData,
         resolver: yupResolver(typeFormValidate)
     });
+    const updatePosition = useUpdatePosition(setError)
 
     const onSubmit = async (data: PositionEditForm) => {
         updatePosition.mutate(data);
