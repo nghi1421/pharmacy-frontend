@@ -1,6 +1,6 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
 import { defaultFetchBaseQuery } from './defaultFetchBaseQuery';
-import { MutationResponse } from '../../types/response.ts/MutationResponse';
+import { MutationResponse } from '../../types/response/MutationResponse';
 import { TypeByUseForm } from '../../pages/type-by-use/CreateType';
 
 export const typeByUseApi = createApi({

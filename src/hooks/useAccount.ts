@@ -4,6 +4,8 @@ import { API_USER } from '../utils/constants';
 import { useQuery } from 'react-query';
 import { formatDateTime } from '../utils/format';
 import { User } from '../types/User';
+import { DataResponse } from '../types/response/DataResponse';
+import { Query } from '../types/Query';
 
 function createData({
     id,
@@ -20,21 +22,31 @@ function createData({
     };
 }
 
-const useGetUsers = () => {
+const useGetUsers = (query: Query) => {
+  const queryParams = new URLSearchParams();
+  queryParams.set('page', query.page.toString())
+  queryParams.set('perPage', query.perPage.toString())
+  queryParams.set('orderBy', query.orderBy)
+  queryParams.set('orderDirection', query.orderDirection)
   return useQuery({
-    queryKey: ['users'],
+    queryKey: ['users', queryParams.toString()],
     queryFn: () => axiosClient
-      .get(API_USER)
-      .then((response) => {
+      .get(`${API_USER}?${queryParams.toString()}`)
+      .then((response): DataResponse | undefined => {
         if (response.data.message) {
-          return response.data.data.map((user: User) => createData(user))
+          return {
+            data: response.data.data.map((user: User) => createData(user)),
+            meta: response.data.meta
+          }
         }
         enqueueSnackbar(response.data.errorMessage, {
           autoHideDuration: 3000,
           variant: 'error'
         })
-        return []
-      })
+
+        return undefined
+      }),
+    enabled: !!queryParams.toString()
   })
 };
 

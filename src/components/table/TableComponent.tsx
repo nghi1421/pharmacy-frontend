@@ -10,6 +10,7 @@ import { Box,
    TableFooter,
    TableHead,
    TableRow,
+   TableSortLabel,
    Typography,
    styled,
   tableCellClasses
@@ -17,17 +18,25 @@ import { Box,
 import { Column } from '../../types/Column'
 import React from 'react'
 import EmptyImage from '../../assets/images/no-data.jpg'
+import { visuallyHidden } from '@mui/utils';
 
-interface TableProps<T> {
-  rows: T[]
+export interface QuerySort {
+  orderBy: string
+  orderDirection: string
+}
+
+interface TableProps {
+  rows: any[]
   columns: Column[]
   keyTable: string
+  query?: QuerySort
   action?: any
   hasAction?: boolean
   hasPagination ?: boolean
   page?: number
   totalPage?: number
-  actionChangePage?: (n: number) => any
+  actionChangePage?: (n: number) => void
+  actionSort?: (q: QuerySort) => void
 }
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -51,12 +60,25 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-const TableComponent: React.FC<TableProps<any>> =
-  ({ rows, keyTable, columns, action, hasAction, page, actionChangePage, totalPage, hasPagination }) => {
-  const handleChange = (_: any, value: number) => {
+const TableComponent: React.FC<TableProps> =
+  ({ rows, keyTable, columns, action, hasAction, page, actionChangePage, actionSort, totalPage, hasPagination, query }) => {
+    const handleChange = (_: any, value: number) => {
       if (actionChangePage)
         actionChangePage(value)
-  }; 
+    }; 
+    
+    const onSort = (column: Column) => {
+      let orderDirection = ''
+      if (query && query.orderBy === column.key) {
+        orderDirection = query.orderDirection === 'asc' ? 'desc' : 'asc'
+      }
+      else {
+        orderDirection = 'asc'
+      }
+      if (actionSort) {
+        actionSort({ orderBy: column.key, orderDirection });
+      }
+    } 
   
   return (
       <TableContainer component={Paper}>
@@ -69,7 +91,24 @@ const TableComponent: React.FC<TableProps<any>> =
                                 align="left"
                                 key={`header-cell-${keyTable}-${index}`}
                               >
-                                {column.value}
+                                {
+                                  query && column.sortable
+                                ?
+                                  <TableSortLabel
+                                    active={query.orderBy === column.key}
+                                    direction={query.orderDirection}
+                                    onClick={() => { onSort(column)}}
+                                  >
+                                    {column.value}
+                                    {query.orderBy === column.key ? (
+                                      <Box component="span" sx={visuallyHidden}>
+                                        {query.orderDirection === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                                      </Box>
+                                    ) : null}
+                                  </TableSortLabel>
+                                :
+                                    column.value
+                                }
                               </StyledTableCell>
                             ))}
                         {
