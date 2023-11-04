@@ -4,11 +4,11 @@ import FilterListIcon from '@mui/icons-material/FilterList';
 import TableComponent from "../../components/table/TableComponent";
 import { useGetUsers } from "../../hooks/useAccount";
 import { useSearchQuery } from '../../hooks/useSearchQuery'
-import React from "react";
+import React, { useState } from "react";
 import { FormInputMultiCheckbox } from "../../components/form/FormInputMultiCheckbox";
 import { useSearchableList } from "../../hooks/useSearchableList";
 import { useFilter } from "../../hooks/useFilter";
-import { GET_SEARCHABLE_KEY, GET_SEARCHABLE_LIST } from "../../utils/constants";
+import { GET_ARRAY_OF_KEY, GET_SEARCHABLE_KEY, GET_SEARCHABLE_LIST } from "../../utils/constants";
 import { getSearchColums, warningSearchField } from "../../utils/helper";
 
 const columnsList = [
@@ -19,13 +19,22 @@ const columnsList = [
     { key: 'updatedAt', value: 'Cập nhật', sortable: true, searchable: false },
 ]
 const UserPage: React.FC<{}> = () => {
-    const { query, actionChangePage, actionSort } = useSearchQuery()
+    const { query, actionChangePage, actionSort, actionSearch } =
+        useSearchQuery(getSearchColums(columnsList, GET_ARRAY_OF_KEY))
+    const [time, setTime] = useState<number>(0)
     const { data, isLoading } = useGetUsers(query)
     const [columns, watchSearchList, control, setValue ] = useSearchableList(columnsList)
     const [filterEl, openSetting, onOpenFilter, onCloseFilter] = useFilter()
 
     const handleSearchData = (event: React.ChangeEvent<HTMLInputElement>) => {
-        console.log(event.target.value)
+        clearTimeout(time);
+            setTime(setTimeout(() => {
+                actionSearch({
+                    searchTerm: event.target.value as string,
+                    searchColumns: watchSearchList
+                })
+            }, 500)
+        )
     }
     return (
         <Paper>
@@ -55,14 +64,14 @@ const UserPage: React.FC<{}> = () => {
                                     onChange={handleSearchData}
                                     onClick={() =>
                                         {
-                                            if (getSearchColums(columns, GET_SEARCHABLE_KEY).length === 0) {
+                                            if (watchSearchList.length === 0) {
                                                 warningSearchField()
                                             }
                                         }
                                     }
                                     sx={{ width: '40%' }}
                                     label="Tìm kiếm"
-                                    disabled={getSearchColums(columns, GET_SEARCHABLE_KEY).length === 0}
+                                    disabled={watchSearchList.length === 0}
                                     placeholder="Nhập thông tin tìm kiếm"
                                     InputProps={{
                                         endAdornment: (

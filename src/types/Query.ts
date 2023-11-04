@@ -4,4 +4,6 @@ export interface Query{
     perPage: number
     orderBy: string
     orderDirection: 'asc' | 'desc'
+    searchColumns: string[]
+    searchTerm: string
 }
