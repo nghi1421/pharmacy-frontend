@@ -22,7 +22,7 @@ export interface QuerySort {
 }
 
 interface TableProps {
-  rows: any[]
+  rows: any[] | undefined
   columns: Column[]
   isLoading: boolean
   keyTable: string
@@ -83,14 +83,16 @@ const TableComponent: React.FC<TableProps> = ({
                   <CircularProgress />
               </Box> 
             :
-              rows.length === 0
+              rows && rows.length === 0
               ?
                 <TableBodyEmpty
                   columns={columns} />
               : 
               <React.Fragment>
                 <TableBody>
-                      {rows.map((row, rowIndex) => (
+                  {
+                    rows ?
+                    rows.map((row, rowIndex) => (
                       <StyledTableRow
                           key={`row-${keyTable}-${rowIndex}`}
                           sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
@@ -105,7 +107,10 @@ const TableComponent: React.FC<TableProps> = ({
                           {hasAction ? action(row) : ''}
                           
                       </StyledTableRow>
-                      ))}
+                    ))
+                    :
+                    <></>
+                  }
                     </TableBody>
                     {
                       hasPagination 

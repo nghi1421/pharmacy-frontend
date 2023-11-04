@@ -1,4 +1,4 @@
-import { Box, CircularProgress, Paper, Typography } from "@mui/material";
+import { Paper, Typography } from "@mui/material";
 import TableComponent from "../../components/table/TableComponent";
 import { useGetUsers } from "../../hooks/useAccount";
 import { useSearchQuery } from '../../hooks/useSearchQuery'
@@ -11,7 +11,7 @@ import { TableExtension } from "../../components/table/TableExtension";
 const columnsList = [
     { key: 'id', value: 'Mã tài khoản', sortable: true, searchable: true, enableSearch: true },
     { key: 'username', value: 'Tên đăng nhập', sortable: true, searchable: true, enableSearch: true },
-    { key: 'role', value: 'Quyền', sortable: true, searchable: false,},
+    { key: 'role', value: 'Quyền', sortable: false, searchable: false,},
     { key: 'createdAt', value: 'Thời gian tạo', sortable: true, searchable: false },
     { key: 'updatedAt', value: 'Cập nhật', sortable: true, searchable: false },
 ]
@@ -30,38 +30,35 @@ const UserPage: React.FC<{}> = () => {
             >
                 Quản lí tài khoản
             </Typography>
-            {
-                data
-                    ?
-                        <React.Fragment>
-                            <TableExtension
-                                setValue={setValue}
-                                initValueSearch={query.searchTerm}
-                                initSearchColumns={getSearchColums(columns, GET_SEARCHABLE_KEY)}
-                                searchColumns={getSearchColums(columnsList, GET_SEARCHABLE_LIST)}
-                                control={control}
-                                actionSearch={actionSearch}
-                                watchSearchList={watchSearchList}
-                            >
+            
+            <React.Fragment>
+                <TableExtension
+                    setValue={setValue}
+                    initValueSearch={query.searchTerm}
+                    initSearchColumns={getSearchColums(columns, GET_SEARCHABLE_KEY)}
+                    searchColumns={getSearchColums(columnsList, GET_SEARCHABLE_LIST)}
+                    control={control}
+                    actionSearch={actionSearch}
+                    watchSearchList={watchSearchList}
+                >
 
-                            </TableExtension>
+                </TableExtension>
 
-                            <TableComponent
-                                isLoading={isLoading}
-                                rows={data.data}
-                                keyTable='user-table'
-                                columns={columns}
-                                hasPagination={true}
-                                page={query.page}
-                                query={{ orderBy: query.orderBy, orderDirection: query.orderDirection }}
-                                actionSort={actionSort}
-                                actionChangePage={actionChangePage}
-                                totalPage={data.meta.totalPage}
-                            />
-                        </React.Fragment>
-                    :
-                    <>No response</>
-            }
+                <TableComponent
+                    isLoading={isLoading}
+                    rows={data ? data.data : undefined}
+                    keyTable='user-table'
+                    columns={columns}
+                    hasPagination={true}
+                    page={query.page}
+                    query={{ orderBy: query.orderBy, orderDirection: query.orderDirection }}
+                    actionSort={actionSort}
+                    actionChangePage={actionChangePage}
+                    totalPage={data ? data.meta.totalPage : undefined}
+                />
+            </React.Fragment>
+        
+            
             
         </Paper>
     )
