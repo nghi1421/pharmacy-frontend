@@ -3,7 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import { Query } from "../types/Query";
 import { QuerySort } from "../components/table/TableComponent";
 
-interface QuerySearch {
+export interface QuerySearch {
     searchTerm: string
     searchColumns: string[]
 }
