@@ -1,11 +1,12 @@
 import { useState } from "react";
 
+
 export const useFilter = (): any[] => {
     const [filterEl, setFilterEl] = useState<HTMLButtonElement | null>(null);
 
     const openSetting = Boolean(filterEl);
 
-    const onClickFilter = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const onOpenFilter = (e: React.MouseEvent<HTMLButtonElement>) => {
         setFilterEl(e.currentTarget);
     };
 
@@ -13,5 +14,5 @@ export const useFilter = (): any[] => {
         setFilterEl(null);
     };
 
-    return [filterEl, openSetting, onClickFilter, onCloseFilter]
+    return [filterEl, openSetting, onOpenFilter, onCloseFilter]
 }

@@ -8,6 +8,7 @@ export interface FormInputListProps {
   control: any;
   label: string;
   setValue?: any;
+  initValue?: any[];
   list: Item[];
   placeholder: string;
 }

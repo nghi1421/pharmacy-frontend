@@ -14,8 +14,9 @@ export const FormInputMultiCheckbox: React.FC<FormInputListProps> = ({
     setValue,
     label,
     list,
+    initValue
 }) => {
-    const [selectedItems, setSelectedItems] = useState<any>([]);
+    const [selectedItems, setSelectedItems] = useState<any>(initValue);
         
     const handleSelect = (value: any) => {
         const isPresent = selectedItems.indexOf(value);
@@ -40,7 +41,7 @@ export const FormInputMultiCheckbox: React.FC<FormInputListProps> = ({
                     control={
                         <Controller
                             name={name}
-                            render={({ field }) => {
+                            render={({ field } ) => {
                                 return (
                                     <Checkbox
                                         checked={selectedItems.includes(option.value)}

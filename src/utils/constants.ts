@@ -41,3 +41,7 @@ export const genders: Item[] = [
         label: 'Khác'
     }
 ]
+
+export const GET_ARRAY_OF_KEY = 1
+export const GET_SEARCHABLE_LIST = 2
+export const GET_SEARCHABLE_KEY = 3

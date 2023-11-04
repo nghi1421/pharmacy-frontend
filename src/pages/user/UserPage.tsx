@@ -2,32 +2,31 @@ import { Box, CircularProgress, IconButton, InputAdornment, Menu, Paper, TextFie
 import SearchIcon from '@mui/icons-material/Search';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import TableComponent from "../../components/table/TableComponent";
-import { Column } from "../../types/Column";
 import { useGetUsers } from "../../hooks/useAccount";
 import { useSearchQuery } from '../../hooks/useSearchQuery'
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { FormInputMultiCheckbox } from "../../components/form/FormInputMultiCheckbox";
-import { Item, useSearchableList } from "../../hooks/useSearchableList";
+import { useSearchableList } from "../../hooks/useSearchableList";
 import { useFilter } from "../../hooks/useFilter";
+import { GET_SEARCHABLE_KEY, GET_SEARCHABLE_LIST } from "../../utils/constants";
+import { getSearchColums, warningSearchField } from "../../utils/helper";
 
+const columnsList = [
+    { key: 'id', value: 'Mã tài khoản', sortable: true, searchable: true, enableSearch: true },
+    { key: 'username', value: 'Tên đăng nhập', sortable: true, searchable: true, enableSearch: true },
+    { key: 'role', value: 'Quyền', sortable: true, searchable: true, enableSearch: true },
+    { key: 'createdAt', value: 'Thời gian tạo', sortable: true, searchable: false },
+    { key: 'updatedAt', value: 'Cập nhật', sortable: true, searchable: false },
+]
 const UserPage: React.FC<{}> = () => {
     const { query, actionChangePage, actionSort } = useSearchQuery()
     const { data, isLoading } = useGetUsers(query)
-    const [columns, setColumns] = useState<Column[]>([
-        { key: 'id', value: 'Mã tài khoản', sortable: true, searchable: true, enableSearch: true },
-        { key: 'username', value: 'Tên đăng nhập', sortable: true, searchable: true, enableSearch: true },
-        { key: 'role', value: 'Quyền', sortable: true, searchable: true, enableSearch: true },
-        { key: 'createdAt', value: 'Thời gian tạo', sortable: true, searchable: false },
-        { key: 'updatedAt', value: 'Cập nhật', sortable: true, searchable: false },
-    ]);
-    const [control, searchList, setValue ] = useSearchableList()
+    const [columns, watchSearchList, control, setValue ] = useSearchableList(columnsList)
+    const [filterEl, openSetting, onOpenFilter, onCloseFilter] = useFilter()
 
-    useEffect(() => {
-        console.log('Changing here')
-    }, [searchList])
-
-    const [filterEl, openSetting, onClickFilter, onCloseFilter] = useFilter()
-
+    const handleSearchData = (event: React.ChangeEvent<HTMLInputElement>) => {
+        console.log(event.target.value)
+    }
     return (
         <Paper>
             <Typography
@@ -53,8 +52,17 @@ const UserPage: React.FC<{}> = () => {
                         <React.Fragment>
                             <Paper sx={{ px: 3, py: 1, w: 200, display: 'flex', gap: 2 }}>
                                 <TextField
+                                    onChange={handleSearchData}
+                                    onClick={() =>
+                                        {
+                                            if (getSearchColums(columns, GET_SEARCHABLE_KEY).length === 0) {
+                                                warningSearchField()
+                                            }
+                                        }
+                                    }
                                     sx={{ width: '40%' }}
                                     label="Tìm kiếm"
+                                    disabled={getSearchColums(columns, GET_SEARCHABLE_KEY).length === 0}
                                     placeholder="Nhập thông tin tìm kiếm"
                                     InputProps={{
                                         endAdornment: (
@@ -66,7 +74,7 @@ const UserPage: React.FC<{}> = () => {
                                         )
                                     }}
                                 />
-                                <IconButton onClick={onClickFilter}>
+                                <IconButton onClick={onOpenFilter}>
                                     <FilterListIcon />
                                     <Typography>
                                         Bộ lọc
@@ -83,18 +91,13 @@ const UserPage: React.FC<{}> = () => {
                                 >
                                     <Box sx={{ px:3, py:2 }}>
                                         <FormInputMultiCheckbox
+                                            initValue={getSearchColums(columns, GET_SEARCHABLE_KEY)}
                                             name='searchableList'
                                             label='Tìm kiếm theo'
                                             placeholder="x"
                                             setValue={setValue}
                                             control={control}
-                                            list={columns.reduce((filtered, column: Column) => {
-                                                    if (column && column.searchable) {
-                                                        filtered.push({ value: column.key, label: column.value});
-                                                    }
-                                                    return filtered;
-                                                }, [] as Item[]
-                                            )}
+                                            list={getSearchColums(columnsList, GET_SEARCHABLE_LIST)}
                                         />
                                     </Box>
                                 </Menu>

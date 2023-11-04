@@ -2,6 +2,14 @@ import { enqueueSnackbar } from "notistack"
 import { UseFormSetError } from "react-hook-form";
 import { QueryClient } from "react-query";
 import { Query } from "../types/Query";
+import { Column } from "../types/Column";
+import { Item } from "../types/props/FormInputListProps";
+
+export enum SearchColumnsOption {
+    GET_ARRAY_OF_KEY = 1,
+    GET_SEARCHABLE_LIST = 2,
+    GET_SEARCHABLE_KEY = 3
+}
 
 export const defaultOnSuccessHandle = (
     queryClient: QueryClient,
@@ -66,4 +74,50 @@ export const updateSearchParams = (query: Query): URLSearchParams => {
     queryParams.set('orderDirection', query.orderDirection)
 
     return queryParams;
+}
+
+
+export const getSearchColums = (columns: Column[], option: SearchColumnsOption = 1): any[] => {
+    switch (option) {
+        case SearchColumnsOption.GET_ARRAY_OF_KEY: {
+            return columns.reduce((filtered, column: Column) => {
+                    if (column && column.searchable) {
+                        filtered.push(column.key);
+                    }
+                    return filtered;
+                }, [] as string[]
+            ) 
+        }
+        
+        case SearchColumnsOption.GET_SEARCHABLE_LIST: {
+            return columns.reduce((filtered, column: Column) => {
+                    if (column && column.searchable) {
+                        filtered.push({ value: column.key, label: column.value});
+                    }
+                    return filtered;
+                }, [] as Item[]
+            )
+        }
+        
+        case SearchColumnsOption.GET_SEARCHABLE_KEY: {
+            return columns.reduce((filtered, column: Column) => {
+                    if (column && column.searchable && column.enableSearch) {
+                        filtered.push(column.key);
+                    }
+                    return filtered;
+                }, [] as string[]
+            )
+        }
+        
+        default: {
+            return []
+        }
+    }
+}
+
+export const warningSearchField = () => {
+    enqueueSnackbar('Vui lòng chọn cột tìm kiếm để thực hiện tìm kiếm.', {
+        autoHideDuration: 3000,
+        variant: 'warning'
+    })  
 }
