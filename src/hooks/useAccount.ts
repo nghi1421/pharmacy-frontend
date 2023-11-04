@@ -4,7 +4,7 @@ import { API_USER } from '../utils/constants';
 import { useQuery } from 'react-query';
 import { formatDateTime } from '../utils/format';
 import { User } from '../types/User';
-import { DataResponse } from '../types/response/DataResponse';
+import { DataMetaResponse } from '../types/response/DataResponse';
 import { Query } from '../types/Query';
 
 function createData({
@@ -32,7 +32,7 @@ const useGetUsers = (query: Query) => {
     queryKey: ['users', queryParams.toString()],
     queryFn: () => axiosClient
       .get(`${API_USER}?${queryParams.toString()}`)
-      .then((response): DataResponse | undefined => {
+      .then((response): DataMetaResponse | undefined => {
         if (response.data.message) {
           return {
             data: response.data.data.map((user: User) => createData(user)),

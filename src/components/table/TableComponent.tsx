@@ -22,7 +22,7 @@ import { visuallyHidden } from '@mui/utils';
 
 export interface QuerySort {
   orderBy: string
-  orderDirection: string
+  orderDirection: 'asc' | 'desc'
 }
 
 interface TableProps {
@@ -68,12 +68,9 @@ const TableComponent: React.FC<TableProps> =
     }; 
     
     const onSort = (column: Column) => {
-      let orderDirection = ''
+      let orderDirection: 'asc' | 'desc' = 'asc'
       if (query && query.orderBy === column.key) {
         orderDirection = query.orderDirection === 'asc' ? 'desc' : 'asc'
-      }
-      else {
-        orderDirection = 'asc'
       }
       if (actionSort) {
         actionSort({ orderBy: column.key, orderDirection });
@@ -96,7 +93,7 @@ const TableComponent: React.FC<TableProps> =
                                 ?
                                   <TableSortLabel
                                     active={query.orderBy === column.key}
-                                    direction={query.orderDirection}
+                                    direction={ query.orderDirection }
                                     onClick={() => { onSort(column)}}
                                   >
                                     {column.value}

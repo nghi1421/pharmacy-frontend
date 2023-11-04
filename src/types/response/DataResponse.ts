@@ -1,4 +1,4 @@
-export interface Data{
+export interface DataResponse{
     message?: string;
     errorMessage?: string;
     data: any[];
@@ -11,7 +11,7 @@ export interface Meta {
     totalPage: number
 }
 
-export interface DataResponse {
-    data: Data;
+export interface DataMetaResponse {
+    data: any[];
     meta: Meta
 }
