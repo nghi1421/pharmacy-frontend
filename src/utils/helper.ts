@@ -1,6 +1,7 @@
 import { enqueueSnackbar } from "notistack"
 import { UseFormSetError } from "react-hook-form";
 import { QueryClient } from "react-query";
+import { Query } from "../types/Query";
 
 export const defaultOnSuccessHandle = (
     queryClient: QueryClient,
@@ -55,4 +56,14 @@ export const defaultCatchErrorHandle = (
         }
          
     }
+}
+
+export const updateSearchParams = (query: Query): URLSearchParams => {
+    const queryParams = new URLSearchParams();
+    queryParams.set('page', query.page.toString())
+    queryParams.set('perPage', query.perPage.toString())
+    queryParams.set('orderBy', query.orderBy)
+    queryParams.set('orderDirection', query.orderDirection)
+
+    return queryParams;
 }

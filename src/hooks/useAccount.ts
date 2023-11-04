@@ -6,6 +6,7 @@ import { formatDateTime } from '../utils/format';
 import { User } from '../types/User';
 import { DataMetaResponse } from '../types/response/DataResponse';
 import { Query } from '../types/Query';
+import { updateSearchParams } from '../utils/helper';
 
 function createData({
     id,
@@ -23,11 +24,7 @@ function createData({
 }
 
 const useGetUsers = (query: Query) => {
-  const queryParams = new URLSearchParams();
-  queryParams.set('page', query.page.toString())
-  queryParams.set('perPage', query.perPage.toString())
-  queryParams.set('orderBy', query.orderBy)
-  queryParams.set('orderDirection', query.orderDirection)
+  const queryParams = updateSearchParams(query)
   return useQuery({
     queryKey: ['users', queryParams.toString()],
     queryFn: () => axiosClient

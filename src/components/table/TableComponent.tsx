@@ -15,10 +15,12 @@ import { Box,
    styled,
   tableCellClasses
 } from "@mui/material"
+import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 import { Column } from '../../types/Column'
 import React from 'react'
 import EmptyImage from '../../assets/images/no-data.jpg'
 import { visuallyHidden } from '@mui/utils';
+import { grey } from "@mui/material/colors";
 
 export interface QuerySort {
   orderBy: string
@@ -96,6 +98,9 @@ const TableComponent: React.FC<TableProps> =
                                     direction={ query.orderDirection }
                                     onClick={() => { onSort(column)}}
                                   >
+                                    {
+                                      column.enableSearch ? <ManageSearchIcon sx={{ color: grey[700] }}/> : <></>
+                                    }
                                     {column.value}
                                     {query.orderBy === column.key ? (
                                       <Box component="span" sx={visuallyHidden}>
