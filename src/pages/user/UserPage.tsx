@@ -1,4 +1,4 @@
-import { Box, CircularProgress,Menu, Paper, Typography } from "@mui/material";
+import { Box, CircularProgress, Paper, Typography } from "@mui/material";
 import TableComponent from "../../components/table/TableComponent";
 import { useGetUsers } from "../../hooks/useAccount";
 import { useSearchQuery } from '../../hooks/useSearchQuery'
@@ -31,17 +31,7 @@ const UserPage: React.FC<{}> = () => {
                 Quản lí tài khoản
             </Typography>
             {
-                isLoading
-                ?   <Box sx={{
-                        display: 'flex',
-                        backgroundColor: 'white',
-                        p: 4,
-                        justifyContent: 'center'
-                    }}>
-                        <CircularProgress />
-                    </Box> 
-                :
-                    data
+                data
                     ?
                         <React.Fragment>
                             <TableExtension
@@ -57,6 +47,7 @@ const UserPage: React.FC<{}> = () => {
                             </TableExtension>
 
                             <TableComponent
+                                isLoading={isLoading}
                                 rows={data.data}
                                 keyTable='user-table'
                                 columns={columns}
