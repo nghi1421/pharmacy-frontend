@@ -19,6 +19,7 @@ const ExportPage: React.FC<{}> = () => {
     let { data, isLoading } = useGetExports()
     const navigate = useNavigate()
     const getStaff = useGetExport()
+    
     const clickAdd = () => {
         navigate('/exports/create')
     }

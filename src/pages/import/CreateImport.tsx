@@ -13,6 +13,10 @@ import { useGetDataDrugCategories } from "../../hooks/useDrugCategory";
 import TableAction from "../../components/table/TableAction";
 import TableSelectDrugCategory from "../../components/table/TableSelectDrugCategory";
 
+interface ColumnDrugCategory {
+    key: string;
+    value: string;
+}
 
 export interface ImportForm {
     provider: any;
@@ -22,7 +26,7 @@ export interface ImportForm {
     importDetails: []
 }
 
-const columns: Column[] = [
+const columns: ColumnDrugCategory[] = [
     { key: 'id', value: 'Mã thuốc'},
     { key: 'name', value: 'Tên thuốc' },
     { key: 'unit', value: 'Đơn vị nhập' },

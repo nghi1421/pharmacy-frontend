@@ -6,12 +6,15 @@ import { useForm } from "react-hook-form";
 import { getStaff } from "../../store/auth";
 import { FormInputText } from "../../components/form/FormInputText";
 import { FormInputDate } from "../../components/form/FormInputDate";
-import { Column } from "../../types/Column";
 import TableAction from "../../components/table/TableAction";
-import { useGetCustomers } from "../../hooks/useCustomer";
+import { useGetCustomers, useGetDataCustomers } from "../../hooks/useCustomer";
 import TableExportSelectDrug from "../../components/table/TableExportSelectDrug";
 import { useGetDataDrugCategories } from "../../hooks/useDrugCategory";
 
+interface ColumnDrugCategory {
+    key: string;
+    value: string;
+}
 
 export interface ImportForm {
     customer: any;
@@ -21,7 +24,7 @@ export interface ImportForm {
     exportDetails: []
 }
 
-const columns: Column[] = [
+const columns: ColumnDrugCategory[] = [
     { key: 'id', value: 'Mã thuốc'},
     { key: 'name', value: 'Tên thuốc' },
     { key: 'formatedPrice', value: 'Đơn giá bán' },
@@ -37,7 +40,7 @@ const CreateExport: React.FC = () => {
     const [drugs, setDrugs] = useState<any[]>([])
     const [selectedDrugs, setSelectedDrugs] = useState<any[]>([])
     const [pay, setPay] = useState<number[]>([0 , 0, 0])
-    const { data: customer, isLoading: customerLoading } = useGetCustomers(2)
+    const { data: customer, isLoading: customerLoading } = useGetDataCustomers()
     const { handleSubmit, control, watch } = useForm<ImportForm>({
     });
 
