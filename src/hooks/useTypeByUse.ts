@@ -8,8 +8,10 @@ import { TypeByUse } from '../types/TypeByUse';
 import { formatDateTime } from '../utils/format';
 import { useNavigate } from 'react-router-dom';
 import { TypeByUseEditForm } from '../pages/type-by-use/EditType';
-import { defaultCatchErrorHandle, defaultOnSuccessHandle } from '../utils/helper';
+import { defaultCatchErrorHandle, defaultOnSuccessHandle, updateSearchParams } from '../utils/helper';
 import { UseFormSetError } from 'react-hook-form';
+import { Query } from '../types/Query';
+import { DataMetaResponse } from '../types/response/DataResponse';
 
 function createData({id, name, detail, createdAt, updatedAt}: TypeByUse) {
     return {
@@ -19,21 +21,27 @@ function createData({id, name, detail, createdAt, updatedAt}: TypeByUse) {
     };
 }
 
-const useGetTypeByUses = () => {
+const useGetTypeByUses = (query: Query) => {
+  const queryParams = updateSearchParams(query)
+
   return useQuery({
-    queryKey: ['type-by-uses'],
+    queryKey: ['type-by-uses', queryParams.toString()],
     queryFn: () => axiosClient
-      .get(API_TYPE_BY_USE)
-      .then((response) => {
+      .get(`${API_TYPE_BY_USE}?${queryParams.toString()}`)
+      .then((response): DataMetaResponse | undefined => {
         if (response.data.message) {
-          return response.data.data.map((type: TypeByUse) => createData(type))
+          return {
+            data: response.data.data.map((type: TypeByUse) => createData(type)),
+            meta: response.data.meta
+          }
         }
         enqueueSnackbar(response.data.errorMessage, {
           autoHideDuration: 3000,
           variant: 'error'
         })
-        return []
-      })
+        return undefined
+      }),
+    enabled: !!queryParams.toString()
   })
 };
 

@@ -1,28 +1,36 @@
-import { Box, Button, CircularProgress, Divider, IconButton, Paper, TableCell, Typography } from "@mui/material";
+import { Box, IconButton, Paper, TableCell } from "@mui/material";
 import TableComponent from "../../components/table/TableComponent";
 import { Column } from "../../types/Column";
-import { Add } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import CreateIcon from '@mui/icons-material/Create';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useDeleteTypeByUse, useGetTypeByUse, useGetTypeByUses } from "../../hooks/useTypeByUse";
 import ConfirmDialog from "../../components/ConfirmDialog";
 import { useConfirmDialog } from "../../hooks/useConfirmDialog";
+import { useSearchQuery } from "../../hooks/useSearchQuery";
+import { getSearchColums } from "../../utils/helper";
+import { GET_ARRAY_OF_KEY, GET_SEARCHABLE_KEY, GET_SEARCHABLE_LIST } from "../../utils/constants";
+import { useSearchableList } from "../../hooks/useSearchableList";
+import { TableExtension } from "../../components/table/TableExtension";
+import { PageHeader } from "../../components/PageHeader";
 
-const columns: Column[] = [
-    { key: 'id', value: 'Mã chức vụ'},
-    { key: 'name', value: 'Tên công dụng' },
-    { key: 'detail', value: 'Chi tiết' },
-    { key: 'createdAt', value: 'Thời gian tạo'},
-    { key: 'updatedAt', value: 'Cập nhật'},
+const columnsList: Column[] = [
+    { key: 'id', value: 'Mã chức vụ', sortable: true, searchable: true, enableSearch: true},
+    { key: 'name', value: 'Tên công dụng' , sortable: true, searchable: true, enableSearch: false},
+    { key: 'detail', value: 'Chi tiết' , sortable: true, searchable: true, enableSearch: false},
+    { key: 'createdAt', value: 'Thời gian tạo', sortable: true, searchable: false},
+    { key: 'updatedAt', value: 'Cập nhật', sortable: true, searchable: false},
 ]
 
 const TypeByUsePage: React.FC<{}> = () => {
-    const { data, isLoading } = useGetTypeByUses()
     const navigate = useNavigate()
     const getTypeByUse = useGetTypeByUse()
     const deleteTypeByUse = useDeleteTypeByUse()
     const [openConfirmDialog, props] = useConfirmDialog(deleteTypeByUse.mutate)
+    const { query, actionChangePage, actionSort, actionSearch, updateQueryParams } =
+        useSearchQuery(getSearchColums(columnsList, GET_ARRAY_OF_KEY))
+    const { data, isLoading } = useGetTypeByUses(query)
+    const [columns, watchSearchList, control, setValue] = useSearchableList(columnsList, updateQueryParams)
     
     const clickAdd = () => {
         navigate('/type-by-uses/create')
@@ -34,80 +42,54 @@ const TypeByUsePage: React.FC<{}> = () => {
                 title="Bạn có thật sự muốn xóa công dụng?"
                 { ...props }
             />
-            <Box sx={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'baseline',
-                p: 1,
-                m: 1,
-                bgcolor: 'background.paper',
-                borderRadius: 1,
-            }}
-            >
-                <Typography
-                    variant="h4"
-                    fontWeight='500'
-                    sx={{ px:3, py: 2 }}
-                >
-                    Quản lí phân loại công dụng thuốc
-                </Typography>
-                <Button
-                    variant="contained"
-                    size="small"
-                    onClick={clickAdd}
-                >
-                    <Add></Add>
-                    <Typography
-                        color="inherit"
-                        fontSize='16px'
-                        marginLeft='4px'
-                    >
-                        Thêm mới
-                    </Typography>
-                </Button>
-            </Box>
-            
-            <Divider></Divider>
-            {
-                isLoading
-                ?   <Box sx={{
-                        display: 'flex',
-                        backgroundColor: 'white',
-                        p: 4,
-                        justifyContent: 'center'
-                    }}>
-                        <CircularProgress />
-                    </Box> 
-                :
-                    <TableComponent
-                        rows={data}
-                        keyTable='type-by-use-table'
-                        columns={columns}
-                        hasAction={true}
-                        action={(rowValue: any) => 
-                                <TableCell
-                                    align="left"
-                                    key={`row-action-type-by-use-table-${rowValue.id}`}>
-                                    <Box sx={{ display: 'flex' }}>
-                                    <IconButton
-                                        color='success'
-                                        onClick={() => { getTypeByUse.mutate(rowValue.id) }}
-                                    >
-                                        <CreateIcon></CreateIcon>
-                                    </IconButton>
-                                    <IconButton
-                                        color='error'
-                                        onClick={() => { openConfirmDialog(rowValue.id) }}
-                                    >
-                                        <DeleteIcon></DeleteIcon>
-                                    </IconButton>
-                                </Box>
-                            </TableCell>
-                        }
-                    >
+            <PageHeader
+                title='Quản lí phân loại công dụng'
+                clickAdd={clickAdd}
+            />
 
-                    </TableComponent>
-            }
+            <TableExtension
+                setValue={setValue}
+                initValueSearch={query.searchTerm}
+                initSearchColumns={getSearchColums(columns, GET_SEARCHABLE_KEY)}
+                searchColumns={getSearchColums(columnsList, GET_SEARCHABLE_LIST)}
+                control={control}
+                actionSearch={actionSearch}
+                watchSearchList={watchSearchList}
+            />
+
+            <TableComponent
+                isLoading={isLoading}
+                rows={data ? data.data : undefined}
+                keyTable='type-by-uses-table'
+                columns={columns}
+                hasPagination={true}
+                page={query.page}
+                query={{ orderBy: query.orderBy, orderDirection: query.orderDirection }}
+                actionSort={actionSort}
+                actionChangePage={actionChangePage}
+                totalPage={data ? data.meta.totalPage : undefined}
+                hasAction={true}
+                action={(rowValue: any) => 
+                        <TableCell
+                            align="left"
+                            key={`row-action-type-by-use-table-${rowValue.id}`}>
+                            <Box sx={{ display: 'flex' }}>
+                            <IconButton
+                                color='success'
+                                onClick={() => { getTypeByUse.mutate(rowValue.id) }}
+                            >
+                                <CreateIcon></CreateIcon>
+                            </IconButton>
+                            <IconButton
+                                color='error'
+                                onClick={() => { openConfirmDialog(rowValue.id) }}
+                            >
+                                <DeleteIcon></DeleteIcon>
+                            </IconButton>
+                        </Box>
+                    </TableCell>
+                }
+            />
         </Paper>
     )
     

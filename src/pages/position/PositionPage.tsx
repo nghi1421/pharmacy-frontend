@@ -59,7 +59,7 @@ const PositionPage: React.FC<{}> = () => {
             <TableComponent
                 isLoading={isLoading}
                 rows={data ? data.data : undefined}
-                keyTable='staff-table'
+                keyTable='position-table'
                 columns={columns}
                 hasPagination={true}
                 page={query.page}
