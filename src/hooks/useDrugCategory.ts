@@ -8,8 +8,10 @@ import { useNavigate } from 'react-router-dom';
 import { pathToUrl } from '../utils/path';
 import { DrugCategoryEditForm } from '../pages/drug-category/EditDrugCategory';
 import { DrugCategoryForm } from '../pages/drug-category/CreateDrugCategory';
-import { defaultCatchErrorHandle, defaultOnSuccessHandle } from '../utils/helper';
+import { defaultCatchErrorHandle, defaultOnSuccessHandle, updateSearchParams } from '../utils/helper';
 import { UseFormSetError } from 'react-hook-form';
+import { Query } from '../types/Query';
+import { DataMetaResponse } from '../types/response/DataResponse';
 
 function createData({id, name, price, form, unit, vat, type, minimalUnit}: DrugCategory) {
     return {
@@ -21,21 +23,27 @@ function createData({id, name, price, form, unit, vat, type, minimalUnit}: DrugC
     };
 }
 
-const useGetDrugCategories = () => {
+const useGetDrugCategories = (query: Query) => {
+  const queryParams = updateSearchParams(query)
+
   return useQuery({
-    queryKey: ['drug-categories'],
+    queryKey: ['drug-categories', queryParams.toString()],
     queryFn: () => axiosClient
-      .get(API_DRUG_CATEGORY)
-      .then((response) => {
+      .get(`${API_DRUG_CATEGORY}?${queryParams.toString()}`)
+      .then((response): DataMetaResponse | undefined => {
         if (response.data.message) {
-          return response.data.data.map((drugCategory: DrugCategory) => createData(drugCategory))
+          return {
+            data: response.data.data.map((drugCategory: DrugCategory) => createData(drugCategory)),
+            meta: response.data.meta
+          }
         }
         enqueueSnackbar(response.data.errorMessage, {
           autoHideDuration: 3000,
           variant: 'error'
         })
-        return []
-      })
+        return undefined
+      }),
+    enabled: !!queryParams.toString()
   })
 };
 
