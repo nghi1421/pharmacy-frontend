@@ -1,19 +1,18 @@
-import { Box, Button, IconButton, Paper, TableCell, Typography } from "@mui/material";
+import { Box, IconButton, Paper, TableCell } from "@mui/material";
 import TableComponent from "../../components/table/TableComponent";
 import { Column } from "../../types/Column";
-import { Add } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import CreateIcon from '@mui/icons-material/Create';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useDeleteCustomer, useGetCustomer, useGetCustomers } from "../../hooks/useCustomer";
 import { useConfirmDialog } from "../../hooks/useConfirmDialog";
 import ConfirmDialog from "../../components/ConfirmDialog";
-import { green } from "@mui/material/colors";
 import { TableExtension } from "../../components/table/TableExtension";
 import { useSearchQuery } from "../../hooks/useSearchQuery";
 import { getSearchColums } from "../../utils/helper";
 import { GET_ARRAY_OF_KEY, GET_SEARCHABLE_KEY, GET_SEARCHABLE_LIST } from "../../utils/constants";
 import { useSearchableList } from "../../hooks/useSearchableList";
+import { PageHeader } from "../../components/PageHeader";
 
 const columnsList: Column[] = [
     { key: 'id', value: 'Mã khách hàng', sortable: true, searchable: true, enableSearch: true},
@@ -32,7 +31,8 @@ const CustomerPage: React.FC<{}> = () => {
     const { query, actionChangePage, actionSort, actionSearch, updateQueryParams } =
         useSearchQuery(getSearchColums(columnsList, GET_ARRAY_OF_KEY))
     const { data, isLoading } = useGetCustomers(query)
-    const [columns, watchSearchList, control, setValue ] = useSearchableList(columnsList, updateQueryParams)
+    const [columns, watchSearchList, control, setValue] = useSearchableList(columnsList, updateQueryParams)
+    
     const clickAdd = () => {
         navigate('/customers/create')
     }
@@ -43,45 +43,11 @@ const CustomerPage: React.FC<{}> = () => {
                 title="Bạn có thật sự muốn xóa thông tin khách hàng này không?"
                 { ...props }
             />
-            <Box sx={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'baseline',
-                p: 1,
-                m: 1,
-                bgcolor: 'background.paper',
-                borderRadius: 1,
-            }}
-            >
-                <Typography
-                    variant="h4"
-                    fontWeight='500'
-                    sx={{ px:3, py: 2 }}
-                >
-                    Quản lí khách hàng
-                </Typography>
-                <Button
-                    variant="contained"
-                    sx={{
-                        backgroundColor: green[500],
-                        '&:hover': {
-                            backgroundColor: green[700],
-                        }
-                    }}
-                    size="small"
-                    onClick={clickAdd}
-                >
-                    <Add></Add>
-                    <Typography
-                        textTransform='none'
-                        variant='button'
-                        color='inheric'
-                        marginLeft='4px'
-                    >
-                        Thêm mới
-                    </Typography>
-                </Button>
-            </Box>
+
+            <PageHeader
+                title='Quản lí thông tin khách hàng'
+                clickAdd={clickAdd}
+            />
 
             <TableExtension
                 setValue={setValue}

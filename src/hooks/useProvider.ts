@@ -8,8 +8,10 @@ import { pathToUrl } from '../utils/path';
 import { useNavigate } from 'react-router-dom';
 import { ProviderForm } from '../pages/provider/CreateProvider';
 import { ProviderEditForm } from '../pages/provider/EditProvider';
-import { defaultCatchErrorHandle, defaultOnSuccessHandle } from '../utils/helper';
+import { defaultCatchErrorHandle, defaultOnSuccessHandle, updateSearchParams } from '../utils/helper';
 import { UseFormSetError } from 'react-hook-form';
+import { Query } from '../types/Query';
+import { DataMetaResponse } from '../types/response/DataResponse';
 
 function createData({id, name, address, createdAt, updatedAt, phoneNumber, email}: Provider) {
     return {
@@ -25,20 +27,38 @@ function createDataForAutocomplete({id, name, address, phoneNumber, email}: Prov
     };
 }
 
-const useGetProviders = (option: number = 1) => {
+const useGetProviders = (query: Query) => {
+  const queryParams = updateSearchParams(query)
+
+  return useQuery({
+    queryKey: ['providers', queryParams.toString()],
+    queryFn: () => axiosClient
+      .get(`${API_PROVIDER}?${queryParams.toString()}`)
+      .then((response): DataMetaResponse | undefined => {
+        if (response.data.message) {
+            return {
+              data: response.data.data.map((provider: Provider) => createData(provider)),
+              meta: response.data.meta
+            }
+        }
+        enqueueSnackbar(response.data.errorMessage, {
+          autoHideDuration: 3000,
+          variant: 'error'
+        })
+        return undefined
+      }),
+    enabled: !!queryParams.toString()
+  })
+};
+
+const useGetDataProviders = () => {
   return useQuery({
     queryKey: ['providers'],
     queryFn: () => axiosClient
       .get(API_PROVIDER)
       .then((response) => {
         if (response.data.message) {
-          switch (option) {
-            case 1: 
-              return response.data.data.map((provider: Provider) => createData(provider))
-            case 2: 
-              return response.data.data.map((provider: Provider) => createDataForAutocomplete(provider))
-            default: response.data.data
-          }
+          return response.data.data.map((provider: Provider) => createDataForAutocomplete(provider))
         }
         enqueueSnackbar(response.data.errorMessage, {
           autoHideDuration: 3000,
@@ -47,7 +67,7 @@ const useGetProviders = (option: number = 1) => {
         return []
       })
   })
-};
+}
 
 const useGetProvider = () => {
   const queryClient = useQueryClient();
@@ -131,6 +151,7 @@ const useDeleteProvider = () => {
 
 export {
   useGetProviders,
+  useGetDataProviders,
   useGetProvider,
   useCreateProvider,
   useUpdateProvider,

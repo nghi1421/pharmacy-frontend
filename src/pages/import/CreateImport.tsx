@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom"
 import React, { useEffect, useState } from "react";
 import { FormAutocomplete } from "../../components/form/FormAutocomplete";
 import { useForm } from "react-hook-form";
-import { useGetProviders } from "../../hooks/useProvider";
+import { useGetDataProviders } from "../../hooks/useProvider";
 import { getStaff } from "../../store/auth";
 import { FormInputText } from "../../components/form/FormInputText";
 import { FormInputDate } from "../../components/form/FormInputDate";
@@ -38,7 +38,7 @@ const CreateImport: React.FC = () => {
     const [drugs, setDrugs] = useState<any[]>([])
     const [selectedDrugs, setSelectedDrugs] = useState<any[]>([])
     const [pay, setPay] = useState<number[]>([0 , 0, 0])
-    const { data: providers, isLoading: providerLoading } = useGetProviders(2)
+    const { data: providers, isLoading: providerLoading } = useGetDataProviders()
     const { handleSubmit, reset, control, watch } = useForm<ImportForm>({
     });
 

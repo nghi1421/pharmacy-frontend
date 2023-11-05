@@ -12,6 +12,7 @@ import { CustomerEditForm } from '../pages/customer/EditCustomer';
 import { defaultCatchErrorHandle, defaultOnSuccessHandle, updateSearchParams } from '../utils/helper';
 import { UseFormSetError } from 'react-hook-form';
 import { Query } from '../types/Query';
+import { DataMetaResponse } from '../types/response/DataResponse';
 
 function createData({id, name, gender, dob, address,  phoneNumber, email}: Customer) {
     return {
@@ -27,25 +28,18 @@ function createDataForAutocomplete({id, name, address, phoneNumber, email}: Cust
     };
 }
 
-const useGetCustomers = (query: Query, option: number = 1) => {
+const useGetCustomers = (query: Query) => {
   const queryParams = updateSearchParams(query)
 
   return useQuery({
     queryKey: ['customers', queryParams.toString()],
     queryFn: () => axiosClient
       .get(`${API_CUSTOMER}?${queryParams.toString()}`)
-      .then((response) => {
+      .then((response): DataMetaResponse | undefined => {
         if (response.data.message) {
-          switch (option) {
-            case 1: {
-                return {
-                  data: response.data.data.map((customer: Customer) => createData(customer)),
-                  meta: response.data.meta
-              }
-            }
-            case 2: 
-              return response.data.data.map((customer: Customer) => createDataForAutocomplete(customer))
-            default: response.data.data
+          return {
+              data: response.data.data.map((customer: Customer) => createData(customer)),
+              meta: response.data.meta
           }
         }
         enqueueSnackbar(response.data.errorMessage, {
@@ -61,21 +55,21 @@ const useGetCustomers = (query: Query, option: number = 1) => {
 
 const useGetDataCustomers = () => {
   return useQuery({
+    queryKey: ['cusotmer'],
     queryFn: () => axiosClient
       .get(API_CUSTOMER)
       .then((response) => {
         if (response.data.message) {
-          return response.data.data.map((customer: Customer) => createData(customer))
+          return response.data.data.map((customer: Customer) => createDataForAutocomplete(customer))
         }
         enqueueSnackbar(response.data.errorMessage, {
           autoHideDuration: 3000,
           variant: 'error'
         })
         return []
-      }),
-    select: (res) => res
+      })
   })
-};
+}
 
 const useGetCustomer = () => {
   const queryClient = useQueryClient();
