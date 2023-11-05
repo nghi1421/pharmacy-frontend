@@ -7,11 +7,11 @@ import { getStaff } from "../../store/auth";
 import { FormInputText } from "../../components/form/FormInputText";
 import { FormInputDate } from "../../components/form/FormInputDate";
 import TableAction from "../../components/table/TableAction";
-import { useGetCustomers, useGetDataCustomers } from "../../hooks/useCustomer";
+import { useGetDataCustomers } from "../../hooks/useCustomer";
 import TableExportSelectDrug from "../../components/table/TableExportSelectDrug";
 import { useGetDataDrugCategories } from "../../hooks/useDrugCategory";
 
-interface ColumnDrugCategory {
+export interface ColumnDrugCategory {
     key: string;
     value: string;
 }

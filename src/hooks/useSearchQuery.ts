@@ -52,9 +52,9 @@ export const useSearchQuery = (defaultSerachColumns: string[]) => {
     }
 
     const actionSearch = (querySearch: QuerySearch) => {
-        setQuery({...query, ...querySearch })
+        setQuery({...query, ...querySearch, page: 1 })
         let searchQuery = new URLSearchParams();
-        searchQuery.set('page', query.page.toString())
+        searchQuery.set('page', '1')
         searchQuery.set('perPage', query.perPage.toString())
         searchQuery.set('orderBy', query.orderBy)
         searchQuery.set('orderDirection', query.orderDirection)

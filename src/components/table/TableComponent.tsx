@@ -58,7 +58,7 @@ const TableComponent: React.FC<TableProps> = ({
     actionSort,
     totalPage,
     hasPagination,
-  query
+    query
 }) => {
 
   return (

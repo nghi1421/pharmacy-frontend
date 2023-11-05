@@ -69,14 +69,14 @@ export const defaultCatchErrorHandle = (
 export const updateSearchParams = (query: Query): URLSearchParams => {
     const queryParams = new URLSearchParams();
     console.log(query)
-    // queryParams.set('page', query.page.toString())
-    // queryParams.set('perPage', query.perPage.toString())
-    // queryParams.set('orderBy', query.orderBy)
-    // queryParams.set('orderDirection', query.orderDirection)
-    // if (query.searchTerm.length > 0) {
-    //     queryParams.set('searchTerm', query.searchTerm)
-    //     queryParams.set('searchColumns', query.searchColumns.toString())
-    // }
+    queryParams.set('page', query.page.toString())
+    queryParams.set('perPage', query.perPage.toString())
+    queryParams.set('orderBy', query.orderBy)
+    queryParams.set('orderDirection', query.orderDirection)
+    if (query.searchTerm.length > 0) {
+        queryParams.set('searchTerm', query.searchTerm)
+        queryParams.set('searchColumns', query.searchColumns.toString())
+    }
     return queryParams;
 }
 

@@ -14,13 +14,13 @@ import {
     styled,
     tableCellClasses
 } from "@mui/material"
-import { Column } from '../../types/Column'
 import React from "react"
 import EmptyImage from '../../assets/images/no-data.jpg'
+import { ColumnDrugCategory } from "../../pages/export/CreateExport"
 
 interface TableProps<T> {
     rows: T[]
-    columns: Column[]
+    columns: ColumnDrugCategory[]
     keyTable: string
     action: (row: any) => void
     tooltip: string

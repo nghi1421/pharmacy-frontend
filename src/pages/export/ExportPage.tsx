@@ -7,12 +7,12 @@ import CreateIcon from '@mui/icons-material/Create';
 import { useGetExport, useGetExports } from "../../hooks/useExport";
 
 const columns: Column[] = [
-    { key: 'id', value: 'Mã xuất thuốc'},
-    { key: 'staffName', value: 'Được tạo bởi' },
-    { key: 'customerName', value: 'Người mua hàng'},
-    { key: 'note', value: 'Ghi chú'},
-    { key: 'precriptionId', value: 'Mã lô hàng'},
-    { key: 'importDate', value: 'Ngày xuất hàng'},
+    { key: 'id', value: 'Mã xuất thuốc', sortable: false, searchable: false},
+    { key: 'staffName', value: 'Được tạo bởi' , sortable: false, searchable: false},
+    { key: 'customerName', value: 'Người mua hàng', sortable: false, searchable: false},
+    { key: 'note', value: 'Ghi chú', sortable: false, searchable: false},
+    { key: 'precriptionId', value: 'Mã lô hàng', sortable: false, searchable: false},
+    { key: 'importDate', value: 'Ngày xuất hàng', sortable: false, searchable: false},
 ]
 
 const ExportPage: React.FC<{}> = () => {
