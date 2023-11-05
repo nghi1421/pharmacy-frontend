@@ -44,7 +44,7 @@ export const TableExtension: React.FC<TableExtensionProps> = ({
     }
 
     return (
-        <Paper sx={{ px: 3, py: 1, w: 200, display: 'flex', gap: 2 }}>
+        <Paper sx={{ px: 3, py: 1, display: 'flex', gap: 2 }}>
             <TextField
                 onChange={handleSearchData}
                 onClick={() =>

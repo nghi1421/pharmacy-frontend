@@ -9,8 +9,9 @@ import { useNavigate } from 'react-router-dom';
 import { pathToUrl } from '../utils/path';
 import { CustomerForm } from '../pages/customer/CreateCustomer';
 import { CustomerEditForm } from '../pages/customer/EditCustomer';
-import { defaultCatchErrorHandle, defaultOnSuccessHandle } from '../utils/helper';
+import { defaultCatchErrorHandle, defaultOnSuccessHandle, updateSearchParams } from '../utils/helper';
 import { UseFormSetError } from 'react-hook-form';
+import { Query } from '../types/Query';
 
 function createData({id, name, gender, dob, address,  phoneNumber, email}: Customer) {
     return {
@@ -26,16 +27,22 @@ function createDataForAutocomplete({id, name, address, phoneNumber, email}: Cust
     };
 }
 
-const useGetCustomers = (option: number = 1) => {
+const useGetCustomers = (query: Query, option: number = 1) => {
+  const queryParams = updateSearchParams(query)
+
   return useQuery({
-    queryKey: ['customers'],
+    queryKey: ['customers', queryParams.toString()],
     queryFn: () => axiosClient
-      .get(API_CUSTOMER)
+      .get(`${API_CUSTOMER}?${queryParams.toString()}`)
       .then((response) => {
         if (response.data.message) {
           switch (option) {
-            case 1: 
-              return response.data.data.map((customer: Customer) => createData(customer))
+            case 1: {
+                return {
+                  data: response.data.data.map((customer: Customer) => createData(customer)),
+                  meta: response.data.meta
+              }
+            }
             case 2: 
               return response.data.data.map((customer: Customer) => createDataForAutocomplete(customer))
             default: response.data.data
@@ -45,8 +52,10 @@ const useGetCustomers = (option: number = 1) => {
           autoHideDuration: 3000,
           variant: 'error'
         })
-        return []
-      })
+
+        return undefined;
+      }),
+    enabled: !!queryParams.toString()
   })
 };
 

@@ -34,7 +34,7 @@ export const FormInputMultiCheckbox: React.FC<FormInputListProps> = ({
     return (
         <FormControl size={"small"} variant={"outlined"}>
         <FormLabel component="legend">{label}</FormLabel>
-        <div>
+        <div style={ { display: 'flex', flexDirection: 'column'} }>
             {list.map((option) => {
             return (
                 <FormControlLabel

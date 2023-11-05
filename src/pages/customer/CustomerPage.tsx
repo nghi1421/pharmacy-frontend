@@ -1,4 +1,4 @@
-import { Box, Button, CircularProgress, Divider, IconButton, Paper, TableCell, Typography } from "@mui/material";
+import { Box, Button, IconButton, Paper, TableCell, Typography } from "@mui/material";
 import TableComponent from "../../components/table/TableComponent";
 import { Column } from "../../types/Column";
 import { Add } from "@mui/icons-material";
@@ -8,14 +8,20 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { useDeleteCustomer, useGetCustomer, useGetCustomers } from "../../hooks/useCustomer";
 import { useConfirmDialog } from "../../hooks/useConfirmDialog";
 import ConfirmDialog from "../../components/ConfirmDialog";
+import { green } from "@mui/material/colors";
+import { TableExtension } from "../../components/table/TableExtension";
+import { useSearchQuery } from "../../hooks/useSearchQuery";
+import { getSearchColums } from "../../utils/helper";
+import { GET_ARRAY_OF_KEY, GET_SEARCHABLE_KEY, GET_SEARCHABLE_LIST } from "../../utils/constants";
+import { useSearchableList } from "../../hooks/useSearchableList";
 
-const columns: Column[] = [
-    { key: 'id', value: 'Mã khách hàng'},
-    { key: 'name', value: 'Họ tên' },
-    { key: 'gender', value: 'Giới tính'},
-    { key: 'phoneNumber', value: 'Số điện thoại'},
-    { key: 'dob', value: 'Ngày sinh'},
-    { key: 'email', value: 'Email'},
+const columnsList: Column[] = [
+    { key: 'id', value: 'Mã khách hàng', sortable: true, searchable: true, enableSearch: true},
+    { key: 'name', value: 'Họ tên' , sortable: true, searchable: true, enableSearch: true},
+    { key: 'gender', value: 'Giới tính', sortable: true, searchable: true, enableSearch: true},
+    { key: 'phoneNumber', value: 'Số điện thoại', sortable: true, searchable: true, enableSearch: true},
+    { key: 'dob', value: 'Ngày sinh', sortable: true, searchable: true, enableSearch: true},
+    { key: 'email', value: 'Email', sortable: true, searchable: true, enableSearch: true},
 ]
 
 const CustomerPage: React.FC<{}> = () => {
@@ -23,8 +29,10 @@ const CustomerPage: React.FC<{}> = () => {
     const getCustomer = useGetCustomer()
     const deleteCustomer = useDeleteCustomer()
     const [openConfirmDialog, props] = useConfirmDialog(deleteCustomer.mutate)
-    let { data, isLoading } = useGetCustomers()
-
+    const { query, actionChangePage, actionSort, actionSearch, updateQueryParams } =
+        useSearchQuery(getSearchColums(columnsList, GET_ARRAY_OF_KEY))
+    const { data, isLoading } = useGetCustomers(query)
+    const [columns, watchSearchList, control, setValue ] = useSearchableList(columnsList, updateQueryParams)
     const clickAdd = () => {
         navigate('/customers/create')
     }
@@ -54,59 +62,70 @@ const CustomerPage: React.FC<{}> = () => {
                 </Typography>
                 <Button
                     variant="contained"
+                    sx={{
+                        backgroundColor: green[500],
+                        '&:hover': {
+                            backgroundColor: green[700],
+                        }
+                    }}
                     size="small"
                     onClick={clickAdd}
                 >
                     <Add></Add>
                     <Typography
-                        color="inherit"
-                        fontSize='16px'
+                        textTransform='none'
+                        variant='button'
+                        color='inheric'
                         marginLeft='4px'
                     >
                         Thêm mới
                     </Typography>
                 </Button>
             </Box>
-            
-            <Divider></Divider>
-            {
-                isLoading
-                ?   <Box sx={{
-                        display: 'flex',
-                        backgroundColor: 'white',
-                        p: 4,
-                        justifyContent: 'center'
-                    }}>
-                        <CircularProgress />
-                    </Box> 
-                :
-                    <TableComponent
-                        rows={data}
-                        keyTable='customer-table'
-                        columns={columns}
-                        hasAction={true}
-                        action={(rowValue: any) => 
-                                <TableCell
-                                    align="left"
-                                    key={`row-action-customer-table-${rowValue.id}`}>
-                                    <Box sx={{ display: 'flex' }}>
-                                    <IconButton
-                                        color='success'
-                                        onClick={() => { getCustomer.mutate(rowValue.id) }}
-                                    >
-                                        <CreateIcon></CreateIcon>
-                                    </IconButton>
-                                    <IconButton
-                                        color='error'
-                                        onClick={() => { openConfirmDialog(rowValue.id) }}
-                                    >
-                                        <DeleteIcon></DeleteIcon>
-                                    </IconButton>
-                                </Box>
-                            </TableCell>
-                        }
-                    ></TableComponent>
-            }
+
+            <TableExtension
+                setValue={setValue}
+                initValueSearch={query.searchTerm}
+                initSearchColumns={getSearchColums(columns, GET_SEARCHABLE_KEY)}
+                searchColumns={getSearchColums(columnsList, GET_SEARCHABLE_LIST)}
+                control={control}
+                actionSearch={actionSearch}
+                watchSearchList={watchSearchList}
+            />
+
+            <TableComponent
+                isLoading={isLoading}
+                rows={data ? data.data : undefined}
+                keyTable='staff-table'
+                columns={columns}
+                hasPagination={true}
+                page={query.page}
+                query={{ orderBy: query.orderBy, orderDirection: query.orderDirection }}
+                actionSort={actionSort}
+                actionChangePage={actionChangePage}
+                totalPage={data ? data.meta.totalPage : undefined}
+                hasAction={true}
+                action={(rowValue: any) => 
+                        <TableCell
+                            align="left"
+                            key={`row-action-customer-table-${rowValue.id}`}>
+                            <Box sx={{ display: 'flex' }}>
+                            <IconButton
+                                color='success'
+                                onClick={() => { getCustomer.mutate(rowValue.id) }}
+                            >
+                                <CreateIcon></CreateIcon>
+                            </IconButton>
+                            <IconButton
+                                color='error'
+                                onClick={() => { openConfirmDialog(rowValue.id) }}
+                            >
+                                <DeleteIcon></DeleteIcon>
+                            </IconButton>
+                        </Box>
+                    </TableCell>
+                }
+            />
         </Paper>
     )
     

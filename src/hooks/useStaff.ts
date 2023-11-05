@@ -9,8 +9,10 @@ import { pathToUrl } from '../utils/path';
 import { useNavigate } from 'react-router-dom';
 import { StaffForm } from '../pages/staff/CreateStaff';
 import { StaffEditForm } from '../pages/staff/EditStaff';
-import { defaultCatchErrorHandle, defaultOnSuccessHandle } from '../utils/helper';
+import { defaultCatchErrorHandle, defaultOnSuccessHandle, updateSearchParams } from '../utils/helper';
 import { UseFormSetError } from 'react-hook-form';
+import { Query } from '../types/Query';
+import { DataMetaResponse } from '../types/response/DataResponse';
 
 function createData({id, name, gender, dob, phoneNumber, email, isWorking, position}: Staff) {
     return {
@@ -24,21 +26,26 @@ function createData({id, name, gender, dob, phoneNumber, email, isWorking, posit
     };
 }
 
-const useGetStaffs = () => {
+const useGetStaffs = (query: Query) => {
+  const queryParams = updateSearchParams(query)
   return useQuery({
-    queryKey: ['staffs'],
+    queryKey: ['staffs', queryParams.toString()],
     queryFn: () => axiosClient
-      .get(API_STAFF)
-      .then((response) => {
+      .get(`${API_STAFF}?${queryParams.toString()}`)
+      .then((response): DataMetaResponse | undefined => {
         if (response.data.message) {
-          return response.data.data.map((staff: Staff) => createData(staff))
+          return {
+            data: response.data.data.map((staff: Staff) => createData(staff)),
+            meta: response.data.meta
+          }
         }
         enqueueSnackbar(response.data.errorMessage, {
           autoHideDuration: 3000,
           variant: 'error'
         })
-        return []
-      })
+        return undefined
+      }),
+    enabled: !!queryParams.toString()
   })
 };
 
