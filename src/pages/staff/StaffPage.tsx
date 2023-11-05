@@ -20,11 +20,11 @@ import { green } from "@mui/material/colors";
 
 const columnsList: Column[] = [
     { key: 'id', value: 'Mã nhân viên', sortable: true, searchable: true, enableSearch: true},
-    { key: 'name', value: 'Họ tên', sortable: true, searchable: true, enableSearch: true},
+    { key: 'name', value: 'Họ tên', sortable: true, searchable: true, enableSearch: false},
     { key: 'gender', value: 'Giới tính', sortable: true, searchable: false},
-    { key: 'phoneNumber', value: 'Số điện thoại', sortable: true, searchable: true, enableSearch: true},
-    { key: 'dob', value: 'Ngày sinh', sortable: true, searchable: true, enableSearch: true},
-    { key: 'email', value: 'Email', sortable: true, searchable: true, enableSearch: true},
+    { key: 'phoneNumber', value: 'Số điện thoại', sortable: true, searchable: true, enableSearch: false},
+    { key: 'dob', value: 'Ngày sinh', sortable: true, searchable: true, enableSearch: false},
+    { key: 'email', value: 'Email', sortable: true, searchable: true, enableSearch: false},
     { key: 'isWorking', value: 'Đang làm việc', sortable: true, searchable: false},
 ]
 

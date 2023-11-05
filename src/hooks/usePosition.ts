@@ -8,8 +8,10 @@ import { Position } from '../types/Position';
 import { formatDateTime } from '../utils/format';
 import { useNavigate } from 'react-router-dom';
 import { PositionEditForm } from '../pages/position/EditPosition';
-import { defaultCatchErrorHandle, defaultOnSuccessHandle } from '../utils/helper';
+import { defaultCatchErrorHandle, defaultOnSuccessHandle, updateSearchParams } from '../utils/helper';
 import { UseFormSetError } from 'react-hook-form';
+import { Query } from '../types/Query';
+import { DataMetaResponse } from '../types/response/DataResponse';
 
 function createData({id, name, createdAt, updatedAt}: Position) {
     return {
@@ -19,21 +21,27 @@ function createData({id, name, createdAt, updatedAt}: Position) {
     };
 }
 
-const useGetPositions = () => {
+const useGetPositions = (query: Query) => {
+  const queryParams = updateSearchParams(query)
+
   return useQuery({
-    queryKey: ['positions'],
+    queryKey: ['positions', queryParams.toString()],
     queryFn: () => axiosClient
-      .get(API_POSITION)
-      .then((response) => {
+      .get(`${API_POSITION}?${queryParams.toString()}`)
+      .then((response): DataMetaResponse | undefined => {
         if (response.data.message) {
-          return response.data.data.map((position: Position) => createData(position))
+          return {
+            data: response.data.data.map((position: Position) => createData(position)),
+            meta: response.data.meta
+          }
         }
         enqueueSnackbar(response.data.errorMessage, {
           autoHideDuration: 3000,
           variant: 'error'
         })
-        return []
-      })
+        return undefined
+      }),
+    enabled: !!queryParams.toString()
   })
 };
 

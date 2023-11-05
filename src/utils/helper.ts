@@ -84,7 +84,7 @@ export const getSearchColums = (columns: Column[], option: SearchColumnsOption =
     switch (option) {
         case SearchColumnsOption.GET_ARRAY_OF_KEY: {
             return columns.reduce((filtered, column: Column) => {
-                    if (column && column.searchable) {
+                    if (column && column.enableSearch) {
                         filtered.push(column.key);
                     }
                     return filtered;

@@ -16,11 +16,11 @@ import { PageHeader } from "../../components/PageHeader";
 
 const columnsList: Column[] = [
     { key: 'id', value: 'Mã khách hàng', sortable: true, searchable: true, enableSearch: true},
-    { key: 'name', value: 'Họ tên' , sortable: true, searchable: true, enableSearch: true},
-    { key: 'gender', value: 'Giới tính', sortable: true, searchable: true, enableSearch: true},
-    { key: 'phoneNumber', value: 'Số điện thoại', sortable: true, searchable: true, enableSearch: true},
-    { key: 'dob', value: 'Ngày sinh', sortable: true, searchable: true, enableSearch: true},
-    { key: 'email', value: 'Email', sortable: true, searchable: true, enableSearch: true},
+    { key: 'name', value: 'Họ tên' , sortable: true, searchable: true, enableSearch: false},
+    { key: 'gender', value: 'Giới tính', sortable: true, searchable: true, enableSearch: false},
+    { key: 'phoneNumber', value: 'Số điện thoại', sortable: true, searchable: true, enableSearch: false},
+    { key: 'dob', value: 'Ngày sinh', sortable: true, searchable: false},
+    { key: 'email', value: 'Email', sortable: true, searchable: true, enableSearch: false},
 ]
 
 const CustomerPage: React.FC<{}> = () => {

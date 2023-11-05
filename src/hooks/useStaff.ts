@@ -28,6 +28,7 @@ function createData({id, name, gender, dob, phoneNumber, email, isWorking, posit
 
 const useGetStaffs = (query: Query) => {
   const queryParams = updateSearchParams(query)
+  
   return useQuery({
     queryKey: ['staffs', queryParams.toString()],
     queryFn: () => axiosClient
