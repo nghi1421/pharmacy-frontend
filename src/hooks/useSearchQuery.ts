@@ -23,8 +23,6 @@ export const useSearchQuery = (defaultSerachColumns: string[]) => {
         searchTerm : searchParams.get('searchTerm') ? searchParams.get('searchTerm') as string : ''
     })
 
-    console.log(query);
-
     const actionChangePage = (page: number) => {
         setQuery({ ...query, page });
         let searchQuery = new URLSearchParams();
@@ -60,9 +58,25 @@ export const useSearchQuery = (defaultSerachColumns: string[]) => {
         searchQuery.set('perPage', query.perPage.toString())
         searchQuery.set('orderBy', query.orderBy)
         searchQuery.set('orderDirection', query.orderDirection)
-        searchQuery.set('searchTerm', query.searchTerm)
-        searchQuery.set('searchColumns', query.searchColumns.toString())
+        searchQuery.set('searchTerm', querySearch.searchTerm)
+        searchQuery.set('searchColumns', querySearch.searchColumns.toString())
         setSearchParams(searchQuery)
+    }
+
+    const updateQueryParams = (searchColumns: string[]) => {
+        if (JSON.stringify(searchColumns) !== JSON.stringify(defaultSerachColumns && query.searchTerm.length > 0)) {
+            setQuery({ ...query, searchColumns: searchColumns })
+            let searchQuery = new URLSearchParams();
+            searchQuery.set('page', query.page.toString())
+            searchQuery.set('perPage', query.perPage.toString())
+            searchQuery.set('orderBy', query.orderBy)
+            searchQuery.set('orderDirection', query.orderDirection)
+            if (query.searchTerm.length > 0) {
+                searchQuery.set('searchTerm', query.searchTerm)
+                searchQuery.set('searchColumns', searchColumns.toString())
+            }
+            setSearchParams(searchQuery)
+        }
     }
 
     return {
@@ -70,5 +84,6 @@ export const useSearchQuery = (defaultSerachColumns: string[]) => {
         actionChangePage,
         actionSort,
         actionSearch,
+        updateQueryParams
     }
 }

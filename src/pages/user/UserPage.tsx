@@ -11,15 +11,16 @@ import { TableExtension } from "../../components/table/TableExtension";
 const columnsList = [
     { key: 'id', value: 'Mã tài khoản', sortable: true, searchable: true, enableSearch: true },
     { key: 'username', value: 'Tên đăng nhập', sortable: true, searchable: true, enableSearch: true },
-    { key: 'role', value: 'Quyền', sortable: false, searchable: false,},
+    { key: 'role', value: 'Quyền', sortable: true, searchable: false,},
     { key: 'createdAt', value: 'Thời gian tạo', sortable: true, searchable: false },
     { key: 'updatedAt', value: 'Cập nhật', sortable: true, searchable: false },
 ]
+
 const UserPage: React.FC<{}> = () => {
-    const { query, actionChangePage, actionSort, actionSearch } =
+    const { query, actionChangePage, actionSort, actionSearch, updateQueryParams } =
         useSearchQuery(getSearchColums(columnsList, GET_ARRAY_OF_KEY))
     const { data, isLoading } = useGetUsers(query)
-    const [columns, watchSearchList, control, setValue ] = useSearchableList(columnsList)
+    const [columns, watchSearchList, control, setValue ] = useSearchableList(columnsList, updateQueryParams)
 
     return (
         <Paper>
@@ -40,10 +41,7 @@ const UserPage: React.FC<{}> = () => {
                     control={control}
                     actionSearch={actionSearch}
                     watchSearchList={watchSearchList}
-                >
-
-                </TableExtension>
-
+                />
                 <TableComponent
                     isLoading={isLoading}
                     rows={data ? data.data : undefined}

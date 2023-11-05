@@ -9,7 +9,7 @@ interface Form {
     searchableList: string[]
 }
 
-export const useSearchableList = (c: Column[]): any[] => {
+export const useSearchableList = (c: Column[], updateQueryParams: (c: string[]) => void): any[] => {
     const [columns, setColumns] = useState<Column[]>(c);
     
     const { watch, control, setValue } = useForm<Form>({
@@ -26,6 +26,8 @@ export const useSearchableList = (c: Column[]): any[] => {
                     enableSearch: watchSearchList.includes(column.key) ? true : false
                 } : column
             }))
+            
+            updateQueryParams(watchSearchList)
         }
         else {
             if (getSearchColums(columns, GET_SEARCHABLE_KEY).length !== 0) {
