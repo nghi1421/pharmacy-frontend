@@ -21,7 +21,7 @@ import Address from "../../components/Address";
 import { FormInputDate } from "../../components/form/FormInputDate";
 import { FormInputCheckBox } from "../../components/form/FormInputCheckBox";
 import * as Yup from 'yup'
-import { useGetPositions } from "../../hooks/usePosition";
+import { useGetDataPositions } from "../../hooks/usePosition";
 import { useCreateStaff } from "../../hooks/useStaff";
 
 export interface StaffForm {
@@ -82,7 +82,7 @@ const staffFormValidate: Yup.ObjectSchema<StaffForm> = yup.object({
 const CreateStaff: React.FC = () => {
     const navigate = useNavigate()
     const [address, setAddress] = useState<string>('')
-    let { data, isLoading } = useGetPositions()
+    let { data, isLoading } = useGetDataPositions()
     const [counter, setCounter] = useState(Math.random())
     const { handleSubmit, reset, control, setError } = useForm<StaffForm>({
         defaultValues: defaultValues,

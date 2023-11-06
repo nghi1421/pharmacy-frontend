@@ -45,6 +45,25 @@ const useGetTypeByUses = (query: Query) => {
   })
 };
 
+const useGetDataTypeByUses = () => {
+  return useQuery({
+    queryKey: ['type-by-uses'],
+    queryFn: () => axiosClient
+      .get(API_TYPE_BY_USE)
+      .then((response)=> {
+        if (response.data.message) {
+          return response.data.data.map((type: TypeByUse) => createData(type))
+        }
+        enqueueSnackbar(response.data.errorMessage, {
+          autoHideDuration: 3000,
+          variant: 'error'
+        })
+        return []
+      }),
+  })
+};
+
+
 const useGetTypeByUse = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
@@ -125,6 +144,7 @@ const useDeleteTypeByUse = () => {
 
 export {
   useGetTypeByUses,
+  useGetDataTypeByUses,
   useGetTypeByUse,
   useCreateTypeByUse,
   useUpdateTypeByUse,

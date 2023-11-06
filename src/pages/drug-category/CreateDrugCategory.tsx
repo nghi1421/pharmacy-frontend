@@ -6,7 +6,7 @@ import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from 'yup'
 import { FormInputFloat } from "../../components/form/FormInputFloat";
-import { useGetTypeByUses } from "../../hooks/useTypeByUse";
+import { useGetDataTypeByUses } from "../../hooks/useTypeByUse";
 import { useCreateDrugCategory } from "../../hooks/useDrugCategory";
 
 export interface DrugCategoryForm {
@@ -67,7 +67,7 @@ const drugCategoryVaidate: Yup.ObjectSchema<DrugCategoryForm> = yup.object({
 
 const CreateDrugCategory: React.FC = () => {
     const navigate = useNavigate()
-    const { data, isLoading } = useGetTypeByUses();
+    const { data, isLoading } = useGetDataTypeByUses();
     const { handleSubmit, watch, reset, control, setError } = useForm<DrugCategoryForm>({
         defaultValues: defaultValues,
         resolver: yupResolver(drugCategoryVaidate)

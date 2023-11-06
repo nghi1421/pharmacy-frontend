@@ -8,7 +8,7 @@ import * as Yup from 'yup'
 import React from "react";
 import { useUpdateDrugCategory } from "../../hooks/useDrugCategory";
 import { FormInputFloat } from "../../components/form/FormInputFloat";
-import { useGetTypeByUses } from "../../hooks/useTypeByUse";
+import { useGetDataTypeByUses } from "../../hooks/useTypeByUse";
 
 export interface DrugCategoryEditForm {
     id: string;
@@ -57,7 +57,7 @@ const drugCategoryVaidate: Yup.ObjectSchema<DrugCategoryForm> = yup.object({
 const EditDrugCategory: React.FC = () => {
     const { state } = useLocation()
     const navigate = useNavigate()
-    const { data, isLoading } = useGetTypeByUses();
+    const { data, isLoading } = useGetDataTypeByUses();
     const { handleSubmit, reset, control, watch, setError } = useForm<DrugCategoryEditForm>({
         defaultValues: {
             ...state.drugCategoryData,

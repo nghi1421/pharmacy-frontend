@@ -12,7 +12,7 @@ import { FormInputDropdown } from "../../components/form/FormInputDropdown";
 import { FormInputDate } from "../../components/form/FormInputDate";
 import { FormInputCheckBox } from "../../components/form/FormInputCheckBox";
 import { genders } from "../../utils/constants";
-import { useGetPositions } from "../../hooks/usePosition";
+import { useGetDataPositions } from "../../hooks/usePosition";
 
 export interface StaffEditForm {
     id: string;
@@ -61,7 +61,7 @@ const staffFormValidate: Yup.ObjectSchema<StaffForm> = yup.object({
 const EditStaff: React.FC = () => {
     const { state } = useLocation()
     const navigate = useNavigate()
-    let { data, isLoading } = useGetPositions()
+    let { data, isLoading } = useGetDataPositions()
     const [counter, setCounter] = useState(Math.random())
     const [address, setAddress] = useState<string>('')
     const { handleSubmit, reset, control, setError } = useForm<StaffEditForm>({
