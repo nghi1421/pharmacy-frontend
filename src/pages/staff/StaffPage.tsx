@@ -40,7 +40,7 @@ const StaffPage: React.FC<{}> = () => {
     const [columns, watchSearchList, control, setValue ] = useSearchableList(columnsList, updateQueryParams)
 
     const clickAdd = () => {
-        navigate('/staffs/create')
+        navigate('/admin/staffs/create')
     }
     return (
         <Paper>

@@ -81,7 +81,7 @@ const useGetCustomer = () => {
     mutationFn: (customerId: string) => axiosClient
       .get(pathToUrl(API_CUSTOMER_WITH_ID, { customerId }))
       .then((response) => {
-        navigate( `/customers/${customerId}/edit`,
+        navigate( `/admin/${customerId}/edit`,
           {
             state: { customerData: response.data.data }
           }
@@ -110,7 +110,7 @@ const useCreateCustomer = (setError: UseFormSetError<any>) => {
         }) 
     },
     onSuccess: (response: any) => {
-      defaultOnSuccessHandle(queryClient, navigate, response, 'customers', '/customers')
+      defaultOnSuccessHandle(queryClient, navigate, response, 'customers', '/admin')
     }
   })
 }
@@ -128,7 +128,7 @@ const useUpdateCustomer = (setError: UseFormSetError<any>) => {
         }) 
     },
     onSuccess: (response: any) => {
-      defaultOnSuccessHandle(queryClient, navigate, response, 'customers', '/customers')
+      defaultOnSuccessHandle(queryClient, navigate, response, 'customers', '/admin')
     }
   }) 
 }
@@ -146,7 +146,7 @@ const useDeleteCustomer = () => {
         }) 
     },
     onSuccess: (response: any) => {
-      defaultOnSuccessHandle(queryClient, navigate, response, 'customers', '/customers')
+      defaultOnSuccessHandle(queryClient, navigate, response, 'customers', '/admin')
     }
   }) 
 }

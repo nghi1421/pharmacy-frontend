@@ -42,7 +42,7 @@ const useGetExport = () => {
     mutationFn: (exportId: string) => axiosClient
       .get(pathToUrl(API_EXPORT_WITH_ID, { exportId }))
       .then((response) => {
-        navigate( `/exports/${exportId}/edit`,
+        navigate( `/admin/exports/${exportId}/edit`,
           {
             state: { ExportData: response.data.data }
           }

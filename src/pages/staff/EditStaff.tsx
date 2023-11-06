@@ -75,7 +75,7 @@ const EditStaff: React.FC = () => {
     }
 
     const backToTable = () => {
-        navigate('/staffs')
+        navigate('/admin/staffs')
     }
     return (
         <Paper sx={{ px:6, py:4 }}>

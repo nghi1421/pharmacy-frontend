@@ -101,7 +101,7 @@ const CreateImport: React.FC = () => {
     }
 
     const backToTable = () => {
-        navigate('/imports')
+        navigate('/admin/imports')
     }
 
     return (

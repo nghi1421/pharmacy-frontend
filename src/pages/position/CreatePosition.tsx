@@ -36,7 +36,7 @@ const CreatePosition: React.FC = () => {
     };
 
     const backToTable = () => {
-        navigate('/positions')
+        navigate('/admin/positions')
     }
     
     return (

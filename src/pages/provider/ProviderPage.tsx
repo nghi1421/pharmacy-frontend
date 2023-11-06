@@ -35,7 +35,7 @@ const ProviderPage: React.FC<{}> = () => {
     const [columns, watchSearchList, control, setValue] = useSearchableList(columnsList, updateQueryParams)
 
     const clickAdd = () => {
-        navigate('/providers/create')
+        navigate('/admin/providers/create')
     }
     return (
         <Paper>

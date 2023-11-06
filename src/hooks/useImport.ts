@@ -44,7 +44,7 @@ const useGetImport = () => {
     mutationFn: (ImportId: string) => axiosClient
       .get(pathToUrl(API_IMPORT_WITH_ID, { ImportId }))
       .then((response) => {
-        navigate( `/imports/${ImportId}/edit`,
+        navigate( `/admin/imports/${ImportId}/edit`,
           {
             state: { ImportData: response.data.data }
           }

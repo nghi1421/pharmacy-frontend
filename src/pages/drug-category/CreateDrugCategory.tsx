@@ -83,7 +83,7 @@ const CreateDrugCategory: React.FC = () => {
     };
 
     const backToTable = () => {
-        navigate('/drug-categories')
+        navigate('/admin/drug-categories')
     }
     return (
         <Paper sx={{ px:6, py:4 }}>

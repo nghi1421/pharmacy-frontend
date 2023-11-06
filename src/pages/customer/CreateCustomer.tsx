@@ -63,7 +63,7 @@ const CreateCustomer: React.FC = () => {
     };
 
     const backToTable = () => {
-        navigate('/customers')
+        navigate('/admin/customers')
     }
     return (
         <Paper sx={{ px:6, py:4 }}>

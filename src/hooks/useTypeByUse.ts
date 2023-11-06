@@ -72,7 +72,7 @@ const useGetTypeByUse = () => {
     mutationFn: (typeId: string) => axiosClient
       .get(pathToUrl(API_TYPE_BY_USE_WITH_ID, { typeId }))
       .then((response) => {
-        navigate( `/type-by-uses/${typeId}/edit`,
+        navigate( `/admin/type-by-uses/${typeId}/edit`,
           {
             state: { typeByUseData: response.data.data }
           }
@@ -101,7 +101,7 @@ const useCreateTypeByUse = (setError: UseFormSetError<any>) => {
         }) 
     },
     onSuccess: (response: any) => {
-      defaultOnSuccessHandle(queryClient, navigate, response, 'type-by-uses', '/type-by-uses')
+      defaultOnSuccessHandle(queryClient, navigate, response, 'type-by-uses', '/admin/type-by-uses')
     }
   })
 }
@@ -119,7 +119,7 @@ const useUpdateTypeByUse = (setError: UseFormSetError<any>) => {
         }) 
     },
     onSuccess: (response: any) => {
-      defaultOnSuccessHandle(queryClient, navigate, response, 'type-by-uses', '/type-by-uses')
+      defaultOnSuccessHandle(queryClient, navigate, response, 'type-by-uses', '/admin/type-by-uses')
     }
   }) 
 }
@@ -137,7 +137,7 @@ const useDeleteTypeByUse = () => {
         }) 
     },
     onSuccess: (response: any) => {
-      defaultOnSuccessHandle(queryClient, navigate, response, 'type-by-uses', '/type-by-uses')
+      defaultOnSuccessHandle(queryClient, navigate, response, 'type-by-uses', '/admin/type-by-uses')
     }
   }) 
 }

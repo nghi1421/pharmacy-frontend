@@ -33,7 +33,7 @@ const TypeByUsePage: React.FC<{}> = () => {
     const [columns, watchSearchList, control, setValue] = useSearchableList(columnsList, updateQueryParams)
     
     const clickAdd = () => {
-        navigate('/type-by-uses/create')
+        navigate('/admin/type-by-uses/create')
     }
     return (
         <Paper>

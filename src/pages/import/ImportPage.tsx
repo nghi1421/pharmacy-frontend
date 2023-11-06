@@ -21,7 +21,7 @@ const ImportPage: React.FC<{}> = () => {
     const navigate = useNavigate()
     const getStaff = useGetImport()
     const clickAdd = () => {
-        navigate('/imports/create')
+        navigate('/admin/imports/create')
     }
     return (
         <Paper>

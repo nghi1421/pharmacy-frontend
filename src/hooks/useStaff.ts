@@ -60,7 +60,7 @@ const useGetStaff = (option: number = 1) => {
       .then((response) => {
         switch (option) {
           case 1: {
-            navigate( `/staffs/${staffId}/edit`,
+            navigate( `/admin/admin/staffs/${staffId}/edit`,
               {
                 state: { staffData: response.data.data }
               }
@@ -104,7 +104,7 @@ const useCreateStaff = (setError: UseFormSetError<any>) => {
         }) 
     },
     onSuccess: (response: any) => {
-      defaultOnSuccessHandle(queryClient, navigate, response, 'staffs', '/staffs')
+      defaultOnSuccessHandle(queryClient, navigate, response, 'staffs', '/admin/staffs')
     }
   })
 }
@@ -123,7 +123,7 @@ const useUpdateStaff =
         }) 
     },
     onSuccess: (response: any) => {
-      defaultOnSuccessHandle(queryClient, navigate,response, 'staffs', '/staffs')
+      defaultOnSuccessHandle(queryClient, navigate,response, 'staffs', '/admin/staffs')
     }
   }) 
 }
@@ -141,7 +141,7 @@ const useDeleteStaff = () => {
         }) 
     },
     onSuccess: (response: any) => {
-      defaultOnSuccessHandle(queryClient, navigate, response, 'staffs', '/staffs')
+      defaultOnSuccessHandle(queryClient, navigate, response, 'staffs', '/admin/staffs')
     }
   }) 
 }
@@ -156,7 +156,7 @@ const useUpdateStaffStatus = () => {
         .post(pathToUrl(API_STAFF_UPDATE_STATUS, { staffId }))
     },
     onSuccess: (response: any) => {
-      defaultOnSuccessHandle(queryClient, navigate, response, 'staffs', '/staffs')
+      defaultOnSuccessHandle(queryClient, navigate, response, 'staffs', '/admin/staffs')
     }
   }) 
 }

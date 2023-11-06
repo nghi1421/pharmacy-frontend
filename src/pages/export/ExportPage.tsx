@@ -21,7 +21,7 @@ const ExportPage: React.FC<{}> = () => {
     const getStaff = useGetExport()
     
     const clickAdd = () => {
-        navigate('/exports/create')
+        navigate('/admin/exports/create')
     }
     return (
         <Paper>

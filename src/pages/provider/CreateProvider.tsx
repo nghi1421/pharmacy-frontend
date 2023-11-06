@@ -52,7 +52,7 @@ const CreateProvider: React.FC = () => {
     const onSubmit = (data: ProviderForm) => createProvider.mutate({...data, address: address});
 
     const backToTable = () => {
-        navigate('/providers')
+        navigate('/admin/providers')
     }
     return (
         <Paper sx={{ px:6, py:4 }}>

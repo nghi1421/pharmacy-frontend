@@ -100,7 +100,7 @@ const CreateExport: React.FC = () => {
     }
 
     const backToTable = () => {
-        navigate('/export')
+        navigate('/admin/exports')
     }
 
     return (

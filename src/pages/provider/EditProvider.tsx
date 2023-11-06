@@ -48,7 +48,7 @@ const EditProvider: React.FC = () => {
         updateProvider.mutate({ ...data, address: address });
 
     const backToTable = () => {
-        navigate('/providers')
+        navigate('/admin/providers')
     }
     return (
         <Paper sx={{ px:6, py:4 }}>

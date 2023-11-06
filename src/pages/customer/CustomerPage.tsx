@@ -34,7 +34,7 @@ const CustomerPage: React.FC<{}> = () => {
     const [columns, watchSearchList, control, setValue] = useSearchableList(columnsList, updateQueryParams)
     
     const clickAdd = () => {
-        navigate('/customers/create')
+        navigate('/admin/customers/create')
     }
     return (
         <Paper>

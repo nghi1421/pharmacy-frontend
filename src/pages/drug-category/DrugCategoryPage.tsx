@@ -36,7 +36,7 @@ const DrugCategoryPage: React.FC<{}> = () => {
     const [columns, watchSearchList, control, setValue] = useSearchableList(columnsList, updateQueryParams)
 
     const clickAdd = () => {
-        navigate('/drug-categories/create')
+        navigate('/admin/drug-categories/create')
     }
     return (
         <Paper>

@@ -73,7 +73,7 @@ const useGetDrugCategory = () => {
     mutationFn: (drugId: string) => axiosClient
       .get(pathToUrl(API_DRUG_CATEGORY_WITH_ID, { drugId }))
       .then((response) => {
-        navigate( `/drug-categories/${drugId}/edit`,
+        navigate( `/admin/drug-categories/${drugId}/edit`,
           {
             state: { drugCategoryData: response.data.data }
           }
@@ -102,7 +102,7 @@ const useCreateDrugCategory = (setError: UseFormSetError<any>) => {
         }) 
     },
     onSuccess: (response: any) => {
-      defaultOnSuccessHandle(queryClient, navigate, response, 'drug-categories', '/drug-categories')
+      defaultOnSuccessHandle(queryClient, navigate, response, 'drug-categories', '/admin/drug-categories')
     }
   })
 }
@@ -120,7 +120,7 @@ const useUpdateDrugCategory = (setError: UseFormSetError<any>) => {
         }) 
     },
     onSuccess: (response: any) => {
-      defaultOnSuccessHandle(queryClient, navigate, response, 'drug-categories', '/drug-categories')
+      defaultOnSuccessHandle(queryClient, navigate, response, 'drug-categories', '/admin/drug-categories')
     }
   }) 
 }
@@ -137,7 +137,7 @@ const useDeleteDrugCategory = () => {
         }) 
     },
     onSuccess: (response: any) => {
-      defaultOnSuccessHandle(queryClient, navigate, response, 'drug-categories', '/drug-categories')
+      defaultOnSuccessHandle(queryClient, navigate, response, 'drug-categories', '/admin/drug-categories')
     }
   }) 
 }

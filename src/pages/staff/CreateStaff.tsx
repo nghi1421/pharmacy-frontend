@@ -93,7 +93,7 @@ const CreateStaff: React.FC = () => {
     const onSubmit = (data: StaffForm) => createStaff.mutate({...data, address: address})
 
     const backToTable = () => {
-        navigate('/staffs')
+        navigate('/admin/staffs')
     }
 
     return (

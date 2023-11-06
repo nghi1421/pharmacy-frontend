@@ -71,7 +71,7 @@ const useGetPosition = () => {
     mutationFn: (positionId: string) => axiosClient
       .get(pathToUrl(API_POSITION_WITH_ID, { positionId }))
       .then((response) => {
-        navigate( `/positions/${positionId}/edit`,
+        navigate( `/admin/positions/${positionId}/edit`,
           {
             state: { positionData: response.data.data }
           }
@@ -100,7 +100,7 @@ const useCreatePosition = (setError: UseFormSetError<any>) => {
         }) 
     },
     onSuccess: (response: any) => {
-      defaultOnSuccessHandle(queryClient, navigate, response, 'positions', '/positions')
+      defaultOnSuccessHandle(queryClient, navigate, response, 'positions', '/admin/positions')
     }
   })
 }
@@ -118,7 +118,7 @@ const useUpdatePosition = (setError: UseFormSetError<any>) => {
         }) 
     },
     onSuccess: (response: any) => {
-      defaultOnSuccessHandle(queryClient, navigate, response, 'positions', '/positions')
+      defaultOnSuccessHandle(queryClient, navigate, response, 'positions', '/admin/positions')
     }
   }) 
 }
@@ -136,7 +136,7 @@ const useDeletePosition = () => {
         }) 
     },
     onSuccess: (response: any) => {
-      defaultOnSuccessHandle(queryClient, navigate, response, 'positions', '/positions')
+      defaultOnSuccessHandle(queryClient, navigate, response, 'positions', '/admin/positions')
     }
   }) 
 }

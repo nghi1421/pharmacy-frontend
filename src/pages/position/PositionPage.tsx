@@ -32,7 +32,7 @@ const PositionPage: React.FC<{}> = () => {
     const [columns, watchSearchList, control, setValue] = useSearchableList(columnsList, updateQueryParams)
 
     const clickAdd = () => {
-        navigate('/positions/create')
+        navigate('/admin/positions/create')
     }
     return (
         <Paper>

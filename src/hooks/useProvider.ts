@@ -79,7 +79,7 @@ const useGetProvider = () => {
     mutationFn: (providerId: string) => axiosClient
       .get(pathToUrl(API_PROVIDER_WITH_ID, { providerId }))
       .then((response) => {
-        navigate( `/providers/${providerId}/edit`,
+        navigate( `/admin/providers/${providerId}/edit`,
           {
             state: { providerData: response.data.data }
           }
@@ -108,7 +108,7 @@ const useCreateProvider = (setError: UseFormSetError<any>) => {
         })
     },
     onSuccess: (response: any) => {
-      defaultOnSuccessHandle(queryClient, navigate, response, 'providers', '/providers')
+      defaultOnSuccessHandle(queryClient, navigate, response, 'providers', '/admin/providers')
     }
   })
 }
@@ -126,7 +126,7 @@ const useUpdateProvider = (setError: UseFormSetError<any>) => {
           })
       },
       onSuccess: (response: any) => {
-        defaultOnSuccessHandle(queryClient, navigate, response, 'providers', '/providers')
+        defaultOnSuccessHandle(queryClient, navigate, response, 'providers', '/admin/providers')
       }
   }) 
 }
@@ -144,7 +144,7 @@ const useDeleteProvider = () => {
           })
       },
       onSuccess: (response: any) => {
-        defaultOnSuccessHandle(queryClient, navigate, response, 'providers', '/providers')
+        defaultOnSuccessHandle(queryClient, navigate, response, 'providers', '/admin/providers')
       }
   }
   ) 

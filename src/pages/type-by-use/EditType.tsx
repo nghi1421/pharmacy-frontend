@@ -39,7 +39,7 @@ const EditType: React.FC = () => {
     };
 
     const backToTable = () => {
-        navigate('/type-by-uses')
+        navigate('/admin/type-by-uses')
     }
     return (
         <Paper sx={{ px: 6, py: 4 }}>
