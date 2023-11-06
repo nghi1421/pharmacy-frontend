@@ -45,6 +45,24 @@ const useGetPositions = (query: Query) => {
   })
 };
 
+const useGetDataPositions = () => {
+  return useQuery({
+    queryKey: ['positions'],
+    queryFn: () => axiosClient
+      .get(API_POSITION)
+      .then((response) => {
+        if (response.data.message) {
+          return response.data.data.map((position: Position) => createData(position))
+        }
+        enqueueSnackbar(response.data.errorMessage, {
+          autoHideDuration: 3000,
+          variant: 'error'
+        })
+        return []
+      }),
+  })
+}
+
 const useGetPosition = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
@@ -125,6 +143,7 @@ const useDeletePosition = () => {
 
 export {
   useGetPositions,
+  useGetDataPositions,
   useGetPosition,
   useCreatePosition,
   useUpdatePosition,

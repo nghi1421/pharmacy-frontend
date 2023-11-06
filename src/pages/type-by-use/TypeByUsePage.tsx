@@ -15,7 +15,7 @@ import { TableExtension } from "../../components/table/TableExtension";
 import { PageHeader } from "../../components/PageHeader";
 
 const columnsList: Column[] = [
-    { key: 'id', value: 'Mã chức vụ', sortable: true, searchable: true, enableSearch: true},
+    { key: 'id', value: 'Mã công dụng', sortable: true, searchable: true, enableSearch: true},
     { key: 'name', value: 'Tên công dụng' , sortable: true, searchable: true, enableSearch: false},
     { key: 'detail', value: 'Chi tiết' , sortable: true, searchable: true, enableSearch: false},
     { key: 'createdAt', value: 'Thời gian tạo', sortable: true, searchable: false},

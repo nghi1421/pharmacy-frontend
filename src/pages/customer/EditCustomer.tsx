@@ -56,7 +56,7 @@ const EditCustomer: React.FC = () => {
                 state.customerData ? 
                     <React.Fragment>
                         <Typography variant="h6" gutterBottom mb='20px'>
-                            Thông tin chức vụ thuốc
+                            Thông tin khách hàng
                         </Typography>
                         <Grid container spacing={3}>
                         <Grid item xs={8} sm={4}>
@@ -85,7 +85,7 @@ const EditCustomer: React.FC = () => {
                             />
                         </Grid>
                             
-                        <Address setAddress={setAddress} key={counter} />  
+                        <Address setAddress={setAddress} key={counter} initAddress={state.customerData.address} />  
 
                         <Grid item xs={12} sm={12} container 
                             sx={{

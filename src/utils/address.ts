@@ -12,7 +12,7 @@ const allProvince = () => {
     return array
 }
 
-const getDistrictsByProvinceCode = (setData: (districts: District[])=> void,provinceCode: string) => {
+const getDistrictsByProvinceCode = (provinceCode: string) => {
     return fetch(`../../node_modules/hanhchinhvn/dist/quan-huyen/${provinceCode}.json`,{
         headers : { 
             'Content-Type': 'application/json',
@@ -20,24 +20,21 @@ const getDistrictsByProvinceCode = (setData: (districts: District[])=> void,prov
         }
     })
     .then((response) => {
-        return response.json();
+        return response.json()
     })
-    .then((myJson) => {
+    .then((data) => {
         let array: District[] = [];
-        for (let key in myJson) {
+        for (let key in data) {
             array.push({
-                code: myJson[key].code,
-                name: myJson[key].name_with_type,
+                code: data[key].code,
+                name: data[key].name_with_type,
             })
         }
-        setData(array)
+        return array
     })
-    .catch((error) => {
-        
-    });
 }
 
-const getWardsByDistrictCode = (setData: (wards: Ward[])=> void, districtCode: string) => {
+const getWardsByDistrictCode = (districtCode: string) => {
     return fetch(`../../node_modules/hanhchinhvn/dist/xa-phuong/${districtCode}.json`,{
         headers : { 
             'Content-Type': 'application/json',
@@ -45,21 +42,18 @@ const getWardsByDistrictCode = (setData: (wards: Ward[])=> void, districtCode: s
         }
     })
     .then((response) => {
-        return response.json();
+        return response.json()
     })
-    .then((myJson) => {
-        let array: Ward[] = [];
-        for (let key in myJson) {
+    .then((data) => {
+        let array: District[] = [];
+        for (let key in data) {
             array.push({
-                code: myJson[key].code,
-                name: myJson[key].name_with_type,
+                code: data[key].code,
+                name: data[key].name_with_type,
             })
         }
-        setData(array)
+        return array
     })
-    .catch((error) => {
-        
-    });;
 }
 
 const getProvinceNameByCode = (provinceCode: string, provinces: Province[]) => {
