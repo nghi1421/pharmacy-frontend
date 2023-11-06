@@ -3,7 +3,7 @@ import TextField from "@mui/material/TextField";
 import { FormInputProps } from "../../types/props/FormInputProps";
 import '../../assets/styles/Input.css'
 
-export const FormInputText: React.FC<FormInputProps> = ({ name, control, label, placeholder }) => {
+export const FormInputText: React.FC<FormInputProps> = ({ name, control, label, placeholder, type }) => {
   return (
     <Controller
         name={name}
@@ -14,6 +14,7 @@ export const FormInputText: React.FC<FormInputProps> = ({ name, control, label, 
             formState,
         }) => (
           <TextField
+              type={type ? type : 'text'}
               helperText={error ? error.message : null}
               error={!!error}
               onChange={onChange}

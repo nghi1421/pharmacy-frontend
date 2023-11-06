@@ -74,11 +74,17 @@ const getWardNameByCode = (wardCode: string, wards: Ward[]) => {
     return ward ? ward.name : ''
 }
 
+const handleAddress = (address: string): string => {
+    const splitAddress: string[] = address.split('/')
+    return splitAddress.filter((data) => data.length > 0).join(', ');
+}
+
 export {
     allProvince,
     getDistrictsByProvinceCode,
     getWardsByDistrictCode,
     getProvinceNameByCode,
     getDistrictNameByCode,
-    getWardNameByCode
+    getWardNameByCode,
+    handleAddress
 }

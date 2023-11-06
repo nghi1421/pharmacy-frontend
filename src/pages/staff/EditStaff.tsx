@@ -159,7 +159,7 @@ const EditStaff: React.FC = () => {
                                 </FormControl>
                             </Grid>
                                 
-                            <Address setAddress={setAddress} key={counter} />  
+                            <Address setAddress={setAddress} key={counter} initAddress={state.staffData.address} />  
                                 
                             <Grid item xs={8} sm={4}>
                                 <FormInputDate

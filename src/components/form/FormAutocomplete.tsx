@@ -7,16 +7,20 @@ interface FormAutoCompleteProps {
   label: string
   placeholder: string
   options: any[]
+  disable?: boolean
 }
 
 export const FormAutocomplete: React.FC<FormAutoCompleteProps> =
-  ({ control, label, name, placeholder, options }) => {
+  ({ control, label, name, placeholder, options, disable }) => {
   return (
     <Controller
-      render={({ field: { onChange } }) => (
+      render={({ field: { onChange} }) => (
         <Autocomplete
           options={options}
-          id="autocomplete-key"
+          disabled={disable ? disable : false}
+          id='autocomplete'
+          getOptionLabel={(option) => option.label}
+          isOptionEqualToValue={(option, value) => option.value === value.value}
           renderInput={(params) => (
             <TextField
               {...params}
@@ -29,6 +33,7 @@ export const FormAutocomplete: React.FC<FormAutoCompleteProps> =
         />
       )}
       name={name}
+      defaultValue=""
       control={control}
     />
   );

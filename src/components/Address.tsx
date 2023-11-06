@@ -1,11 +1,6 @@
 import {
-    CircularProgress,
-    FormControl,
+    Autocomplete,
     Grid,
-    InputLabel,
-    MenuItem,
-    Select,
-    SelectChangeEvent,
     TextField
 } from "@mui/material"
 import React, {
@@ -17,39 +12,37 @@ import {
     allProvince,
     getDistrictsByProvinceCode,
     getWardsByDistrictCode,
-    getProvinceNameByCode,
-    getDistrictNameByCode,
-getWardNameByCode
 } from '../utils/address'
 
 import { District,
      Province,
      Ward } from "../types/Address";
+import { Item } from "../types/props/FormInputListProps";
 
 interface AddressProp {
     initAddress?: string,
     setAddress: (address: string) => void;
 }
 
-const Address: React.FC<AddressProp> = ({setAddress, initAddress}) => {
-    const [province, setProvince] = useState<Province>({ name: '', code: '' })
-    const [district, setDistrict] = useState<District>({ name: '', code:'' })
-    const [ward, setWard] = useState<Ward>({ name: '', code: '' })
+const Address: React.FC<AddressProp> = ({ setAddress, initAddress }) => {
+    const [province, setProvince] = useState<Item|null>(null)
+    const [district, setDistrict] = useState<Item|null>(null)
+    const [ward, setWard] = useState<Item|null>(null)
     const [provinces, _] = useState<Province[]>(allProvince())
     const [districts, setDistricts] = useState<District[]>([])
     const [wards, setWards] = useState<Ward[]>([])
     const [detailAddress, setDetailAddress] = useState<string>('')
-
+    
     function getFullAddress(): string {
-        return `${detailAddress}/${ward.name}/${district.name}/${province.name}`
+        return `${detailAddress}/${ward ? ward.label : ''}/${district ? district.label : ''}/${province ? province.label : ''}`
     }
 
-    
     useEffect(() => {
         if (initAddress) {
             const splitAddress = initAddress.split('/')
 
             async function handledExistAddress(splitAddress: string[]) {
+                console.log(splitAddress);
                 try {
                     _(allProvince())
                     if (splitAddress[0].length > 0) {
@@ -62,7 +55,7 @@ const Address: React.FC<AddressProp> = ({setAddress, initAddress}) => {
                         if (provinceObj) {
                             localDistricts = await getDistrictsByProvinceCode(provinceObj.code)
                             setDistricts(localDistricts)
-                            setProvince(provinceObj)
+                            setProvince({ label: provinceObj.name, value: provinceObj.code })
                         }
                     }
 
@@ -71,14 +64,14 @@ const Address: React.FC<AddressProp> = ({setAddress, initAddress}) => {
                         if (districtObj) {
                             localWards = await getWardsByDistrictCode(districtObj.code)
                             setWards(localWards)
-                            setDistrict(districtObj)
+                            setDistrict({label: districtObj.name, value: districtObj.code})
                         }
                     }
 
                     if (splitAddress[1].length > 0) {
                         const wardObj: Ward | undefined = localWards.find((ward) => ward.name === splitAddress[1])
                         if (wardObj) {
-                            setWard(wardObj)
+                            setWard({label: wardObj.name, value: wardObj.code})
                         }
                     }
                 }
@@ -91,39 +84,42 @@ const Address: React.FC<AddressProp> = ({setAddress, initAddress}) => {
     }, [])
     
     useEffect(() => {
+        if (province) {
+            if (!initAddress || (initAddress && province.label !== initAddress.split('/')[3])) {
+                async function selectProvince() {
+                    const data = await getDistrictsByProvinceCode(province.value)
+                    setDistricts(data)
+                    setDistrict(null)
+                    setWard(null)
+                }
+                selectProvince()
+            }
+        }
+        else {
+            setDistrict(null)
+            setWard(null)
+        }
+    }, [province])
+
+    useEffect(() => {
+        if (district !== null) {
+            if (!initAddress || (initAddress && district.label !== initAddress.split('/')[2])) {
+                async function selectDistrict() {
+                    const data = await getWardsByDistrictCode(district.value)
+                    setWards(data)
+                    setWard(null)
+                }
+                selectDistrict()
+            }
+        }
+        else {
+            setWard(null)
+        }
+    }, [district])
+
+    useEffect(() => {
         setAddress(getFullAddress())
     })
-
-    const handleProvinceChange = async (e: SelectChangeEvent) => {
-        const data = await getDistrictsByProvinceCode(e.target.value as string)
-        setDistricts(data)
-        setProvince((prevProvines) => {
-            if (prevProvines.code.length > 0) {
-                setDistrict({name: '', code: ''})
-                setWard({name: '', code: ''})
-            }
-            return {
-                code: e.target.value as string,
-                name: getProvinceNameByCode(e.target.value as string, provinces)
-            }
-        })
-    }
-
-    const handleDistrictChange = async (e: SelectChangeEvent) => {
-        const data = await getWardsByDistrictCode(e.target.value as string)
-        setWards(data)
-        setDistrict({
-            code: e.target.value as string,
-            name: getDistrictNameByCode(e.target.value as string, districts)
-        })
-    }
-
-    const handleWardChange = (e: SelectChangeEvent)=> {
-        setWard({
-            code: e.target.value as string,
-            name: getWardNameByCode(e.target.value as string, wards)
-        })
-    }
     
     const handleChangeDetailAddress = (e: ChangeEvent<HTMLInputElement>)=> {
         setDetailAddress(e.target.value)
@@ -132,75 +128,65 @@ const Address: React.FC<AddressProp> = ({setAddress, initAddress}) => {
     return (
         <>
             <Grid item xs={4}>
-                <FormControl fullWidth> 
-                    <InputLabel id="province-select-label"> 
-                        Tỉnh thành 
-                    </InputLabel> 
-                    <Select
-                        labelId="province-select-label"
-                        id="province-select-label"
-                        fullWidth
-                        label="Tỉnh thành"
-                        value={province.code}
-                        onChange={handleProvinceChange} 
-                        > 
-                            {
-                                provinces.length > 0 ? 
-                                provinces.map((province) => (
-                                    <MenuItem value={province.code}>{ province.name }</MenuItem>                                     
-                                )) 
-                                : <CircularProgress sx={{ margin: 'auto'}}/>
-                            }
-                    </Select> 
-                </FormControl> 
+                <Autocomplete
+                    options={provinces.map((province) => {return {label: province.name, value: province.code}})}
+                    id='autocomplete'
+                    value={province}
+                    getOptionLabel={(option) => option.label}
+                    isOptionEqualToValue={(option, value) => option.value === value.value}
+                    renderInput={(params) => (
+                        <TextField
+                        {...params}
+                        placeholder={'Chọn địa chỉ'}
+                        label='Quận/Huyện'
+                        variant="outlined"
+                        />
+                    )}
+                    onChange={(_, data) => setProvince(data)}
+                />
+
             </Grid>
                 
             <Grid item xs={4}>
-                <FormControl fullWidth disabled={province.name === ''}> 
-                    <InputLabel id="district-select-label"> 
-                        Quận/Huyện
-                    </InputLabel> 
-                    <Select 
-                        labelId="district-select-label"
-                        defaultValue=""
-                        id="district-simple-select"
-                        fullWidth
-                        label="Quận/Huyện"
-                        value={district.code}
-                        onChange={handleDistrictChange} 
-                        > 
-                            {
-                                districts.length > 0 ?
-                                districts.map((district) => (
-                                    <MenuItem value={district.code}>{ district.name }</MenuItem>                                     
-                                )) : <CircularProgress sx={{ margin: 'auto'}} />
-                            }
-                    </Select> 
-                </FormControl>  
+                <Autocomplete
+                    key={province === null ? Math.random() : 'district-value'}
+                    disabled={province === null ? true : false}
+                    options={districts.map((province) => {return {label: province.name, value: province.code}})}
+                    id='autocomplete'
+                    value={district}
+                    getOptionLabel={(option) => option.label}
+                    isOptionEqualToValue={(option, value) => option.value === value.value}
+                    renderInput={(params) => (
+                        <TextField
+                        {...params}
+                        placeholder={'Chọn quận huyện'}
+                        label='Quận/Huyện'
+                        variant="outlined"
+                        />
+                    )}
+                    onChange={(_, data) => setDistrict(data)}
+                />
             </Grid>
 
             <Grid item xs={4}>
-                <FormControl fullWidth disabled={district.name.length === 0}> 
-                    <InputLabel id="ward-select-label"> 
-                        Phường/Xã/Thị trấn
-                    </InputLabel> 
-                    <Select 
-                        labelId="ward-select-label"
-                        id="ward-select-label"
-                        fullWidth
-                        label="Phường/Xã/Thị trấn"
-                        value={ward.code}
-                        onChange={handleWardChange} 
-                    > 
-                        {
-                            wards.length > 0 ?
-                            wards.map((ward) => (
-                                <MenuItem value={ward.code}>{ ward.name }</MenuItem>                                     
-                            )) 
-                            : <CircularProgress sx={{ margin: 'auto'}}/>
-                        }
-                    </Select> 
-                </FormControl>
+                <Autocomplete
+                    key={province === null ? Math.random() : 'ward-value'}
+                    disabled={district === null ? true : false}
+                    options={wards.map((ward) => {return {label: ward.name, value: ward.code}})}
+                    id='autocomplete'
+                    value={ward}
+                    getOptionLabel={(option) => option.label}
+                    isOptionEqualToValue={(option, value) => option.value === value.value}
+                    renderInput={(params) => (
+                        <TextField
+                        {...params}
+                        placeholder={'Chọn quận huyện'}
+                        label='Quận/Huyện'
+                        variant="outlined"
+                        />
+                    )}
+                    onChange={(_, data) => setWard(data)}
+                />
             </Grid>
             <Grid item xs={8} sm={4}>
                 <TextField

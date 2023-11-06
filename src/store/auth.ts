@@ -1,6 +1,6 @@
 import { Staff } from "../types/Staff";
 
-const setAccessToken = (accessToken: string) => {
+const setAccessToken = (accessToken: string | null) => {
     localStorage.setItem('accessToken', accessToken);
 }
 
@@ -8,7 +8,7 @@ const getAccessToken = (): string | null => {
     return localStorage.getItem('accessToken');
 }
 
-const setStaff = (staff: Staff) => {
+const setStaff = (staff: Staff|null) => {
     localStorage.setItem('staffInfomation', JSON.stringify(staff));
 }
 

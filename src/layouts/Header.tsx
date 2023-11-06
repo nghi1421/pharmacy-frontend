@@ -1,9 +1,11 @@
 import { AccountCircle } from "@mui/icons-material"
 import { Divider, IconButton, Menu, MenuItem, Toolbar, Typography, styled } from "@mui/material"
 import MuiAppBar, { AppBarProps as MuiAppBarProps  } from '@mui/material/AppBar';
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import MenuIcon from '@mui/icons-material/Menu';
-import { getStaff } from "../store/auth";
+import { getAccessToken, getStaff, setAccessToken, setStaff } from "../store/auth";
+import { useNavigate } from "react-router-dom";
+import { enqueueSnackbar } from "notistack";
 
 interface HeaderProps {
   open: boolean;
@@ -37,8 +39,15 @@ const AppBar = styled(MuiAppBar, {
 const Header: React.FC<HeaderProps> = ({ open, setOpen }) => {
   const [avatarEl, setAvatarEl] = useState<HTMLButtonElement | null>(null);
   const staff = getStaff();
-
+  const accessToken = getAccessToken();
+  const navigate = useNavigate()
   const openSetting = Boolean(avatarEl);
+
+  useEffect(() => {
+    if (!staff || !accessToken) {
+      navigate('/login')
+    }
+  })
 
   const handleAvatarClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     setAvatarEl(e.currentTarget);
@@ -47,6 +56,16 @@ const Header: React.FC<HeaderProps> = ({ open, setOpen }) => {
   const handleAvatarClose = () => {
     setAvatarEl(null);
   };
+
+  const handleLogout = () => {
+    setStaff(null);
+    setAccessToken(null);
+    navigate('/login')
+    enqueueSnackbar('Đăng xuất thành công.', {
+      variant: 'success',
+      autoHideDuration: 3000
+    })
+  }
 
   const toggleDrawer = () => {
       setOpen(!open);
@@ -106,7 +125,7 @@ const Header: React.FC<HeaderProps> = ({ open, setOpen }) => {
             <MenuItem onClick={handleAvatarClose}>Cập nhật thông tin</MenuItem>
             <MenuItem onClick={handleAvatarClose}>Đổi mật khẩu</MenuItem>
               <Divider />
-            <MenuItem onClick={handleAvatarClose}>Đăng xuất</MenuItem>
+            <MenuItem onClick={handleLogout}>Đăng xuất</MenuItem>
           </Menu>
         </Toolbar>
         </AppBar>

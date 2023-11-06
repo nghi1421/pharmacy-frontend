@@ -10,6 +10,7 @@ import { enqueueSnackbar } from 'notistack';
 import { login } from '../hooks/useAuth.ts';
 import { useNavigate } from 'react-router-dom';
 import { setAccessToken, setStaff } from '../store/auth.ts';
+import { handleAddress } from '../utils/address.ts';
 
 interface AuthForm {
     username: string
@@ -43,14 +44,14 @@ const Login: React.FC = () => {
     const onSubmit = async (data: AuthForm) => {
         const response = await login(data.username, data.password);
         if (response.data.message) {
-            setStaff(response.data.data.staff)
+            setStaff({...response.data.data.staff, address: handleAddress(response.data.data.staff.address)})
             setAccessToken(response.data.accessToken);
             enqueueSnackbar(
                 response.data.message, {
                 autoHideDuration: 3000,
                 variant: 'success'
             })
-            navigate('/users')
+            navigate('/admin/users')
         }
         else {
             enqueueSnackbar(
@@ -92,6 +93,7 @@ const Login: React.FC = () => {
                         <Grid item xs={8} sm={12}>
                         <FormInputText
                             name="password"
+                            type='password'
                             control={control}
                             label="Mật khẩu"
                             placeholder='Nhập mật khẩu của bạn'

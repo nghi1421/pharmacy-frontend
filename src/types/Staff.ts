@@ -9,4 +9,5 @@ export type Staff = {
     gender: number
     isWorking: boolean
     position: Position
+    address: string
 }

@@ -85,7 +85,7 @@ const EditProvider: React.FC = () => {
                             />
                         </Grid>
                             
-                        <Address setAddress={setAddress} key={counter} />  
+                        <Address setAddress={setAddress} key={counter} initAddress={state.providerData.address}/>  
 
                         <Grid item xs={12} sm={12} container 
                             sx={{

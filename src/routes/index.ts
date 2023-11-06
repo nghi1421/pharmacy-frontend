@@ -29,63 +29,63 @@ export const dashboardRoutes: Array<Route> = [
     {      
         key: 'user-route',
         title: 'Tài khoản',
-        path: '/users',
+        path: 'users',
         icon: ManageAccounts,
         element: UserPage
     },
     {      
         key: 'staff-route',
         title: 'Nhân viên',
-        path: '/staffs',
+        path: 'staffs',
         icon: Group,
         element: StaffPage
     },
     {      
         key: 'customer-route',
         title: 'Khách hàng',
-        path: '/customers',
+        path: 'customers',
         icon: PeopleIcon,
         element: CustomerPage
     },
     {      
         key: 'provider-route',
         title: 'Công ty dược',
-        path: '/providers',
+        path: 'providers',
         icon: Handshake,
         element: ProviderPage
     },
     {      
         key: 'position-route',
         title: 'Chức vụ',
-        path: '/positions',
+        path: 'positions',
         icon: ClearAll,
         element: PositionPage
     },
     {      
         key: 'drug-category-route',
         title: 'Danh mục thuốc',
-        path: '/drug-categories',
+        path: 'drug-categories',
         icon: Medication,
         element: DrugCategoryPage
     },
     {      
         key: 'type-by-use-route',
         title: 'Công dụng',
-        path: '/type-by-uses',
+        path: 'type-by-uses',
         icon: VolunteerActivism,
         element: TypeByUsePage
     },
     {      
         key: 'import-route',
         title: 'Nhập hàng',
-        path: '/imports',
+        path: 'imports',
         icon: VerticalAlignBottom,
         element: ImportPage
     },
     {      
         key: 'export-route',
         title: 'Xuất hàng',
-        path: '/exports',
+        path: 'exports',
         icon: AttachMoney,
         element: ExportPage
     }
@@ -95,98 +95,98 @@ export const formRoutes: Array<Route> = [
     {      
         key: 'staff-create-form-route',
         title: 'Form nhân viên',
-        path: '/staffs/create',
+        path: 'staffs/create',
         icon: AttachMoney,
         element: CreateStaff
     },
     {      
         key: 'staff-edit-form-route',
         title: 'Form nhân viên',
-        path: '/staffs/:staffId/edit',
+        path: 'staffs/:staffId/edit',
         icon: AttachMoney,
         element: EditStaff
     },
     {      
         key: 'customer-create-form-route',
         title: 'Form khách hàng',
-        path: '/customers/create',
+        path: 'customers/create',
         icon: AttachMoney,
         element: CreateCustomer
     },
     {      
         key: 'customer-edit-form-route',
         title: 'Form khách hàng',
-        path: '/customers/:customerId/edit',
+        path: 'customers/:customerId/edit',
         icon: AttachMoney,
         element: EditCustomer
     },
     {      
         key: 'providers-create-form-route',
         title: 'Form khách hàng',
-        path: '/providers/create',
+        path: 'providers/create',
         icon: AttachMoney,
         element: CreateProvider
     },
     {      
         key: 'providers-update-form-route',
         title: 'Form khách hàng',
-        path: '/providers/:providerId/edit',
+        path: 'providers/:providerId/edit',
         icon: AttachMoney,
         element: EditProvider
     },
     {      
         key: 'positions-create-form-route',
         title: 'Form vị trí',
-        path: '/positions/create',
+        path: 'positions/create',
         icon: AttachMoney,
         element: CreatePosition
     },
     {      
         key: 'positions-edit-form-route',
         title: 'Form công dụng',
-        path: '/positions/:positionId/edit',
+        path: 'positions/:positionId/edit',
         icon: AttachMoney,
         element: EditPosition
     },
     {      
         key: 'type-by-uses-create-form-route',
         title: 'Form công dụng',
-        path: '/type-by-uses/create',
+        path: 'type-by-uses/create',
         icon: AttachMoney,
         element: CreateType
     },
     {      
         key: 'type-by-uses-edit-form-route',
         title: 'Form công dụng',
-        path: '/type-by-uses/:typeId/edit',
+        path: 'type-by-uses/:typeId/edit',
         icon: AttachMoney,
         element: EditType
     },
     {      
         key: 'drug-category-create-form-route',
         title: 'Form danh mục thuốc',
-        path: '/drug-categories/create',
+        path: 'drug-categories/create',
         icon: AttachMoney,
         element: CreateDrugCategory
     },
     {      
         key: 'drug-category-update-form-route',
         title: 'Form danh mục thuốc',
-        path: '/drug-categories/:drugdrCategoryId/edit',
+        path: 'drug-categories/:drugdrCategoryId/edit',
         icon: AttachMoney,
         element: EditDrugCategory
     },
     {      
         key: 'import-create-form-route',
         title: 'Form danh phieu nhap hang',
-        path: '/imports/create',
+        path: 'imports/create',
         icon: AttachMoney,
         element: CreateImport
     },
     {      
         key: 'export-create-form-route',
         title: 'Form danh phieu xuat hang',
-        path: '/exports/create',
+        path: 'exports/create',
         icon: AttachMoney,
         element: CreateExport
     },

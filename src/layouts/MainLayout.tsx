@@ -20,9 +20,10 @@ const Layout: React.FC<LayoutProps> = ({ children }): ReactElement => {
   };
 
   const token = getAccessToken();
-  if (!token) {
+  const staff = getStaff();
+  if (!token || !staff) {
     return (
-      <Navigate replace to="/login" />
+      <Navigate to="/login" />
     )
   }
   else 

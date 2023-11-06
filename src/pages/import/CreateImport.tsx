@@ -8,7 +8,6 @@ import { getStaff } from "../../store/auth";
 import { FormInputText } from "../../components/form/FormInputText";
 import { FormInputDate } from "../../components/form/FormInputDate";
 import { FormInputCurrency } from "../../components/form/FormInputCurrency";
-import { Column } from "../../types/Column";
 import { useGetDataDrugCategories } from "../../hooks/useDrugCategory";
 import TableAction from "../../components/table/TableAction";
 import TableSelectDrugCategory from "../../components/table/TableSelectDrugCategory";

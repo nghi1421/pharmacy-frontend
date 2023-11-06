@@ -12,10 +12,12 @@ import { defaultCatchErrorHandle, defaultOnSuccessHandle, updateSearchParams } f
 import { UseFormSetError } from 'react-hook-form';
 import { Query } from '../types/Query';
 import { DataMetaResponse } from '../types/response/DataResponse';
+import { handleAddress } from '../utils/address';
 
 function createData({id, name, address, createdAt, updatedAt, phoneNumber, email}: Provider) {
     return {
-        id, name, phoneNumber, email, address,
+      id, name, phoneNumber, email,
+        address: handleAddress(address),
         createdAt: formatDateTime(createdAt),
         updatedAt: formatDateTime(updatedAt),
     };
@@ -23,7 +25,7 @@ function createData({id, name, address, createdAt, updatedAt, phoneNumber, email
 
 function createDataForAutocomplete({id, name, address, phoneNumber, email}: Provider) {
     return {
-        id, label: name, phoneNumber, email, address,
+        id, label: name, phoneNumber, email, address: handleAddress(address),
     };
 }
 
