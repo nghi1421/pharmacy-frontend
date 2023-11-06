@@ -8,8 +8,8 @@ import { useForm } from 'react-hook-form'
 import yup from '../utils/yup.ts'
 import { enqueueSnackbar } from 'notistack';
 import { login } from '../hooks/useAuth.ts';
-import { useNavigate } from 'react-router-dom';
-import { setAccessToken, setStaff } from '../store/auth.ts';
+import { Navigate, useNavigate } from 'react-router-dom';
+import { getAccessToken, getStaff, setAccessToken, setStaff } from '../store/auth.ts';
 import { handleAddress } from '../utils/address.ts';
 
 interface AuthForm {
@@ -36,6 +36,8 @@ const authFormValidate: Yup.ObjectSchema<TypeByUseEditForm> = yup.object({
 
 const Login: React.FC = () => {
     const navigate = useNavigate()
+    const staff = getStaff()
+    const accessToken = getAccessToken()
     const { handleSubmit, control } = useForm<AuthForm>({
         defaultValues: defaultValues,
         resolver: yupResolver(authFormValidate)
@@ -62,6 +64,10 @@ const Login: React.FC = () => {
         }
     };
         
+    if (staff && accessToken) {
+        return <Navigate replace to='/admin/users'/>
+    }
+    else 
     return (
         <Container component="main" maxWidth="xs">
             <CssBaseline />
