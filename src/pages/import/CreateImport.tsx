@@ -1,4 +1,4 @@
-import { Box, Button, CircularProgress, Grid, Paper, Typography } from "@mui/material"
+import { Box, Button, CircularProgress, Grid, InputAdornment, Paper, TextField, Typography } from "@mui/material"
 import { useNavigate } from "react-router-dom"
 import React, { useEffect, useState } from "react";
 import { FormAutocomplete } from "../../components/form/FormAutocomplete";
@@ -11,6 +11,16 @@ import { FormInputCurrency } from "../../components/form/FormInputCurrency";
 import { useGetDataDrugCategories } from "../../hooks/useDrugCategory";
 import TableAction from "../../components/table/TableAction";
 import TableSelectDrugCategory from "../../components/table/TableSelectDrugCategory";
+import SearchIcon from '@mui/icons-material/Search';
+import { makeStyles } from "@mui/styles";
+
+const useStyles = makeStyles({
+  customTextField: {
+    "& input::placeholder": {
+      fontSize: "15px"
+    }
+  }
+})
 
 interface ColumnDrugCategory {
     key: string;
@@ -36,22 +46,39 @@ const columns: ColumnDrugCategory[] = [
 
 const CreateImport: React.FC = () => {
     const navigate = useNavigate()
+    const classes = useStyles();
     const staff = getStaff();
     const { isLoading: drugCategoryLoading, data: drugCategories } = useGetDataDrugCategories()
     const [drugs, setDrugs] = useState<any[]>([])
+    const [cloneDrugs, setCloneDrugs] = useState<any[]>([])
     const [selectedDrugs, setSelectedDrugs] = useState<any[]>([])
     const [pay, setPay] = useState<number[]>([0 , 0, 0])
     const { data: providers, isLoading: providerLoading } = useGetDataProviders()
     const { handleSubmit, reset, control, watch } = useForm<ImportForm>({
     });
+    const [search, setSearch] = useState<string>('')
 
     const watchProvider = watch('provider')
 
+    const handleSearchData = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const searchTerm = event.target.value as string
+        if (searchTerm.trim().length > 0) {
+            setDrugs(cloneDrugs.filter(
+                drug => (drug.name).toLowerCase().includes(searchTerm.toLowerCase()) && !drug.checked
+            ))
+        }
+        else {
+            setDrugs(cloneDrugs)
+        }
+        setSearch(event.target.value as string);
+    }
+
     useEffect(() => {
         if (drugCategories && drugCategories.length > 0) {
-            setDrugs(drugCategories.map((drug: any) => {
-                return {...drug, checked: false}
-            }))
+            const data = drugCategories.map((drug: any) => {
+                return { ...drug, checked: false }
+            });
+            setDrugs(data)
         }
     }, [drugCategories])
 
@@ -75,21 +102,24 @@ const CreateImport: React.FC = () => {
     }, [selectedDrugs])
 
     const onSubmit = (data: ImportForm) => { 
-        console.log(selectedDrugs)
         console.log(data)
     };
 
     const checkDrugCategory = (drugCategory: any) => {
-        setDrugs(drugs.map(drug => {
+        const data = drugs.map(drug => {
             return drug.id === drugCategory.id ? {...drug, checked: true} : drug
-        }))
+        })
+        setDrugs(data)
+        setCloneDrugs(data)
         selectedDrugs.push({...drugCategory, checked: false, quantity: 0, unitPrice: 0, expiryDate: new Date()})
     }
 
     const unCheckDrugCategory = (drugCategory: any) => {
-        setDrugs(drugs.map(drug => {
+        const data = drugs.map(drug => {
             return drug.id === drugCategory.id ? {...drug, checked: false} : drug
-        }))
+        })
+        setDrugs(data)
+        setCloneDrugs(data)
         const newSelectedDrugs = selectedDrugs.filter((drug) => drug.id !== drugCategory.id);
         setSelectedDrugs(newSelectedDrugs);
     }
@@ -295,11 +325,11 @@ const CreateImport: React.FC = () => {
                         gap: 4
                     }}
                 >
-                    <Typography variant="subtitle2" sx={{  }}>
+                    <Typography variant="subtitle2">
                         Tổng tiền (chưa tính VAT): { pay[0] ? pay[0].toLocaleString() : '_'} VND
                     </Typography>
 
-                    <Typography variant="subtitle2" sx={{  }}>
+                    <Typography variant="subtitle2">
                         Tiền thuế VAT: { pay[1] ? pay[1].toLocaleString() : '_'} VND
                     </Typography>
 
@@ -313,6 +343,24 @@ const CreateImport: React.FC = () => {
                     <Typography mb='20px' variant="subtitle2" sx={{ fontWeight: 'fontWeightBold', mt: 2 }}>
                         Danh mục thuốc
                     </Typography>
+                    <TextField
+                        onChange={handleSearchData}
+                        classes={{ root: classes.customTextField }}
+                        size='small'
+                        sx={{ width: '40%', my :'auto', mx: 2 }}
+                        label="Tìm kiếm"
+                        value={search}
+                        placeholder="Nhập thông tin danh mục thuốc theo tên"
+                        InputProps={{
+                            endAdornment: (
+                                <InputAdornment
+                                    position='end'
+                                >
+                                    <SearchIcon />
+                                </InputAdornment>
+                            )
+                        }}
+                    />
                     {
                         drugCategoryLoading
                         ?
@@ -362,5 +410,7 @@ const CreateImport: React.FC = () => {
         </Paper>
     )
 }
+
+
 
 export default CreateImport

@@ -68,7 +68,6 @@ export const defaultCatchErrorHandle = (
 
 export const updateSearchParams = (query: Query): URLSearchParams => {
     const queryParams = new URLSearchParams();
-    console.log(query)
     queryParams.set('page', query.page.toString())
     queryParams.set('perPage', query.perPage.toString())
     queryParams.set('orderBy', query.orderBy)

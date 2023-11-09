@@ -14,7 +14,7 @@ export interface DrugCategoryForm {
     unit: string;
     minimalUnit: string;
     vat: number;
-    quantityConversion: number;
+    conversionQuantity: number;
     instruction: string;
     preserved: string;
     typeId: string;
@@ -27,7 +27,7 @@ const defaultValues = {
     unit: 'thùng',
     minimalUnit: 'viên',
     vat: 0.0,
-    quantityConversion: 0,
+    conversionQuantity: 0,
     instruction: '',
     preserved: '',
     typeId: '1',
@@ -51,7 +51,7 @@ const drugCategoryVaidate: Yup.ObjectSchema<DrugCategoryForm> = yup.object({
         .number()
         .min(0, 'VAT phải lớn hơn 0')
         .max(100, 'VAT phải là nhỏ hơn 100'),
-    quantityConversion: yup
+    conversionQuantity: yup
         .number()
         .min(1, 'Số lượng quy đổi phải lớn hơn 0'),
     instruction: yup
@@ -78,7 +78,6 @@ const CreateDrugCategory: React.FC = () => {
     const watchMinimalUnit = watch('minimalUnit')
 
     const onSubmit = (data: DrugCategoryForm) => {
-        console.log(data);
         createDrugCategory.mutate(data)
     };
 
@@ -166,7 +165,7 @@ const CreateDrugCategory: React.FC = () => {
                 </Grid>
                 <Grid item xs={8} sm={3}>
                     <FormInputFloat
-                        name='quantityConversion'
+                        name='conversionQuantity'
                         label='Số lượng quy đổi'
                         step='1'
                         min={0}

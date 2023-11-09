@@ -16,7 +16,7 @@ export interface DrugCategoryEditForm {
     unit: string;
     minimalUnit: string;
     vat: number;
-    quantityConversion: number;
+    conversionQuantity: number;
     instruction: string;
     preserved: string;
     typeId: string;
@@ -40,7 +40,7 @@ const drugCategoryVaidate: Yup.ObjectSchema<DrugCategoryForm> = yup.object({
         .number()
         .min(0, 'VAT phải lớn hơn 0')
         .max(100, 'VAT phải là nhỏ hơn 100'),
-    quantityConversion: yup
+    conversionQuantity: yup
         .number()
         .min(1, 'Số lượng quy đổi phải lớn hơn 0'),
     instruction: yup
@@ -162,7 +162,7 @@ const EditDrugCategory: React.FC = () => {
                             </Grid>
                             <Grid item xs={8} sm={3}>
                                 <FormInputFloat
-                                    name='quantityConversion'
+                                    name='conversionQuantity'
                                     label='Số lượng quy đổi'
                                     step='1'
                                     min={0}

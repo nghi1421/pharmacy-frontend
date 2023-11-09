@@ -74,7 +74,6 @@ const CreateExport: React.FC = () => {
     }, [selectedDrugs])
 
     const onSubmit = (data: ImportForm) => { 
-        console.log(selectedDrugs)
         console.log(data)
     };
 

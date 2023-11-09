@@ -42,7 +42,6 @@ const Address: React.FC<AddressProp> = ({ setAddress, initAddress }) => {
             const splitAddress = initAddress.split('/')
 
             async function handledExistAddress(splitAddress: string[]) {
-                console.log(splitAddress);
                 try {
                     _(allProvince())
                     if (splitAddress[0].length > 0) {

@@ -1,3 +1,3 @@
-import { theme } from './GlobalTheme'
+import theme from './GlobalTheme'
 
 export { theme }

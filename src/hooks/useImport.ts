@@ -85,7 +85,6 @@ const useGetImport = () => {
 //       }
 //     },
 //     onError: (error: any) => {
-//       console.log(error)
 //       enqueueSnackbar('Lỗi server.',
 //         {
 //           autoHideDuration: 3000,
@@ -121,7 +120,6 @@ const useGetImport = () => {
 //       }
 //     },
 //     onError: (error: any) => {
-//       console.log(error)
 //       enqueueSnackbar('Lỗi server.',
 //         {
 //           autoHideDuration: 3000,
@@ -155,7 +153,6 @@ const useGetImport = () => {
 //       }
 //     },
 //     onError: (error: any) => {
-//       console.log(error)
 //       enqueueSnackbar('Lỗi server.',
 //         {
 //           autoHideDuration: 3000,

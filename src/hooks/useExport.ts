@@ -83,7 +83,6 @@ const useGetExport = () => {
 //       }
 //     },
 //     onError: (error: any) => {
-//       console.log(error)
 //       enqueueSnackbar('Lỗi server.',
 //         {
 //           autoHideDuration: 3000,
@@ -119,7 +118,6 @@ const useGetExport = () => {
 //       }
 //     },
 //     onError: (error: any) => {
-//       console.log(error)
 //       enqueueSnackbar('Lỗi server.',
 //         {
 //           autoHideDuration: 3000,
@@ -153,7 +151,6 @@ const useGetExport = () => {
 //       }
 //     },
 //     onError: (error: any) => {
-//       console.log(error)
 //       enqueueSnackbar('Lỗi server.',
 //         {
 //           autoHideDuration: 3000,

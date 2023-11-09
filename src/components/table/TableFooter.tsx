@@ -34,8 +34,8 @@ export const TableFooter: React.FC<TableFooterProps> = (
                             alignItems: "center", 
                         }} 
                     > 
-                        <Typography fontSize={24} align="center"> 
-                            Page: {page} 
+                        <Typography align="center"> 
+                            Trang: {page} 
                         </Typography> 
                         <Pagination
                             count={totalPage}

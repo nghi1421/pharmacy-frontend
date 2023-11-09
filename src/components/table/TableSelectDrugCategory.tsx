@@ -244,7 +244,6 @@ const TableSelectDrugCategory: React.FC<TableProps<any>> = ({ rows, keyTable, ac
                                   <DatePicker
                                     sx={{ width: '100%' }}
                                     value={dayjs(row['expiryDate'])}
-                                    onChange={(e) => (console.log(e))}
                                     minDate={dayjs()}
                                     format="DD-MM-YYYY"
                                     label='Hạn sử dụng'

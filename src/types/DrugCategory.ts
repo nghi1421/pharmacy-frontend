@@ -11,7 +11,7 @@ export type DrugCategory = {
     minimalUnit: string
     instruction: string
     preserved: string
-    quantityConversion: number
+    conversionQuantity: number
     createdAt: string
     updatedAt: string
 }
