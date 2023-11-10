@@ -135,11 +135,18 @@ const CreateExport: React.FC = () => {
     }
 
     const unCheckDrugCategory = (drugCategory: any) => {
-        const data = drugs.map(drug => {
+        const data = cloneDrugs.map(drug => {
             return drug.id === drugCategory.id ? {...drug, checked: false} : drug
         })
-        setDrugs(data)
-        setCloneDrugs(data)
+        setCloneDrugs(data);
+        if (search.trim().length > 0) {
+            setDrugs(data.filter(
+                drug => (drug.name).toLowerCase().includes(search.toLowerCase()) && !drug.checked
+            ))
+        }
+        else {
+            setDrugs(data)
+        }
 
         const newSelectedDrugs = selectedDrugs.filter((drug) => drug.id !== drugCategory.id);
         setSelectedDrugs(newSelectedDrugs);

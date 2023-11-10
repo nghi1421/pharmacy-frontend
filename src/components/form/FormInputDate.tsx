@@ -32,8 +32,6 @@ export const FormInputDate: React.FC<FormInputProps> = ({ name, control, label,s
                     },
                   }}
                 />
-      
-              
             )}
         />
     </LocalizationProvider>

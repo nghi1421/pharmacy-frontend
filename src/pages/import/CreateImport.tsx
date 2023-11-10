@@ -15,6 +15,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import { makeStyles } from "@mui/styles";
 import globalEvent from "../../utils/emitter";
 import ReplayIcon from '@mui/icons-material/Replay';
+import dayjs from "dayjs";
 
 const useStyles = makeStyles({
   customTextField: {
@@ -110,10 +111,16 @@ const CreateImport: React.FC = () => {
     }, [selectedDrugs])
 
     const onSubmit = (data: ImportForm) => { 
-        setSelectedDrugs(selectedDrugs.map(drug => {
-            return {...drug, errors: ['', '', 'Mã lô hàng bắt buộc']}
-        }))
-        console.log(selectedDrugs)
+        const validatedDrugs = selectedDrugs.map(drugCategory => {
+            const validateErrors = ['', '', '', '']
+            validateErrors[3] = drugCategory.batchId.length === 0 ? 'Mã lô thuốc bắt buộc.' : ''
+            validateErrors[2] = dayjs(drugCategory.expiryDate) < dayjs() ?'Thuốc đã hết hạn sử dụng.' : ''
+            validateErrors[1] = drugCategory.unitPrice === 0 ? 'Giá nhập bắt buộc.' : ''
+            validateErrors[0] = drugCategory.quantity === 0 ? 'Số lượng nhập bắt buộc.' : ''
+            return {...drugCategory, errors: validateErrors}
+        })
+        setSelectedDrugs(validatedDrugs)
+        console.log(validatedDrugs)
         console.log(data)
     };
 
@@ -123,6 +130,7 @@ const CreateImport: React.FC = () => {
         })
         setDrugs(data)
         setCloneDrugs(data)
+        
         selectedDrugs.push({
             ...drugCategory,
             checked: false,
@@ -130,23 +138,37 @@ const CreateImport: React.FC = () => {
             unitPrice: 0,
             expiryDate: new Date(),
             batchId: '',
-            errors: ['', '', '']
+            errors: ['', '', '', '']
         })
     }
 
     const unCheckDrugCategory = (drugCategory: any) => {
-        const data = drugs.map(drug => {
+        const data = cloneDrugs.map(drug => {
             return drug.id === drugCategory.id ? {...drug, checked: false} : drug
         })
-        setDrugs(data)
-        setCloneDrugs(data)
+        setCloneDrugs(data);
+        if (search.trim().length > 0) {
+            setDrugs(data.filter(
+                drug => (drug.name).toLowerCase().includes(search.toLowerCase()) && !drug.checked
+            ))
+        }
+        else {
+            setDrugs(data)
+        }
+
         const newSelectedDrugs = selectedDrugs.filter((drug) => drug.id !== drugCategory.id);
         setSelectedDrugs(newSelectedDrugs);
     }
 
     const updateSelectedDrugs = (drugCategory: any) => {
+        console.log(drugCategory.expiryDate);
+        const validateErrors = ['', '', '', '']
+        validateErrors[3] = drugCategory.batchId.length === 0 ? 'Mã lô thuốc bắt buộc.' : ''
+        validateErrors[2] = dayjs(drugCategory.expiryDate) < dayjs() ? 'Thuốc đã hết hạn sử dụng.' : ''
+        validateErrors[1] =  isNaN(drugCategory.unitPrice) || drugCategory.unitPrice === 0 ? 'Giá nhập bắt buộc.' : ''
+        validateErrors[0] = isNaN(drugCategory.quantity) || drugCategory.quantity === 0 ?'Số lượng nhập bắt buộc.' : ''
         setSelectedDrugs(selectedDrugs.map(drug => {
-            return drug.id === drugCategory.id ?  drugCategory : drug
+            return drug.id === drugCategory.id ?  {...drugCategory, errors: validateErrors} : drug
         }))
     }
 

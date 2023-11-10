@@ -220,6 +220,7 @@ const TableSelectDrugCategory: React.FC<TableProps<any>> = ({ rows, keyTable, ac
                             <NumericFormat 
                                 size='small'
                                   sx={{
+                                    
                                       width: '100%',
                                       height: '100%',
                                       fontSize: '13px',
@@ -236,9 +237,11 @@ const TableSelectDrugCategory: React.FC<TableProps<any>> = ({ rows, keyTable, ac
                                 placeholder='Nhập đơn giá nhập'
                                 suffix=' VND'
                                 thousandSeparator=","
+                                error={row.errors[1]}
                                 customInput={TextField}
                                 onValueChange={({ value }) => (update({...row, unitPrice: parseInt(value)}))}
-                              />
+                          />
+                          <Typography color='#d32f2f' sx={{ fontSize: 13, mt:0.5 }}>{row.errors[1]}</Typography>
                           </CustomTableCell>
                           
                           <CustomTableCell align="left" key={`5-${rowIndex}-expiryDate`}>
@@ -248,12 +251,13 @@ const TableSelectDrugCategory: React.FC<TableProps<any>> = ({ rows, keyTable, ac
                                     minDate={dayjs()}
                                     format="DD-MM-YYYY"
                                     label='Hạn sử dụng'
+                                    onChange={(newValue) => (update({...row, expiryDate: newValue})) }
                                     slotProps={{
                                         textField: {
                                             size: 'small',
                                             variant: 'outlined',
-                                            error: !!row['errors'][1],
-                                            helperText: row['errors'][1],
+                                            error: !!row['errors'][2],
+                                            helperText: row['errors'][2],
                                         },
                                     }}
                                 />
@@ -269,8 +273,8 @@ const TableSelectDrugCategory: React.FC<TableProps<any>> = ({ rows, keyTable, ac
                             variant="outlined"
                             onChange={(e) => (update({...row, batchId: e.target.value as string}))}
                             placeholder='Nhập mã lô thuốc'
-                            helperText={row.errors[2] ? row.errors[2] : null}
-                            error={!!row.errors[2]}
+                            helperText={row.errors[3] ? row.errors[3] : null}
+                            error={!!row.errors[3]}
                         />
                       </CustomTableCell>
                      
