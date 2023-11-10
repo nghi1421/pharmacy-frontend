@@ -37,7 +37,7 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
         backgroundColor: 'lightBlue',
         color: theme.palette.common.black,
-        fontWeight: 500
+        fontWeight: 600
     },
     [`&.${tableCellClasses.body}`]: {
           fontSize: 14,
@@ -94,7 +94,7 @@ const TableSelectDrugCategory: React.FC<TableProps<any>> = ({ rows, keyTable, ac
                 rows.length === 0
                 ?
                     <TableRow key='empty-row'>
-                        <TableCell key='cell-empty' colSpan={columns.length + 2}>
+                        <TableCell key='cell-empty' colSpan={columns.length + 3}>
                         <Grid
                             container
                             spacing={0}
@@ -252,8 +252,8 @@ const TableSelectDrugCategory: React.FC<TableProps<any>> = ({ rows, keyTable, ac
                                         textField: {
                                             size: 'small',
                                             variant: 'outlined',
-                                            error: !!row['errors'],
-                                            helperText: row['errors'],
+                                            error: !!row['errors'][1],
+                                            helperText: row['errors'][1],
                                         },
                                     }}
                                 />
@@ -265,10 +265,12 @@ const TableSelectDrugCategory: React.FC<TableProps<any>> = ({ rows, keyTable, ac
                             size='small'
                             value={row['batchId']}
                             fullWidth
-                            label='Mã lô thuốc'
+                            label='Mã lô thuốc' 
                             variant="outlined"
                             onChange={(e) => (update({...row, batchId: e.target.value as string}))}
                             placeholder='Nhập mã lô thuốc'
+                            helperText={row.errors[2] ? row.errors[2] : null}
+                            error={!!row.errors[2]}
                         />
                       </CustomTableCell>
                      

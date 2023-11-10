@@ -1,4 +1,4 @@
-import { Box, Button, CircularProgress, Grid, Paper, Typography } from "@mui/material"
+import { Box, Button, CircularProgress, Grid, InputAdornment, Paper, TextField, Typography } from "@mui/material"
 import { useNavigate } from "react-router-dom"
 import React, { useEffect, useState } from "react";
 import { FormAutocomplete } from "../../components/form/FormAutocomplete";
@@ -10,6 +10,33 @@ import TableAction from "../../components/table/TableAction";
 import { useGetDataCustomers } from "../../hooks/useCustomer";
 import TableExportSelectDrug from "../../components/table/TableExportSelectDrug";
 import { useGetDataDrugCategories } from "../../hooks/useDrugCategory";
+import SearchIcon from '@mui/icons-material/Search';
+import { makeStyles } from "@mui/styles";
+import globalEvent from "../../utils/emitter";
+import ReplayIcon from '@mui/icons-material/Replay';
+
+const useStyles = makeStyles({
+  customTextField: {
+    "& input::placeholder": {
+      fontSize: "15px"
+    }
+    },
+    // rotateIcon: {
+    //     "&:hover": {
+    //         '& .MuiSvgIcon-root': {
+    //             animation: "$spin 0.2s linear forwards"
+    //         }
+    //     }
+    // },
+    // "@keyframes spin": {
+    //   "0%": {
+    //     transform: "rotate(360deg)"
+    //   },
+    //   "100%": {
+    //     transform: "rotate(0deg)"
+    //   }
+    // }
+})
 
 export interface ColumnDrugCategory {
     key: string;
@@ -35,24 +62,45 @@ const columns: ColumnDrugCategory[] = [
 
 const CreateExport: React.FC = () => {
     const navigate = useNavigate()
+    const classes = useStyles();
     const staff = getStaff();
-    const { isLoading: drugCategoryLoading, data: drugCategories } = useGetDataDrugCategories()
+    const { isLoading: drugCategoryLoading, data: drugCategories, refetch } = useGetDataDrugCategories()
     const [drugs, setDrugs] = useState<any[]>([])
+    const [cloneDrugs, setCloneDrugs] = useState<any[]>([])
     const [selectedDrugs, setSelectedDrugs] = useState<any[]>([])
     const [pay, setPay] = useState<number[]>([0 , 0, 0])
     const { data: customer, isLoading: customerLoading } = useGetDataCustomers()
     const { handleSubmit, control, watch } = useForm<ImportForm>({
     });
-
     const watchCustomer = watch('customer')
+    const [search, setSearch] = useState<string>('')
+
+    const handleSearchData = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const searchTerm = event.target.value as string
+        if (searchTerm.trim().length > 0) {
+            setDrugs(cloneDrugs.filter(
+                drug => (drug.name).toLowerCase().includes(searchTerm.toLowerCase()) && !drug.checked
+            ))
+        }
+        else {
+            setDrugs(cloneDrugs)
+        }
+        setSearch(event.target.value as string);
+    }
 
     useEffect(() => {
         if (drugCategories && drugCategories.length > 0) {
-            setDrugs(drugCategories.map((drug: any) => {
-                return {...drug, checked: false}
-            }))
+            const data = drugCategories.map((drug: any) => {
+                return { ...drug, checked: false }
+            });
+            setDrugs(data)
+            setCloneDrugs(data)
         }
     }, [drugCategories])
+
+    useEffect(() => {
+        globalEvent.emit('close-sidebar')
+    }, [])
 
     useEffect(() => {
         if (selectedDrugs.length > 0) {
@@ -78,16 +126,21 @@ const CreateExport: React.FC = () => {
     };
 
     const checkDrugCategory = (drugCategory: any) => {
-        setDrugs(drugs.map(drug => {
+        const data = drugs.map(drug => {
             return drug.id === drugCategory.id ? {...drug, checked: true} : drug
-        }))
+        })
+        setDrugs(data)
+        setCloneDrugs(data)
         selectedDrugs.push({...drugCategory, checked: false, quantity: 0})
     }
 
     const unCheckDrugCategory = (drugCategory: any) => {
-        setDrugs(drugs.map(drug => {
+        const data = drugs.map(drug => {
             return drug.id === drugCategory.id ? {...drug, checked: false} : drug
-        }))
+        })
+        setDrugs(data)
+        setCloneDrugs(data)
+
         const newSelectedDrugs = selectedDrugs.filter((drug) => drug.id !== drugCategory.id);
         setSelectedDrugs(newSelectedDrugs);
     }
@@ -292,9 +345,43 @@ const CreateExport: React.FC = () => {
 
                 <Grid item xs={12} sm={12} container 
                 >
-                    <Typography mb='20px' variant="subtitle2" sx={{ fontWeight: 'fontWeightBold', mt: 2 }}>
-                        Danh mục thuốc
-                    </Typography>
+                    <Box sx={{ display: 'flex', width: '100%' }}>
+                        <Typography mb='20px' variant="subtitle2" sx={{ fontWeight: 'fontWeightBold', mt: 2 }}>
+                            Danh mục thuốc
+                        </Typography>
+                        <TextField
+                            onChange={handleSearchData}
+                            classes={{ root: classes.customTextField }}
+                            size='small'
+                            sx={{ flexGrow: 1, my :'auto', mr: '35%', ml: 2}}
+                            label="Tìm kiếm"
+                            value={search}
+                            placeholder="Nhập thông tin danh mục thuốc theo tên"
+                            InputProps={{
+                                endAdornment: (
+                                    <InputAdornment
+                                        position='end'
+                                    >
+                                        <SearchIcon />
+                                    </InputAdornment>
+                                )
+                            }}
+                        />
+                        <Button
+                            variant='contained'
+                            color="success"
+                            aria-label="Delete"
+                            sx={{
+                                height: '70%',
+                                m: 'auto',
+                                textTransform: 'none',
+                            }}
+                            onClick={ () => refetch()}
+                        >
+                            <ReplayIcon  />
+                            Làm mới
+                        </Button>
+                    </Box>
                     {
                         drugCategoryLoading
                         ?
@@ -306,6 +393,7 @@ const CreateExport: React.FC = () => {
                                 columns={columns}
                                 keyTable='drug-category-table-key'
                                 action={checkDrugCategory}
+                                type='export'
                             />
                     }  
                 </Grid>

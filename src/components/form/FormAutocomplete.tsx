@@ -1,5 +1,6 @@
-import { Autocomplete, TextField } from "@mui/material";
+import { Autocomplete, TextField, TextFieldPropsSizeOverrides } from "@mui/material";
 import { Controller } from "react-hook-form";
+import { OverridableStringUnion } from '@mui/types';
 
 interface FormAutoCompleteProps {
   control: any
@@ -8,10 +9,11 @@ interface FormAutoCompleteProps {
   placeholder: string
   options: any[]
   disable?: boolean
+  size?: OverridableStringUnion<'small' | 'medium', TextFieldPropsSizeOverrides>
 }
 
 export const FormAutocomplete: React.FC<FormAutoCompleteProps> =
-  ({ control, label, name, placeholder, options, disable }) => {
+  ({ control, label, name, placeholder, options, disable, size }) => {
   return (
     <Controller
       render={({ field: { onChange} }) => (
@@ -24,6 +26,7 @@ export const FormAutocomplete: React.FC<FormAutoCompleteProps> =
           renderInput={(params) => (
             <TextField
               {...params}
+              size={ size ? size : 'medium'}
               placeholder={placeholder}
               label={label}
               variant="outlined"

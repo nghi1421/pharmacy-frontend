@@ -1,4 +1,4 @@
-import { Box, Button, CircularProgress, Grid, IconButton, InputAdornment, Paper, TextField, Typography } from "@mui/material"
+import { Box, Button, CircularProgress, Grid, InputAdornment, Paper, TextField, Typography } from "@mui/material"
 import { useNavigate } from "react-router-dom"
 import React, { useEffect, useState } from "react";
 import { FormAutocomplete } from "../../components/form/FormAutocomplete";
@@ -18,25 +18,10 @@ import ReplayIcon from '@mui/icons-material/Replay';
 
 const useStyles = makeStyles({
   customTextField: {
-    "& input::placeholder": {
-      fontSize: "15px"
-    }
+        "& input::placeholder": {
+            fontSize: "15px"
+        }
     },
-    // rotateIcon: {
-    //     "&:hover": {
-    //         '& .MuiSvgIcon-root': {
-    //             animation: "$spin 0.2s linear forwards"
-    //         }
-    //     }
-    // },
-    // "@keyframes spin": {
-    //   "0%": {
-    //     transform: "rotate(360deg)"
-    //   },
-    //   "100%": {
-    //     transform: "rotate(0deg)"
-    //   }
-    // }
 })
 
 interface ColumnDrugCategory {
@@ -125,6 +110,9 @@ const CreateImport: React.FC = () => {
     }, [selectedDrugs])
 
     const onSubmit = (data: ImportForm) => { 
+        setSelectedDrugs(selectedDrugs.map(drug => {
+            return {...drug, errors: ['', '', 'Mã lô hàng bắt buộc']}
+        }))
         console.log(selectedDrugs)
         console.log(data)
     };
@@ -135,7 +123,15 @@ const CreateImport: React.FC = () => {
         })
         setDrugs(data)
         setCloneDrugs(data)
-        selectedDrugs.push({...drugCategory, checked: false, quantity: 0, unitPrice: 0, expiryDate: new Date(), batchId: ''})
+        selectedDrugs.push({
+            ...drugCategory,
+            checked: false,
+            quantity: 0,
+            unitPrice: 0,
+            expiryDate: new Date(),
+            batchId: '',
+            errors: ['', '', '']
+        })
     }
 
     const unCheckDrugCategory = (drugCategory: any) => {
@@ -175,6 +171,7 @@ const CreateImport: React.FC = () => {
                                 <CircularProgress sx={{ margin: 'auto' }} />
                             :
                                 <FormAutocomplete
+                                    size='small'
                                     control={control}
                                     label='Tên công ty dược'
                                     placeholder='Chọn tên công ty dược'
@@ -335,7 +332,7 @@ const CreateImport: React.FC = () => {
                 </Grid>
                 
                 <Grid item xs={12} sm={12} container>
-                    <Typography mb='20px' variant="subtitle2" sx={{ fontWeight: 'fontWeightBold', mt: 2 }}>
+                    <Typography mb='20px' variant="subtitle2" sx={{ fontWeight: 600, fontSize: 16, mt: 2 }}>
                         Thuốc đã chọn
                     </Typography>
                     <TableSelectDrugCategory
@@ -362,7 +359,7 @@ const CreateImport: React.FC = () => {
                         Tiền thuế VAT: { pay[1] ? pay[1].toLocaleString() : '_'} VND
                     </Typography>
 
-                    <Typography variant="subtitle2" sx={{ color: "#148c07"  }}>
+                    <Typography variant="subtitle2" sx={{ color: "#148c07", fontWeight: 600,  }}>
                         Tổng tiền: { pay[2] ? pay[2].toLocaleString() : '_'} VND
                     </Typography>
                 </Grid>
@@ -370,7 +367,7 @@ const CreateImport: React.FC = () => {
                 <Grid item xs={12} sm={12} container 
                 >
                     <Box sx={{ display: 'flex', width: '100%' }}>
-                        <Typography mb='20px' variant="subtitle2" sx={{ fontWeight: 'fontWeightBold', mt: 2 }}>
+                        <Typography mb='20px' variant="subtitle2" sx={{ fontWeight: 600, fontSize: 16, mt: 2 }}>
                             Danh mục thuốc
                         </Typography>
                         <TextField
@@ -398,6 +395,7 @@ const CreateImport: React.FC = () => {
                             sx={{
                                 height: '70%',
                                 m: 'auto',
+                                fontWeight: 600,
                                 textTransform: 'none',
                             }}
                             onClick={ () => refetch()}
@@ -417,6 +415,7 @@ const CreateImport: React.FC = () => {
                                 columns={columns}
                                 keyTable='drug-category-table-key'
                                 action={checkDrugCategory}
+                                type='import'
                             />
                     }  
                 </Grid>
