@@ -13,7 +13,7 @@ const allProvince = () => {
 }
 
 const getDistrictsByProvinceCode = (provinceCode: string) => {
-    return fetch(`../../node_modules/hanhchinhvn/dist/quan-huyen/${provinceCode}.json`,{
+    return fetch(`../../../node_modules/hanhchinhvn/dist/quan-huyen/${provinceCode}.json`,{
         headers : { 
             'Content-Type': 'application/json',
             'Accept': 'application/json'
@@ -35,7 +35,7 @@ const getDistrictsByProvinceCode = (provinceCode: string) => {
 }
 
 const getWardsByDistrictCode = (districtCode: string) => {
-    return fetch(`../../node_modules/hanhchinhvn/dist/xa-phuong/${districtCode}.json`,{
+    return fetch(`../../../node_modules/hanhchinhvn/dist/xa-phuong/${districtCode}.json`,{
         headers : { 
             'Content-Type': 'application/json',
             'Accept': 'application/json'

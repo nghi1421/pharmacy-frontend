@@ -5,6 +5,7 @@ import { Add } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import CreateIcon from '@mui/icons-material/Create';
 import { useGetImport, useGetImports } from "../../hooks/useImport";
+import globalEvent from "../../utils/emitter";
 
 const columns: Column[] = [
     { key: 'id', value: 'Mã phiếu nhập'},
@@ -21,6 +22,7 @@ const ImportPage: React.FC<{}> = () => {
     const navigate = useNavigate()
     const getStaff = useGetImport()
     const clickAdd = () => {
+        globalEvent.emit('close-sidebar');
         navigate('/admin/imports/create')
     }
     return (

@@ -63,6 +63,7 @@ const columns: Column[] = [
     { key: 'unit', value: 'Đơn vị nhập' },
     { key: 'importPrice', value: 'Đơn giá nhập' },
     { key: 'expiriDate', value: 'Hạn sử dụng' },
+    { key: 'batchId', value: 'Mã lô thuốc' },
 ]
 
 const TableSelectDrugCategory: React.FC<TableProps<any>> = ({ rows, keyTable, action, tooltip, update }) => {
@@ -257,7 +258,20 @@ const TableSelectDrugCategory: React.FC<TableProps<any>> = ({ rows, keyTable, ac
                                     }}
                                 />
                             
-                          </CustomTableCell>
+                      </CustomTableCell>
+                      
+                      <CustomTableCell align="left" key={`6-${rowIndex}-batchId`}>
+                        <TextField
+                            size='small'
+                            value={row['batchId']}
+                            fullWidth
+                            label='Mã lô thuốc'
+                            variant="outlined"
+                            onChange={(e) => (update({...row, batchId: e.target.value as string}))}
+                            placeholder='Nhập mã lô thuốc'
+                        />
+                      </CustomTableCell>
+                     
                       </TableRow>
                         ))}
                     </TableBody>

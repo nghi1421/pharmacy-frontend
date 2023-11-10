@@ -60,7 +60,7 @@ const useGetStaff = (option: number = 1) => {
       .then((response) => {
         switch (option) {
           case 1: {
-            navigate( `/admin/admin/staffs/${staffId}/edit`,
+            navigate( `/admin/staffs/${staffId}/edit`,
               {
                 state: { staffData: response.data.data }
               }

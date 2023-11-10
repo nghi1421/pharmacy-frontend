@@ -1,4 +1,4 @@
-import { ReactElement, ReactNode, useState } from "react";
+import { ReactElement, ReactNode, useEffect, useState } from "react";
 import { Box, CssBaseline } from "@mui/material";
 import { Container, Divider, Toolbar } from '@mui/material';
 import IconButton from '@mui/material/IconButton'
@@ -8,6 +8,7 @@ import { Navigate } from "react-router-dom";
 import { SideBar } from "../components/Sidebar";
 import { Drawer } from '../themes/DrawerTheme'
 import { getAccessToken, getStaff } from "../store/auth";
+import globalEvent from "../utils/emitter";
 
 interface LayoutProps {
   children: ReactNode;
@@ -15,12 +16,19 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ children }): ReactElement => {
   const [open, setOpen] = useState<boolean>(true);
-    const toggleDrawer = () => {
-      setOpen(!open);
+  const toggleDrawer = () => {
+    setOpen(!open);
   };
 
   const token = getAccessToken();
   const staff = getStaff();
+
+  useEffect(() => {
+    globalEvent.on('close-sidebar', () => {
+      setOpen(false);
+    })
+  })
+
   if (!token || !staff) {
     return (
       <Navigate to="/login" />
@@ -64,7 +72,7 @@ const Layout: React.FC<LayoutProps> = ({ children }): ReactElement => {
               }}
             >
             <Toolbar />
-              <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+              <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
                  { children }
               </Container>
             </Box>

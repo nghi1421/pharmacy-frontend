@@ -3,6 +3,7 @@ import { TypeByUse } from "./TypeByUse"
 export type DrugCategory = {
     id: number
     name: string
+    quantity: number;
     price: string
     form: string
     unit: string

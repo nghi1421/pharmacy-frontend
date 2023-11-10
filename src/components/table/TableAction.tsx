@@ -17,6 +17,7 @@ import {
 import React from "react"
 import EmptyImage from '../../assets/images/no-data.jpg'
 import { ColumnDrugCategory } from "../../pages/export/CreateExport"
+import { enqueueSnackbar } from "notistack"
 
 interface TableProps<T> {
     rows: T[]
@@ -103,22 +104,29 @@ const TableAction: React.FC<TableProps<any>> = ({ rows, keyTable, columns, actio
                       <Tooltip key={`tooltip-${rowIndex}`} title={tooltip} >
                             <TableRow
                                   key={`${keyTable}-${rowIndex}`}
-                                  onClick={() => action(row)}
+                                  onClick={() => {
+                                    if (row.quantity == 0) {
+                                      enqueueSnackbar(`Số lượng tồn thuốc ${row.name} đã hết không thể chọn.`, {variant: 'warning', autoHideDuration: 3000})
+                                    } 
+                                    else {
+                                      action(row)
+                                    }
+                                  }}
                                   hover={true}
                                   sx={{ 
                                     '&:last-child td, &:last-child th': { border: 0 },
                                     '&.MuiTableRow-root:hover': {
-                                        cursor: 'pointer',
-                                        backgroundColor: '#daf0ee' 
+                                        cursor: row.quantity == 0 ? 'not-allowed' :'pointer',
+                                        backgroundColor: row.quantity == 0 ? '#f2ccc9' :'#daf0ee' 
                                       },
                                   }}
                               >
                                   {columns.map((column, index) => (
-                                  <TableCell
-                                      align="left"
-                                      key={`${rowIndex}-${keyTable}-${index}`}>
-                                      {row[column.key]}
-                                  </TableCell>
+                                    <TableCell
+                                        align="left"
+                                        key={`${rowIndex}-${keyTable}-${index}`}>
+                                        {row[column.key]}
+                                    </TableCell>
                                   ))}
                               </TableRow>
                           </Tooltip>

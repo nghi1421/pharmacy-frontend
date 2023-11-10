@@ -1,15 +1,17 @@
-import { TextField } from "@mui/material";
+import { TextField, TextFieldPropsSizeOverrides } from "@mui/material";
 import { Controller } from "react-hook-form"
 import { NumericFormat } from "react-number-format";
+import { OverridableStringUnion } from '@mui/types';
 
 interface FormInputCurrencyProps {
     control: any
     name: string
     label: string
     placeholder: string
+    size?: OverridableStringUnion<'small' | 'medium', TextFieldPropsSizeOverrides>
 }
 
-export const FormInputCurrency: React.FC<FormInputCurrencyProps> = ({control, name, label, placeholder}) => {
+export const FormInputCurrency: React.FC<FormInputCurrencyProps> = ({control, name, label, placeholder, size}) => {
     return (
         <Controller
             control={control}
@@ -18,6 +20,7 @@ export const FormInputCurrency: React.FC<FormInputCurrencyProps> = ({control, na
                 <NumericFormat 
                     sx={{ width: '100%' }}
                     label={label}
+                    size={ size ? size : "medium"}
                     placeholder={placeholder}
                     thousandSeparator=","
                     customInput={TextField}

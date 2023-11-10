@@ -1,4 +1,4 @@
-import { Box, Button, CircularProgress, Grid, InputAdornment, Paper, TextField, Typography } from "@mui/material"
+import { Box, Button, CircularProgress, Grid, IconButton, InputAdornment, Paper, TextField, Typography } from "@mui/material"
 import { useNavigate } from "react-router-dom"
 import React, { useEffect, useState } from "react";
 import { FormAutocomplete } from "../../components/form/FormAutocomplete";
@@ -13,13 +13,30 @@ import TableAction from "../../components/table/TableAction";
 import TableSelectDrugCategory from "../../components/table/TableSelectDrugCategory";
 import SearchIcon from '@mui/icons-material/Search';
 import { makeStyles } from "@mui/styles";
+import globalEvent from "../../utils/emitter";
+import ReplayIcon from '@mui/icons-material/Replay';
 
 const useStyles = makeStyles({
   customTextField: {
     "& input::placeholder": {
       fontSize: "15px"
     }
-  }
+    },
+    // rotateIcon: {
+    //     "&:hover": {
+    //         '& .MuiSvgIcon-root': {
+    //             animation: "$spin 0.2s linear forwards"
+    //         }
+    //     }
+    // },
+    // "@keyframes spin": {
+    //   "0%": {
+    //     transform: "rotate(360deg)"
+    //   },
+    //   "100%": {
+    //     transform: "rotate(0deg)"
+    //   }
+    // }
 })
 
 interface ColumnDrugCategory {
@@ -38,6 +55,7 @@ export interface ImportForm {
 const columns: ColumnDrugCategory[] = [
     { key: 'id', value: 'Mã thuốc'},
     { key: 'name', value: 'Tên thuốc' },
+    { key: 'quantity', value: 'Tồn kho' },
     { key: 'unit', value: 'Đơn vị nhập' },
     { key: 'formatedPrice', value: 'Đơn giá bán' },
     { key: 'minimalUnit', value: 'Đơn vị bán' },
@@ -48,13 +66,13 @@ const CreateImport: React.FC = () => {
     const navigate = useNavigate()
     const classes = useStyles();
     const staff = getStaff();
-    const { isLoading: drugCategoryLoading, data: drugCategories } = useGetDataDrugCategories()
+    const { isLoading: drugCategoryLoading, data: drugCategories, refetch } = useGetDataDrugCategories()
     const [drugs, setDrugs] = useState<any[]>([])
     const [cloneDrugs, setCloneDrugs] = useState<any[]>([])
     const [selectedDrugs, setSelectedDrugs] = useState<any[]>([])
     const [pay, setPay] = useState<number[]>([0 , 0, 0])
     const { data: providers, isLoading: providerLoading } = useGetDataProviders()
-    const { handleSubmit, reset, control, watch } = useForm<ImportForm>({
+    const { handleSubmit, control, watch } = useForm<ImportForm>({
     });
     const [search, setSearch] = useState<string>('')
 
@@ -74,10 +92,15 @@ const CreateImport: React.FC = () => {
     }
 
     useEffect(() => {
+        globalEvent.emit('close-sidebar')
+    }, [])
+
+    useEffect(() => {
         if (drugCategories && drugCategories.length > 0) {
             const data = drugCategories.map((drug: any) => {
                 return { ...drug, checked: false }
             });
+            setCloneDrugs(data)
             setDrugs(data)
         }
     }, [drugCategories])
@@ -102,6 +125,7 @@ const CreateImport: React.FC = () => {
     }, [selectedDrugs])
 
     const onSubmit = (data: ImportForm) => { 
+        console.log(selectedDrugs)
         console.log(data)
     };
 
@@ -111,7 +135,7 @@ const CreateImport: React.FC = () => {
         })
         setDrugs(data)
         setCloneDrugs(data)
-        selectedDrugs.push({...drugCategory, checked: false, quantity: 0, unitPrice: 0, expiryDate: new Date()})
+        selectedDrugs.push({...drugCategory, checked: false, quantity: 0, unitPrice: 0, expiryDate: new Date(), batchId: ''})
     }
 
     const unCheckDrugCategory = (drugCategory: any) => {
@@ -124,7 +148,7 @@ const CreateImport: React.FC = () => {
         setSelectedDrugs(newSelectedDrugs);
     }
 
-    const updateQuantity = (drugCategory: any) => {
+    const updateSelectedDrugs = (drugCategory: any) => {
         setSelectedDrugs(selectedDrugs.map(drug => {
             return drug.id === drugCategory.id ?  drugCategory : drug
         }))
@@ -201,8 +225,18 @@ const CreateImport: React.FC = () => {
                 </Grid>
 
                 <Grid item xs={8} sm={6} >
-                    <Box sx={{ border: 1, borderColor: 'grey.300', mt: 4, px: 2, borderRadius: 2, boxShadow: 1 }}>
-                        <Typography mb='20px' variant="subtitle2" sx={{ fontWeight: 'fontWeightBold', mt: 2 }}>
+                    <Box
+                        sx={{
+                            minHeight: '88%',
+                            border: 1,
+                            borderColor: 'grey.300',
+                            mt: 4,
+                            px: 2,
+                            borderRadius: 2,
+                            boxShadow: 1
+                        }}
+                    >
+                    <Typography mb='20px' variant="subtitle2" sx={{ fontWeight: 'fontWeightBold', mt: 2 }}>
                         Thông tin nhân viên
                     </Typography>
         
@@ -262,6 +296,7 @@ const CreateImport: React.FC = () => {
 
                 <Grid item xs={8} sm={3}>
                     <FormInputDate
+                        size='small'
                         name="importDate"
                         control={control}
                         label="Ngày nhập hàng"
@@ -269,8 +304,9 @@ const CreateImport: React.FC = () => {
                     />
                 </Grid>
 
-                <Grid item xs={8} sm={9}>
+                <Grid item xs={8} sm={3}>
                     <FormInputText
+                        size='small'
                         name="note"
                         control={control}
                         label="Ghi chú"
@@ -278,8 +314,9 @@ const CreateImport: React.FC = () => {
                     />
                 </Grid>
 
-                <Grid item xs={8} sm={4}>
+                <Grid item xs={8} sm={3}>
                     <FormInputCurrency
+                        size='small'
                         control={control}
                         name='paid'
                         label='Đã thanh toán'
@@ -287,21 +324,13 @@ const CreateImport: React.FC = () => {
                     />
                 </Grid>
 
-                <Grid item xs={8} sm={4}>
+                <Grid item xs={8} sm={3}>
                     <FormInputDate
+                        size='small'
                         name="maturityDate"
                         control={control}
                         label="Ngày đáo hạn"
                         placeholder='x'
-                    />
-                </Grid>
-
-                <Grid item xs={8} sm={4}>
-                    <FormInputText
-                        name="patchId"
-                        control={control}
-                        label="Mã lô hàng"
-                        placeholder='Nhập mã lô hàng'
                     />
                 </Grid>
                 
@@ -314,7 +343,7 @@ const CreateImport: React.FC = () => {
                         tooltip='Nhấn để bỏ chọn thuốc'
                         keyTable='selected-drug-category-table-key'
                         action={unCheckDrugCategory}
-                        update={updateQuantity}
+                        update={updateSelectedDrugs}
                     /> 
                 </Grid>
 
@@ -340,27 +369,43 @@ const CreateImport: React.FC = () => {
 
                 <Grid item xs={12} sm={12} container 
                 >
-                    <Typography mb='20px' variant="subtitle2" sx={{ fontWeight: 'fontWeightBold', mt: 2 }}>
-                        Danh mục thuốc
-                    </Typography>
-                    <TextField
-                        onChange={handleSearchData}
-                        classes={{ root: classes.customTextField }}
-                        size='small'
-                        sx={{ width: '40%', my :'auto', mx: 2 }}
-                        label="Tìm kiếm"
-                        value={search}
-                        placeholder="Nhập thông tin danh mục thuốc theo tên"
-                        InputProps={{
-                            endAdornment: (
-                                <InputAdornment
-                                    position='end'
-                                >
-                                    <SearchIcon />
-                                </InputAdornment>
-                            )
-                        }}
-                    />
+                    <Box sx={{ display: 'flex', width: '100%' }}>
+                        <Typography mb='20px' variant="subtitle2" sx={{ fontWeight: 'fontWeightBold', mt: 2 }}>
+                            Danh mục thuốc
+                        </Typography>
+                        <TextField
+                            onChange={handleSearchData}
+                            classes={{ root: classes.customTextField }}
+                            size='small'
+                            sx={{ flexGrow: 1, my :'auto', mr: '35%', ml: 2}}
+                            label="Tìm kiếm"
+                            value={search}
+                            placeholder="Nhập thông tin danh mục thuốc theo tên"
+                            InputProps={{
+                                endAdornment: (
+                                    <InputAdornment
+                                        position='end'
+                                    >
+                                        <SearchIcon />
+                                    </InputAdornment>
+                                )
+                            }}
+                        />
+                        <Button
+                            variant='contained'
+                            color="success"
+                            aria-label="Delete"
+                            sx={{
+                                height: '70%',
+                                m: 'auto',
+                                textTransform: 'none',
+                            }}
+                            onClick={ () => refetch()}
+                        >
+                            <ReplayIcon  />
+                            Làm mới
+                        </Button>
+                    </Box>
                     {
                         drugCategoryLoading
                         ?

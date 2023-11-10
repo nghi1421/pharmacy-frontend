@@ -39,7 +39,9 @@ const Address: React.FC<AddressProp> = ({ setAddress, initAddress }) => {
 
     useEffect(() => {
         if (initAddress) {
-            const splitAddress = initAddress.split('/')
+            const splitAddress = initAddress.split('/') 
+
+            console.log(splitAddress)
 
             async function handledExistAddress(splitAddress: string[]) {
                 try {
@@ -50,9 +52,11 @@ const Address: React.FC<AddressProp> = ({ setAddress, initAddress }) => {
                     let localDistricts: District[] = []
                     let localWards: Ward[] = []
                     if (splitAddress[3].length > 0) {
-                        const provinceObj: Province | undefined = provinces.find((province) => province.name === splitAddress[3])
+                        const provinceObj: Province | undefined = provinces
+                            .find((province) => province.name === splitAddress[3])
                         if (provinceObj) {
                             localDistricts = await getDistrictsByProvinceCode(provinceObj.code)
+                            console.log(localDistricts);
                             setDistricts(localDistricts)
                             setProvince({ label: provinceObj.name, value: provinceObj.code })
                         }
@@ -136,8 +140,8 @@ const Address: React.FC<AddressProp> = ({ setAddress, initAddress }) => {
                     renderInput={(params) => (
                         <TextField
                         {...params}
-                        placeholder={'Chọn địa chỉ'}
-                        label='Quận/Huyện'
+                        placeholder={'Chọn tỉnh thành'}
+                        label='Tỉnh thành'
                         variant="outlined"
                         />
                     )}
@@ -158,9 +162,9 @@ const Address: React.FC<AddressProp> = ({ setAddress, initAddress }) => {
                     renderInput={(params) => (
                         <TextField
                         {...params}
-                        placeholder={'Chọn quận huyện'}
-                        label='Quận/Huyện'
-                        variant="outlined"
+                            placeholder={'Chọn quận huyện'}
+                            label='Quận/Huyện'
+                            variant="outlined"
                         />
                     )}
                     onChange={(_, data) => setDistrict(data)}
@@ -178,10 +182,10 @@ const Address: React.FC<AddressProp> = ({ setAddress, initAddress }) => {
                     isOptionEqualToValue={(option, value) => option.value === value.value}
                     renderInput={(params) => (
                         <TextField
-                        {...params}
-                        placeholder={'Chọn quận huyện'}
-                        label='Quận/Huyện'
-                        variant="outlined"
+                            {...params}
+                            placeholder={'Chọn xã phường thị'}
+                            label='Xã/phường/thị trấn'
+                            variant="outlined"
                         />
                     )}
                     onChange={(_, data) => setWard(data)}
