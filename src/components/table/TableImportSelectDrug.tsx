@@ -202,12 +202,14 @@ const TableImportSelectDrug: React.FC<TableProps<any>> = ({ rows, keyTable, acti
                                     }}
                                     value={row['quantity']}
                                     defaultValue={0}
+                                    error={row.errors[0]}
                                     label='Số lượng'
                                     placeholder='Nhập số lượng'
                                     thousandSeparator=","
                                     customInput={TextField}
                                     onValueChange={({ value }) => (update({...row, quantity: parseInt(value)}))}
                                 />
+                            <Typography color='#d32f2f' sx={{ fontSize: 13, mt:0.5 }}>{row.errors[0]}</Typography>
                           </CustomTableCell>
 
                           <CustomTableCell

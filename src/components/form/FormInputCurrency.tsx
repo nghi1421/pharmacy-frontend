@@ -16,12 +16,13 @@ export const FormInputCurrency: React.FC<FormInputCurrencyProps> = ({control, na
         <Controller
             control={control}
             name={name}
-            render={({ field: { onChange, name, value } }) => (
+            render={({ field: { onChange, name, value }, fieldState: { error } }) => (
                 <NumericFormat 
                     sx={{ width: '100%' }}
                     label={label}
                     size={ size ? size : "medium"}
                     placeholder={placeholder}
+                    error={!!error}
                     thousandSeparator=","
                     customInput={TextField}
                     suffix={'  VND'}

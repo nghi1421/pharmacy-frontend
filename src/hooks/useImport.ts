@@ -6,6 +6,9 @@ import { formatCurrency, formatDate } from '../utils/format';
 import { ImportType } from '../types/ImportType';
 import { useNavigate } from 'react-router-dom';
 import { pathToUrl } from '../utils/path';
+import { ImportForm } from '../pages/import/CreateImport';
+import { defaultCatchErrorHandle, defaultOnSuccessHandle } from '../utils/helper';
+import { UseFormSetError } from 'react-hook-form';
 
 function createData({id, importDate, staff, provider, note, paid, maturityDate}: ImportType) {
     return {
@@ -60,40 +63,23 @@ const useGetImport = () => {
   })
 }
 
-// const useCreateImport = () => {
-//   const queryClient = useQueryClient();
-//   const navigate = useNavigate();
+const useCreateImport = (setError: UseFormSetError<any>) => {
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
-//   return useMutation({
-//     mutationFn: async (data: ImportForm) => {
-//       return await axiosClient.post(API_IMPORT, data)
-//     },
-//     onSuccess: (response: any) => {
-//       if (response.data.message) {
-//         queryClient.invalidateQueries('Imports', { refetchInactive: true })
-//         navigate('/Imports')
-//         enqueueSnackbar(response.data.message, {
-//           autoHideDuration: 3000,
-//           variant: 'success'
-//         })  
-//       }
-//       else {
-//           enqueueSnackbar(response.data.errorMessage, {
-//             autoHideDuration: 3000,
-//             variant: 'error'
-//           }) 
-//       }
-//     },
-//     onError: (error: any) => {
-//       enqueueSnackbar('Lỗi server.',
-//         {
-//           autoHideDuration: 3000,
-//           variant: 'error'
-//         })
-//     }
-//   }
-//   )
-// }
+  return useMutation({
+    mutationFn: async (data: ImportForm) => {
+      return await axiosClient.post(API_IMPORT, data)
+          .then(response => response)
+          .catch(error => {
+            defaultCatchErrorHandle(error, setError)
+          }) 
+      },
+      onSuccess: (response: any) => {
+        defaultOnSuccessHandle(queryClient, navigate, response, 'imports', '/admin/imports')
+      }
+    })
+}
 
 // const useUpdateImport = () => {
 //   const queryClient = useQueryClient();
@@ -166,7 +152,7 @@ const useGetImport = () => {
 export {
   useGetImports,
   useGetImport,
-//   useCreateImport,
+  useCreateImport,
 //   useUpdateImport,
 //   useDeleteImport,
 }

@@ -11,7 +11,6 @@ export const FormInputText: React.FC<FormInputProps> = ({ name, control, label, 
         render={({
             field: { onChange, value },
             fieldState: { error },
-            formState,
         }) => (
           <TextField
               size={ size ? size : 'medium'}

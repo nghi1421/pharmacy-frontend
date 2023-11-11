@@ -16,6 +16,11 @@ import { makeStyles } from "@mui/styles";
 import globalEvent from "../../utils/emitter";
 import ReplayIcon from '@mui/icons-material/Replay';
 import dayjs from "dayjs";
+import yup from "../../utils/yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { Provider } from "../../types/Provider";
+import { ErrorMessage } from '@hookform/error-message/dist';
+import { useCreateImport } from "../../hooks/useImport";
 
 const useStyles = makeStyles({
   customTextField: {
@@ -30,13 +35,57 @@ export interface ColumnDrugCategory {
     value: string;
 }
 
-export interface ImportForm {
-    provider: any;
-    note: string;
-    importDate: string
-    paid: string
-    importDetails: []
+interface ImportDetail {
+    drugId: number;
+    quantity: number;
+    batchId: string;
+    expiryDate: Date;
+    unitPrice: number;
 }
+
+export interface ImportForm {
+    provider: Provider | null;
+    note: string;
+    importDate: Date;
+    paid: number;
+    maturityDate: Date;
+    importDetails: ImportDetail[];
+    providerId: number;
+    staffId: number;
+}
+
+const defaultValues = {
+    note: '',
+    importDate: new Date(),
+    paid: 0,
+    provider: null,
+    maturityDate: new Date(),
+    importDetails: [],
+    providerId: 0,
+    staffId: 0,
+};
+
+ // @ts-ignore
+const importValidate: Yup.ObjectSchema<DrugCategoryForm> = yup.object({
+    note: yup
+        .string()
+        .max(255, 'Ghi chú không quá 255 kí tự'),
+    importDate: yup
+        .date()
+        .max(new Date(), 'Thời gian nhập hàng không hợp lệ.'),
+    provider: yup
+        .object()
+        .typeError('Vui lòng chọn công ty dược.')
+        .required('Vui lòng chọn công ty dược'),
+    paid: yup
+        .number()
+        .typeError('Số tiền đã thanh toán bắt buộc.')
+        .required('Số tiền đã thanh toán bắt buộc.'),
+    maturityDate: yup
+        .date()
+        .typeError('Ngày đáo hạn bắt buộc.')
+        .min(new Date(), 'Ngày đáo hạn phải sau hôm nay.'),
+})
 
 const columns: ColumnDrugCategory[] = [
     { key: 'id', value: 'Mã thuốc'},
@@ -59,8 +108,12 @@ const CreateImport: React.FC = () => {
     const [selectedDrugs, setSelectedDrugs] = useState<any[]>([])
     const [pay, setPay] = useState<number[]>([0 , 0, 0])
     const { data: providers, isLoading: providerLoading } = useGetDataProviders()
-    const { handleSubmit, control, watch } = useForm<ImportForm>({
+    const { handleSubmit, control, watch, formState: { errors }, setError } = useForm<ImportForm>({
+        defaultValues: defaultValues,
+        resolver: yupResolver(importValidate)
     });
+    const createImport = useCreateImport(setError);
+
     const [search, setSearch] = useState<string>('')
 
     const watchProvider = watch('provider')
@@ -122,13 +175,35 @@ const CreateImport: React.FC = () => {
     }
 
     const onSubmit = (data: ImportForm) => { 
+        let isInvalid = false;
         const validatedDrugs = selectedDrugs.map(drugCategory => {
+            const validateErrros = validate(drugCategory);
+            if (!isInvalid && validateErrros.some(error => error.length > 0)) {
+                isInvalid = true;
+            }
             return {...drugCategory, errors: validate(drugCategory)}
         })
         setIsFirstSubmit(true);
-        setSelectedDrugs(validatedDrugs)
-        console.log(validatedDrugs)
-        console.log(data)
+        if (isInvalid) {
+            setSelectedDrugs(validatedDrugs)
+        }
+        else {
+            const result = createImport.mutate({
+                ...data,
+                providerId: data.provider ?  data.provider.id : 1,
+                staffId: staff.id,
+                importDetails: validatedDrugs.map(drug => {
+                    return { 
+                        drugId: drug.id,
+                        unitPrice: drug.unitPrice,
+                        batchId: drug.batchId,
+                        quantity: drug.quantity,
+                        expiryDate: drug.expiryDate,
+                     } as ImportDetail
+                })
+            })
+            console.log(result);
+        }
     };
 
     const checkDrugCategory = (drugCategory: any) => {
@@ -349,6 +424,11 @@ const CreateImport: React.FC = () => {
                         label='Đã thanh toán'
                         placeholder='Nhập số tiền đã thanh toán'
                     />
+                    <ErrorMessage
+                        errors={errors}
+                        name="paid"
+                        render={({ message }) =><Typography color='#d32f2f' sx={{ fontSize: 13, mt:0.5 }}>{message}</Typography>}
+                    />
                 </Grid>
 
                 <Grid item xs={8} sm={3}>
@@ -449,7 +529,6 @@ const CreateImport: React.FC = () => {
                             />
                     }  
                 </Grid>
-               
 
                 <Grid item xs={12} sm={12} container 
                     sx={{

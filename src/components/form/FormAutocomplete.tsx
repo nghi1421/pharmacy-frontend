@@ -9,14 +9,14 @@ interface FormAutoCompleteProps {
   placeholder: string
   options: any[]
   disable?: boolean
-  size?: OverridableStringUnion<'small' | 'medium', TextFieldPropsSizeOverrides>
+  size?: OverridableStringUnion<'small' | 'medium', TextFieldPropsSizeOverrides>,
 }
 
 export const FormAutocomplete: React.FC<FormAutoCompleteProps> =
   ({ control, label, name, placeholder, options, disable, size }) => {
   return (
     <Controller
-      render={({ field: { onChange} }) => (
+      render={({ field: { onChange }, fieldState: { error } }) => (
         <Autocomplete
           options={options}
           disabled={disable ? disable : false}
@@ -26,7 +26,9 @@ export const FormAutocomplete: React.FC<FormAutoCompleteProps> =
           renderInput={(params) => (
             <TextField
               {...params}
-              size={ size ? size : 'medium'}
+              error={!!error}
+              helperText={error ? error.message : null}
+              size={size ? size : 'medium'}
               placeholder={placeholder}
               label={label}
               variant="outlined"
@@ -36,6 +38,7 @@ export const FormAutocomplete: React.FC<FormAutoCompleteProps> =
         />
       )}
       name={name}
+      rules={{required: 'Required field'}}
       defaultValue=""
       control={control}
     />
