@@ -16,12 +16,11 @@ import {
     styled,
     tableCellClasses
 } from "@mui/material"
-import { Column } from '../../types/Column'
 import React from "react"
 import CloseIcon from '@mui/icons-material/Close';
 import EmptyImage from '../../assets/images/no-data.jpg'
 import { NumericFormat } from "react-number-format";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { ColumnDrugCategory } from "../../pages/import/CreateImport";
 
 interface TableProps<T> {
     rows: T[]
@@ -35,7 +34,7 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
         backgroundColor: 'lightBlue',
         color: theme.palette.common.black,
-        fontWeight: 500
+        fontWeight: 600
     },
     [`&.${tableCellClasses.body}`]: {
           fontSize: 14,
@@ -49,12 +48,12 @@ const CustomTableCell = styled(TableCell)(({ theme }) => ({
         fontWeight: 500
     },
     [`&.${tableCellClasses.body}`]: {
-        fontSize: 13,
+        fontSize: 14,
         p: 1
     },
 }));
 
-const columns: Column[] = [
+const columns: ColumnDrugCategory[] = [
     { key: 'id', value: 'Mã thuốc'},
     { key: 'name', value: 'Tên thuốc' },
     { key: 'quantity', value: 'Số lượng' },

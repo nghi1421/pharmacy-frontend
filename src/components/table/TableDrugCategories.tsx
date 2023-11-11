@@ -32,14 +32,14 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
         backgroundColor: 'lightBlue',
         color: theme.palette.common.black,
-        fontWeight: 500
+        fontWeight: 600
     },
     [`&.${tableCellClasses.body}`]: {
           fontSize: 14,
     },
 }));
 
-const TableAction: React.FC<TableProps<any>> = ({ rows, keyTable, columns, action, tooltip, type }) => {
+const TableDrugCategories: React.FC<TableProps<any>> = ({ rows, keyTable, columns, action, tooltip, type }) => {
  
   return (
       <TableContainer component={Paper} style={{ maxHeight: 300 }}>
@@ -55,7 +55,7 @@ const TableAction: React.FC<TableProps<any>> = ({ rows, keyTable, columns, actio
                             {column.value}
                           </StyledTableCell>
                         ))}
-          </TableRow>
+                    </TableRow>
           {
             rows.length - rows.filter(row => row.checked).length === 0
               ?
@@ -165,4 +165,4 @@ const TableAction: React.FC<TableProps<any>> = ({ rows, keyTable, columns, actio
     )
 }
 
-export default TableAction;
+export default TableDrugCategories;

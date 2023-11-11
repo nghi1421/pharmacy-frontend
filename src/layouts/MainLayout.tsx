@@ -27,6 +27,9 @@ const Layout: React.FC<LayoutProps> = ({ children }): ReactElement => {
     globalEvent.on('close-sidebar', () => {
       setOpen(false);
     })
+    globalEvent.on('open-sidebar', () => {
+      setOpen(true);
+    })
   })
 
   if (!token || !staff) {

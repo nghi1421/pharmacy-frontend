@@ -9,8 +9,8 @@ import { FormInputText } from "../../components/form/FormInputText";
 import { FormInputDate } from "../../components/form/FormInputDate";
 import { FormInputCurrency } from "../../components/form/FormInputCurrency";
 import { useGetDataDrugCategories } from "../../hooks/useDrugCategory";
-import TableAction from "../../components/table/TableAction";
-import TableSelectDrugCategory from "../../components/table/TableSelectDrugCategory";
+import TableImportSelectDrug from "../../components/table/TableImportSelectDrug";
+import TableDrugCategories from "../../components/table/TableDrugCategories";
 import SearchIcon from '@mui/icons-material/Search';
 import { makeStyles } from "@mui/styles";
 import globalEvent from "../../utils/emitter";
@@ -25,7 +25,7 @@ const useStyles = makeStyles({
     },
 })
 
-interface ColumnDrugCategory {
+export interface ColumnDrugCategory {
     key: string;
     value: string;
 }
@@ -53,6 +53,7 @@ const CreateImport: React.FC = () => {
     const classes = useStyles();
     const staff = getStaff();
     const { isLoading: drugCategoryLoading, data: drugCategories, refetch } = useGetDataDrugCategories()
+    const [isFirstSubmit, setIsFirstSubmit] = useState<boolean>(false)
     const [drugs, setDrugs] = useState<any[]>([])
     const [cloneDrugs, setCloneDrugs] = useState<any[]>([])
     const [selectedDrugs, setSelectedDrugs] = useState<any[]>([])
@@ -110,15 +111,21 @@ const CreateImport: React.FC = () => {
         }
     }, [selectedDrugs])
 
+    const validate = (drugCategory: any) => {
+        const validateErrors = ['', '', '', '']
+        validateErrors[3] = drugCategory.batchId.length === 0 ? 'Mã lô thuốc bắt buộc.' : ''
+        validateErrors[2] = dayjs(drugCategory.expiryDate).isBefore(dayjs(), 'day') ? 'Thuốc đã hết hạn sử dụng.' : ''
+        validateErrors[1] =  isNaN(drugCategory.unitPrice) || drugCategory.unitPrice === 0 ? 'Đơn giá bắt buộc.' : ''
+        validateErrors[0] = isNaN(drugCategory.quantity) || drugCategory.quantity === 0 ?'Số lượng nhập bắt buộc.' : ''
+
+        return validateErrors;
+    }
+
     const onSubmit = (data: ImportForm) => { 
         const validatedDrugs = selectedDrugs.map(drugCategory => {
-            const validateErrors = ['', '', '', '']
-            validateErrors[3] = drugCategory.batchId.length === 0 ? 'Mã lô thuốc bắt buộc.' : ''
-            validateErrors[2] = dayjs(drugCategory.expiryDate) < dayjs() ?'Thuốc đã hết hạn sử dụng.' : ''
-            validateErrors[1] = drugCategory.unitPrice === 0 ? 'Giá nhập bắt buộc.' : ''
-            validateErrors[0] = drugCategory.quantity === 0 ? 'Số lượng nhập bắt buộc.' : ''
-            return {...drugCategory, errors: validateErrors}
+            return {...drugCategory, errors: validate(drugCategory)}
         })
+        setIsFirstSubmit(true);
         setSelectedDrugs(validatedDrugs)
         console.log(validatedDrugs)
         console.log(data)
@@ -161,18 +168,20 @@ const CreateImport: React.FC = () => {
     }
 
     const updateSelectedDrugs = (drugCategory: any) => {
-        console.log(drugCategory.expiryDate);
         const validateErrors = ['', '', '', '']
-        validateErrors[3] = drugCategory.batchId.length === 0 ? 'Mã lô thuốc bắt buộc.' : ''
-        validateErrors[2] = dayjs(drugCategory.expiryDate) < dayjs() ? 'Thuốc đã hết hạn sử dụng.' : ''
-        validateErrors[1] =  isNaN(drugCategory.unitPrice) || drugCategory.unitPrice === 0 ? 'Giá nhập bắt buộc.' : ''
-        validateErrors[0] = isNaN(drugCategory.quantity) || drugCategory.quantity === 0 ?'Số lượng nhập bắt buộc.' : ''
         setSelectedDrugs(selectedDrugs.map(drug => {
-            return drug.id === drugCategory.id ?  {...drugCategory, errors: validateErrors} : drug
+            return drug.id === drugCategory.id
+                ? (
+                    !isFirstSubmit
+                    ? { ...drugCategory, errors: validateErrors }
+                    : { ...drugCategory, errors: validate(drugCategory) }
+                )
+             : drug
         }))
     }
 
     const backToTable = () => {
+        globalEvent.emit('open-sidebar')
         navigate('/admin/imports')
     }
 
@@ -181,10 +190,10 @@ const CreateImport: React.FC = () => {
             <Typography variant="h4" gutterBottom mb='20px'>
                 Thông tin phiếu nhập thuốc
             </Typography>
-            <Grid container spacing={3}>
-                <Grid item xs={8} sm={6} >
-                    <Box sx={{ border: 1, borderColor: 'grey.300', mt:4, px: 2, borderRadius: 2, boxShadow: 1 }}>
-                        <Typography variant="subtitle2" mb='20px' sx={{ fontWeight: 'fontWeightBold', mt: 2 }}>
+            <Grid container spacing={3} >
+                <Grid item xs={8} sm={6} sx={{ pb: 2 }}>
+                    <Box sx={{ border: 1,height: '100%', borderColor: 'grey.300', px: 2, borderRadius: 2, boxShadow: 1 }}>
+                        <Typography variant="subtitle2" mb='20px' sx={{ fontWeight: 'fontWeightBold', fontSize: 16, mt: 2 }}>
                             Công ty dược
                         </Typography>
                         {
@@ -243,19 +252,18 @@ const CreateImport: React.FC = () => {
                     </Box>
                 </Grid>
 
-                <Grid item xs={8} sm={6} >
+                <Grid item xs={8} sm={6} sx={{ pb: 2 }}>
                     <Box
                         sx={{
-                            minHeight: '88%',
+                            height: '100%',
                             border: 1,
                             borderColor: 'grey.300',
-                            mt: 4,
                             px: 2,
                             borderRadius: 2,
                             boxShadow: 1
                         }}
                     >
-                    <Typography mb='20px' variant="subtitle2" sx={{ fontWeight: 'fontWeightBold', mt: 2 }}>
+                    <Typography mb='20px' variant="subtitle2" sx={{ fontWeight: 'fontWeightBold', fontSize: 16, mt: 2 }}>
                         Thông tin nhân viên
                     </Typography>
         
@@ -357,7 +365,7 @@ const CreateImport: React.FC = () => {
                     <Typography mb='20px' variant="subtitle2" sx={{ fontWeight: 600, fontSize: 16, mt: 2 }}>
                         Thuốc đã chọn
                     </Typography>
-                    <TableSelectDrugCategory
+                    <TableImportSelectDrug
                         rows={selectedDrugs}
                         tooltip='Nhấn để bỏ chọn thuốc'
                         keyTable='selected-drug-category-table-key'
@@ -431,7 +439,7 @@ const CreateImport: React.FC = () => {
                         ?
                             <CircularProgress sx={{ margin: 'auto' }} />
                         :
-                            <TableAction
+                            <TableDrugCategories
                                 rows={drugs}
                                 tooltip='Nhấn để chọn thuốc'
                                 columns={columns}

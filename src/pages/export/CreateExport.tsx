@@ -6,9 +6,9 @@ import { useForm } from "react-hook-form";
 import { getStaff } from "../../store/auth";
 import { FormInputText } from "../../components/form/FormInputText";
 import { FormInputDate } from "../../components/form/FormInputDate";
-import TableAction from "../../components/table/TableAction";
 import { useGetDataCustomers } from "../../hooks/useCustomer";
 import TableExportSelectDrug from "../../components/table/TableExportSelectDrug";
+import TableDrugCategories from "../../components/table/TableDrugCategories";
 import { useGetDataDrugCategories } from "../../hooks/useDrugCategory";
 import SearchIcon from '@mui/icons-material/Search';
 import { makeStyles } from "@mui/styles";
@@ -21,21 +21,6 @@ const useStyles = makeStyles({
       fontSize: "15px"
     }
     },
-    // rotateIcon: {
-    //     "&:hover": {
-    //         '& .MuiSvgIcon-root': {
-    //             animation: "$spin 0.2s linear forwards"
-    //         }
-    //     }
-    // },
-    // "@keyframes spin": {
-    //   "0%": {
-    //     transform: "rotate(360deg)"
-    //   },
-    //   "100%": {
-    //     transform: "rotate(0deg)"
-    //   }
-    // }
 })
 
 export interface ColumnDrugCategory {
@@ -168,9 +153,9 @@ const CreateExport: React.FC = () => {
                 Thông tin phiếu xuất hàng
             </Typography>
             <Grid container spacing={3}>
-                <Grid item xs={8} sm={6} >
-                    <Box sx={{ border: 1, borderColor: 'grey.300', mt:4, px: 2, borderRadius: 2, boxShadow: 1 }}>
-                        <Typography variant="subtitle2" mb='20px' sx={{ fontWeight: 'fontWeightBold', mt: 2 }}>
+                <Grid item xs={8} sm={6} sx={{ pb: 2, mb: 1 }} >
+                    <Box sx={{ border: 1, height: '100%', borderColor: 'grey.300', px: 2, borderRadius: 2, boxShadow: 1 }}>
+                        <Typography variant="subtitle2" mb='20px' sx={{ fontWeight: 'fontWeightBold', fontSize: 16, mt: 2 }}>
                             Khách hàng
                         </Typography>
                         {
@@ -228,9 +213,9 @@ const CreateExport: React.FC = () => {
                     </Box>
                 </Grid>
 
-                <Grid item xs={8} sm={6} >
-                    <Box sx={{ border: 1, borderColor: 'grey.300', mt: 4, px: 2, borderRadius: 2, boxShadow: 1 }}>
-                        <Typography mb='20px' variant="subtitle2" sx={{ fontWeight: 'fontWeightBold', mt: 2 }}>
+                <Grid item xs={8} sm={6} sx={{ pb: 2, mb: 1 }} >
+                    <Box sx={{ border: 1, height: '100%', borderColor: 'grey.300', px: 2, borderRadius: 2, boxShadow: 1 }}>
+                        <Typography mb='20px' variant="subtitle2" sx={{ fontWeight: 'fontWeightBold', fontSize: 16, mt: 2 }}>
                         Thông tin nhân viên
                     </Typography>
         
@@ -394,7 +379,7 @@ const CreateExport: React.FC = () => {
                         ?
                             <CircularProgress sx={{ margin: 'auto' }} />
                         :
-                            <TableAction
+                            <TableDrugCategories
                                 rows={drugs}
                                 tooltip='Nhấn để chọn thuốc'
                                 columns={columns}

@@ -16,7 +16,6 @@ import {
     styled,
     tableCellClasses
 } from "@mui/material"
-import { Column } from '../../types/Column'
 import React from "react"
 import CloseIcon from '@mui/icons-material/Close';
 import EmptyImage from '../../assets/images/no-data.jpg'
@@ -24,6 +23,7 @@ import { NumericFormat } from "react-number-format";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { ColumnDrugCategory } from "../../pages/export/CreateExport";
 
 interface TableProps<T> {
     rows: T[]
@@ -56,7 +56,7 @@ const CustomTableCell = styled(TableCell)(({ theme }) => ({
     },
 }));
 
-const columns: Column[] = [
+const columns: ColumnDrugCategory[] = [
     { key: 'id', value: 'Mã thuốc'},
     { key: 'name', value: 'Tên thuốc' },
     { key: 'quantity', value: 'Số lượng' },
@@ -66,7 +66,7 @@ const columns: Column[] = [
     { key: 'batchId', value: 'Mã lô thuốc' },
 ]
 
-const TableSelectDrugCategory: React.FC<TableProps<any>> = ({ rows, keyTable, action, tooltip, update }) => {
+const TableImportSelectDrug: React.FC<TableProps<any>> = ({ rows, keyTable, action, tooltip, update }) => {
  
   return (
       <TableContainer component={Paper}>
@@ -287,4 +287,4 @@ const TableSelectDrugCategory: React.FC<TableProps<any>> = ({ rows, keyTable, ac
     )
 }
 
-export default TableSelectDrugCategory;
+export default TableImportSelectDrug;
