@@ -25,7 +25,7 @@ export const FormInputDate: React.FC<FormInputProps> = ({ name, control, label,s
                   label={label}
                   slotProps={{
                     textField: {
-                      size: size ? size: 'medium',
+                      size: size ? size: 'small',
                       variant: 'outlined',
                       error: !!error,
                       helperText: error?.message,

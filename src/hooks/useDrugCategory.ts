@@ -50,6 +50,7 @@ const useGetDrugCategories = (query: Query) => {
 
 const useGetDataDrugCategories = () => {
   return useQuery({
+    queryKey: ['drug-categories'],
     queryFn: () => axiosClient
       .get(API_DRUG_CATEGORY)
       .then((response) => {

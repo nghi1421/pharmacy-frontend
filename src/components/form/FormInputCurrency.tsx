@@ -20,7 +20,7 @@ export const FormInputCurrency: React.FC<FormInputCurrencyProps> = ({control, na
                 <NumericFormat 
                     sx={{ width: '100%' }}
                     label={label}
-                    size={ size ? size : "medium"}
+                    size={ size ? size : "small"}
                     placeholder={placeholder}
                     error={!!error}
                     thousandSeparator=","

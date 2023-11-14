@@ -8,13 +8,15 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from 'yup'
 import { useUpdateCustomer } from "../../hooks/useCustomer";
+import { FormInputDropdown } from "../../components/form/FormInputDropdown";
+import { genders } from "../../utils/constants";
 
 export interface CustomerEditForm {
     id: string;
     name: string;
     phoneNumber: string;
-    email: string;
     address: string;
+    gender: string;
 }
 
 //@ts-ignore
@@ -28,10 +30,6 @@ const customerFormValidate: Yup.ObjectSchema<CustomerEditForm> = yup.object({
         .required('Số điện thoại bắt buộc.')
         //@ts-ignore
         .phoneNumber('Số điện thoại không hợp lệ.'),
-    email: yup
-        .string()
-        .required('Email bắt buộc.')
-        .email('Email không hợp lệ.'),
 })
 const EditCustomer: React.FC = () => {
     const { state } = useLocation()
@@ -61,31 +59,34 @@ const EditCustomer: React.FC = () => {
                         <Grid container spacing={3}>
                         <Grid item xs={8} sm={4}>
                             <FormInputText
+                                size='small'
                                 name="name"
                                 control={control}
-                                label="Tên công ty dược"
-                                placeholder='Nhập tên công ty dược'
+                                label="Tên khách hàng"
+                                placeholder='Nhập tên khách hàng'
                             />
                         </Grid>
                         <Grid item xs={8} sm={4}>
                             <FormInputText
+                                size='small'
                                 name="phoneNumber"
                                 control={control}
                                 label="Số điện thoại"
                                 placeholder='Nhập họ số điện thoại'
                             />
-                        </Grid>
-                        
-                        <Grid item xs={8} sm={4}>
-                            <FormInputText
-                                name="email"
-                                control={control}
-                                label="Email"
-                                placeholder='Nhập email công ty dược'
-                            />
+                            </Grid>
+                        <Grid item xs={8} sm={2}>
+                        <FormInputDropdown
+                            size='small'
+                            name="gender"
+                            control={control}
+                            label="Giới tính"
+                            placeholder='Giới tính'
+                            list={genders}
+                        />
                         </Grid>
                             
-                        <Address setAddress={setAddress} key={counter} initAddress={state.customerData.address} />  
+                        <Address setAddress={setAddress} key={counter} initAddress={state.customerData.address} size='small'/>  
 
                         <Grid item xs={12} sm={12} container 
                             sx={{

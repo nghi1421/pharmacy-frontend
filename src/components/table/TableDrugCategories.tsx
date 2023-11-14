@@ -16,7 +16,7 @@ import {
 } from "@mui/material"
 import React from "react"
 import EmptyImage from '../../assets/images/no-data.jpg'
-import { ColumnDrugCategory } from "../../pages/export/CreateExport"
+import { ColumnDrugCategory } from "../../pages/export/CreateExportOld"
 import { enqueueSnackbar } from "notistack"
 
 interface TableProps<T> {

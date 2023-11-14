@@ -2,12 +2,12 @@ import { enqueueSnackbar } from 'notistack';
 import axiosClient from '../services/axios';
 import { API_CUSTOMER, API_CUSTOMER_WITH_ID} from '../utils/constants';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
-import { formatDate } from '../utils/format';
 import { Customer } from '../types/Customer';
 import { GenderEnum } from '../types/GenderEnum';
 import { useNavigate } from 'react-router-dom';
 import { pathToUrl } from '../utils/path';
 import { CustomerForm } from '../pages/customer/CreateCustomer';
+import { CustomerForm as CustomerWithId } from '../pages/export/CreateExport';
 import { CustomerEditForm } from '../pages/customer/EditCustomer';
 import { defaultCatchErrorHandle, defaultOnSuccessHandle, updateSearchParams } from '../utils/helper';
 import { UseFormSetError } from 'react-hook-form';
@@ -15,18 +15,17 @@ import { Query } from '../types/Query';
 import { DataMetaResponse } from '../types/response/DataResponse';
 import { handleAddress } from '../utils/address';
 
-function createData({ id, name, gender, dob, address, phoneNumber, email }: Customer) {
+function createData({ id, name, gender, address, phoneNumber }: Customer) {
     return {
-      id, name, phoneNumber, email,
+      id, name, phoneNumber,
         address: handleAddress(address),
         gender: GenderEnum[gender],
-        dob: !dob ? '_' : formatDate(dob),
     };
 }
 
-function createDataForAutocomplete({id, name, address, phoneNumber, email}: Customer) {
+function createDataForAutocomplete({id, name, address, phoneNumber}: Customer) {
     return {
-        id, label: name, phoneNumber, email, address: handleAddress(address),
+        id, label: name, phoneNumber, address: handleAddress(address),
     };
 }
 
@@ -96,6 +95,17 @@ const useGetCustomer = () => {
       }),
   })
 }
+const useSearchCustomer = (setCustomer: (a: CustomerWithId)=> void) => {
+  return useMutation({
+    mutationFn: async (phoneNumber: string) => {
+      return await axiosClient.post('/customers/search-by-phone-number', {phoneNumber})
+        .then(response => {setCustomer(response.data.data)})
+        .catch(error => {
+          defaultCatchErrorHandle(error)
+        }) 
+    },
+  })
+}
 
 const useCreateCustomer = (setError: UseFormSetError<any>) => {
   const queryClient = useQueryClient();
@@ -154,6 +164,7 @@ const useDeleteCustomer = () => {
 export {
   useGetCustomers,
   useGetDataCustomers,
+  useSearchCustomer,
   useGetCustomer,
   useCreateCustomer,
   useUpdateCustomer,

@@ -1,3 +1,6 @@
+import { TextFieldPropsSizeOverrides } from "@mui/material";
+import { OverridableStringUnion } from '@mui/types';
+
 export interface FormInputFloatProps {
     name: string;
     control: any;
@@ -8,4 +11,5 @@ export interface FormInputFloatProps {
     step: string;
     postfix: string;
     prefix: string
+    size?: OverridableStringUnion<'small' | 'medium', TextFieldPropsSizeOverrides>;
 }

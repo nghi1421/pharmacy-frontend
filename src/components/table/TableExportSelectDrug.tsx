@@ -56,7 +56,7 @@ const CustomTableCell = styled(TableCell)(({ theme }) => ({
 const columns: ColumnDrugCategory[] = [
     { key: 'id', value: 'Mã thuốc'},
     { key: 'name', value: 'Tên thuốc' },
-    { key: 'quantity', value: 'Số lượng' },
+    { key: 'exportQuantity', value: 'Số lượng' },
     { key: 'unitPrice', value: 'Đơn giá bán' },
     { key: 'vat', value: 'Thuế VAT' },
     { key: 'use', value: 'Công dụng' },
@@ -180,7 +180,7 @@ const TableExportSelectDrug: React.FC<TableProps<any>> = ({ rows, keyTable, acti
                           </CustomTableCell>
 
                           
-                          <CustomTableCell  align="left" key={`2-${rowIndex}-${keyTable}-quantity`}>
+                          <CustomTableCell  align="left" key={`2-${rowIndex}-${keyTable}-exportQuantity`}>
                                 <NumericFormat 
                                     size='small'
                                     sx={{
@@ -194,14 +194,16 @@ const TableExportSelectDrug: React.FC<TableProps<any>> = ({ rows, keyTable, acti
                                             fontSize: "13px"
                                         }
                                     }}
-                                    value={row['quantity']}
+                                    value={row['exportQuantity']}
                                     defaultValue={0}
+                                    error={row.error}
                                     label='Số lượng'
                                     placeholder='Nhập số lượng'
                                     thousandSeparator=","
                                     customInput={TextField}
-                                    onValueChange={({ value }) => (update({...row, quantity: parseInt(value)}))}
+                                    onValueChange={({ value }) => (update({...row, exportQuantity: parseInt(value)}))}
                                 />
+                                <Typography color='#d32f2f' sx={{ fontSize: 13, mt:0.5 }}>{row.error}</Typography>
                           </CustomTableCell>
 
                           <CustomTableCell

@@ -20,7 +20,7 @@ export const FormInputNumber: React.FC<FormInputNumberProps> =
             name={name}
             render={({ field: { onChange, name, value } }) => (
                 <NumericFormat 
-                    size={size ? size : 'max'}
+                    size={size ? size : 'small'}
                     sx={{ width: '100%' }}
                     label={label}
                     placeholder={placeholder}

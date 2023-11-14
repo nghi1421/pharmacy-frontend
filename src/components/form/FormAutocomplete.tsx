@@ -28,7 +28,7 @@ export const FormAutocomplete: React.FC<FormAutoCompleteProps> =
               {...params}
               error={!!error}
               helperText={error ? error.message : null}
-              size={size ? size : 'medium'}
+              size={size ? size : 'small'}
               placeholder={placeholder}
               label={label}
               variant="outlined"

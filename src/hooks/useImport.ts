@@ -75,7 +75,8 @@ const useCreateImport = (setError: UseFormSetError<any>) => {
             defaultCatchErrorHandle(error, setError)
           }) 
       },
-      onSuccess: (response: any) => {
+    onSuccess: (response: any) => {
+        queryClient.invalidateQueries('drug-categories', { refetchInactive: true })
         defaultOnSuccessHandle(queryClient, navigate, response, 'imports', '/admin/imports')
       }
     })

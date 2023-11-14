@@ -3,30 +3,23 @@ import { useNavigate } from "react-router-dom"
 import React, { useEffect, useState } from "react";
 import { FormAutocomplete } from "../../components/form/FormAutocomplete";
 import { useForm } from "react-hook-form";
-import { useGetDataProviders } from "../../hooks/useProvider";
 import { getStaff } from "../../store/auth";
 import { FormInputText } from "../../components/form/FormInputText";
 import { FormInputDate } from "../../components/form/FormInputDate";
-import { FormInputCurrency } from "../../components/form/FormInputCurrency";
-import { useGetDataDrugCategories } from "../../hooks/useDrugCategory";
-import TableImportSelectDrug from "../../components/table/TableImportSelectDrug";
+import { useGetDataCustomers } from "../../hooks/useCustomer";
+import TableExportSelectDrug from "../../components/table/TableExportSelectDrug";
 import TableDrugCategories from "../../components/table/TableDrugCategories";
+import { useGetDataDrugCategories } from "../../hooks/useDrugCategory";
 import SearchIcon from '@mui/icons-material/Search';
 import { makeStyles } from "@mui/styles";
 import globalEvent from "../../utils/emitter";
 import ReplayIcon from '@mui/icons-material/Replay';
-import dayjs from "dayjs";
-import yup from "../../utils/yup";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { Provider } from "../../types/Provider";
-import { ErrorMessage } from '@hookform/error-message/dist';
-import { useCreateImport } from "../../hooks/useImport";
 
 const useStyles = makeStyles({
   customTextField: {
-        "& input::placeholder": {
-            fontSize: "15px"
-        }
+    "& input::placeholder": {
+      fontSize: "15px"
+    }
     },
 })
 
@@ -35,88 +28,37 @@ export interface ColumnDrugCategory {
     value: string;
 }
 
-interface ImportDetail {
-    drugId: number;
-    quantity: number;
-    batchId: string;
-    expiryDate: Date;
-    unitPrice: number;
-}
-
 export interface ImportForm {
-    provider: Provider | null;
+    customer: any;
     note: string;
-    importDate: Date;
-    paid: number;
-    maturityDate: Date;
-    importDetails: ImportDetail[];
-    providerId: number;
-    staffId: number;
+    exportDate: string
+    precriptionId: string
+    exportDetails: []
 }
-
-const defaultValues = {
-    note: '',
-    importDate: new Date(),
-    paid: 0,
-    provider: null,
-    maturityDate: new Date(),
-    importDetails: [],
-    providerId: 0,
-    staffId: 0,
-};
-
- // @ts-ignore
-const importValidate: Yup.ObjectSchema<ImportForm> = yup.object({
-    note: yup
-        .string()
-        .max(255, 'Ghi chú không quá 255 kí tự'),
-    importDate: yup
-        .date()
-        .max(new Date(), 'Thời gian nhập hàng không hợp lệ.'),
-    provider: yup
-        .object()
-        .typeError('Vui lòng chọn công ty dược.')
-        .required('Vui lòng chọn công ty dược'),
-    paid: yup
-        .number()
-        .typeError('Số tiền đã thanh toán bắt buộc.')
-        .required('Số tiền đã thanh toán bắt buộc.'),
-    maturityDate: yup
-        .date()
-        .typeError('Ngày đáo hạn bắt buộc.')
-        .min(new Date(), 'Ngày đáo hạn phải sau hôm nay.'),
-})
 
 const columns: ColumnDrugCategory[] = [
     { key: 'id', value: 'Mã thuốc'},
     { key: 'name', value: 'Tên thuốc' },
-    { key: 'quantity', value: 'Tồn kho' },
-    { key: 'unit', value: 'Đơn vị nhập' },
     { key: 'formatedPrice', value: 'Đơn giá bán' },
     { key: 'minimalUnit', value: 'Đơn vị bán' },
+    { key: 'vat', value: 'Thuế VAT' },
     { key: 'use', value: 'Công dụng'},
 ]
 
-const CreateImport: React.FC = () => {
+const CreateExport: React.FC = () => {
     const navigate = useNavigate()
     const classes = useStyles();
     const staff = getStaff();
     const { isLoading: drugCategoryLoading, data: drugCategories, refetch } = useGetDataDrugCategories()
-    const [isFirstSubmit, setIsFirstSubmit] = useState<boolean>(false)
     const [drugs, setDrugs] = useState<any[]>([])
     const [cloneDrugs, setCloneDrugs] = useState<any[]>([])
     const [selectedDrugs, setSelectedDrugs] = useState<any[]>([])
     const [pay, setPay] = useState<number[]>([0 , 0, 0])
-    const { data: providers, isLoading: providerLoading } = useGetDataProviders()
-    const { handleSubmit, control, watch, formState: { errors }, setError } = useForm<ImportForm>({
-        defaultValues: defaultValues,
-        resolver: yupResolver(importValidate)
+    const { data: customer, isLoading: customerLoading } = useGetDataCustomers()
+    const { handleSubmit, control, watch } = useForm<ImportForm>({
     });
-    const createImport = useCreateImport(setError);
-
+    const watchCustomer = watch('customer')
     const [search, setSearch] = useState<string>('')
-
-    const watchProvider = watch('provider')
 
     const handleSearchData = (event: React.ChangeEvent<HTMLInputElement>) => {
         const searchTerm = event.target.value as string
@@ -132,27 +74,27 @@ const CreateImport: React.FC = () => {
     }
 
     useEffect(() => {
-        globalEvent.emit('close-sidebar')
-    }, [])
-
-    useEffect(() => {
         if (drugCategories && drugCategories.length > 0) {
             const data = drugCategories.map((drug: any) => {
                 return { ...drug, checked: false }
             });
-            setCloneDrugs(data)
             setDrugs(data)
+            setCloneDrugs(data)
         }
     }, [drugCategories])
 
     useEffect(() => {
+        globalEvent.emit('close-sidebar')
+    }, [])
+
+    useEffect(() => {
         if (selectedDrugs.length > 0) {
             const withoutVat = selectedDrugs.reduce((value, drug) => {
-                return value + drug.quantity * drug.unitPrice
+                return value + drug.quantity * drug.price
             }, 0)
 
             const vat = selectedDrugs.reduce((value, drug) => {
-                return value + drug.rawVat*drug.quantity * drug.unitPrice
+                return value + drug.rawVat * drug.quantity * drug.price
             }, 0)
 
             const total = vat + withoutVat;
@@ -164,71 +106,17 @@ const CreateImport: React.FC = () => {
         }
     }, [selectedDrugs])
 
-    const validate = (drugCategory: any) => {
-        const validateErrors = ['', '', '', '']
-        validateErrors[3] = drugCategory.batchId.length === 0 ? 'Mã lô thuốc bắt buộc.' : ''
-        validateErrors[2] = dayjs(drugCategory.expiryDate).isBefore(dayjs(), 'day') ? 'Thuốc đã hết hạn sử dụng.' : ''
-        validateErrors[1] =  isNaN(drugCategory.unitPrice) || drugCategory.unitPrice === 0 ? 'Đơn giá bắt buộc.' : ''
-        validateErrors[0] = isNaN(drugCategory.quantity) || drugCategory.quantity === 0 ?'Số lượng nhập bắt buộc.' : ''
-
-        return validateErrors;
-    }
-
     const onSubmit = (data: ImportForm) => { 
-        let isInvalid = false;
-        const validatedDrugs = selectedDrugs.map(drugCategory => {
-            const validateErrros = validate(drugCategory);
-            if (!isInvalid && validateErrros.some(error => error.length > 0)) {
-                isInvalid = true;
-            }
-            return {...drugCategory, errors: validate(drugCategory)}
-        })
-        setIsFirstSubmit(true);
-        if (isInvalid) {
-            setSelectedDrugs(validatedDrugs)
-        }
-        else {
-            const result = createImport.mutate({
-                ...data,
-                providerId: data.provider ?  data.provider.id : 1,
-                staffId: staff.id,
-                importDetails: validatedDrugs.map(drug => {
-                    return { 
-                        drugId: drug.id,
-                        unitPrice: drug.unitPrice,
-                        batchId: drug.batchId,
-                        quantity: drug.quantity,
-                        expiryDate: drug.expiryDate,
-                     } as ImportDetail
-                })
-            })
-            console.log(result);
-        }
+        console.log(data)
     };
 
     const checkDrugCategory = (drugCategory: any) => {
-        const data = cloneDrugs.map(drug => {
+        const data = drugs.map(drug => {
             return drug.id === drugCategory.id ? {...drug, checked: true} : drug
         })
+        setDrugs(data)
         setCloneDrugs(data)
-        if (search.trim().length > 0) {
-            setDrugs(data.filter(
-                drug => (drug.name).toLowerCase().includes(search.toLowerCase()) && !drug.checked
-            ))
-        }
-        else {
-            setDrugs(data)
-        }
-        
-        selectedDrugs.push({
-            ...drugCategory,
-            checked: false,
-            quantity: 0,
-            unitPrice: 0,
-            expiryDate: new Date(),
-            batchId: '',
-            errors: ['', '', '', '']
-        })
+        selectedDrugs.push({...drugCategory, checked: false, quantity: 0})
     }
 
     const unCheckDrugCategory = (drugCategory: any) => {
@@ -249,47 +137,38 @@ const CreateImport: React.FC = () => {
         setSelectedDrugs(newSelectedDrugs);
     }
 
-    const updateSelectedDrugs = (drugCategory: any) => {
-        const validateErrors = ['', '', '', '']
+    const updateQuantity = (drugCategory: any) => {
         setSelectedDrugs(selectedDrugs.map(drug => {
-            return drug.id === drugCategory.id
-                ? (
-                    !isFirstSubmit
-                    ? { ...drugCategory, errors: validateErrors }
-                    : { ...drugCategory, errors: validate(drugCategory) }
-                )
-             : drug
+            return drug.id === drugCategory.id ?  drugCategory : drug
         }))
     }
 
     const backToTable = () => {
-        globalEvent.emit('open-sidebar')
-        navigate('/admin/imports')
+        navigate('/admin/exports')
     }
 
     return (
         <Paper sx={{ px:6, py:4 }}>
             <Typography variant="h4" gutterBottom mb='20px'>
-                Thông tin phiếu nhập thuốc
+                Thông tin phiếu xuất hàng
             </Typography>
-            <Grid container spacing={3} >
-                <Grid item xs={8} sm={6} sx={{ pb: 2 }}>
-                    <Box sx={{ border: 1,height: '100%', borderColor: 'grey.300', px: 2, borderRadius: 2, boxShadow: 1 }}>
+            <Grid container spacing={3}>
+                <Grid item xs={8} sm={6} sx={{ pb: 2, mb: 1 }} >
+                    <Box sx={{ border: 1, height: '100%', borderColor: 'grey.300', px: 2, borderRadius: 2, boxShadow: 1 }}>
                         <Typography variant="subtitle2" mb='20px' sx={{ fontWeight: 'fontWeightBold', fontSize: 16, mt: 2 }}>
-                            Công ty dược
+                            Khách hàng
                         </Typography>
                         {
-                                providerLoading
+                                customerLoading
                             ?
                                 <CircularProgress sx={{ margin: 'auto' }} />
                             :
                                 <FormAutocomplete
-                                    size='small'
                                     control={control}
-                                    label='Tên công ty dược'
-                                    placeholder='Chọn tên công ty dược'
-                                    name='provider'
-                                    options={providers}
+                                    label='Tên khách hàng'
+                                    placeholder='Chọn khách hàng'
+                                    name='customer'
+                                    options={customer}
                                 />    
                         }
 
@@ -302,7 +181,7 @@ const CreateImport: React.FC = () => {
                             </Typography>
 
                             <Typography display="inline" sx={{ pl:1, textDecoration: 'none'}}>
-                                {watchProvider?.phoneNumber ? watchProvider.phoneNumber : ''}
+                                {watchCustomer?.phoneNumber ? watchCustomer.phoneNumber : ''}
                             </Typography>
                         </Typography>
 
@@ -315,7 +194,7 @@ const CreateImport: React.FC = () => {
                             </Typography>
 
                             <Typography display="inline" sx={{ pl:1, textDecoration: 'none'}}>
-                                {watchProvider?.email ? watchProvider.email : ''}
+                                {watchCustomer?.email ? watchCustomer.email : ''}
                             </Typography>
                         </Typography>
 
@@ -328,24 +207,15 @@ const CreateImport: React.FC = () => {
                             </Typography>
 
                             <Typography display="inline" sx={{ pl:1, textDecoration: 'none'}}>
-                                {watchProvider?.address ? watchProvider.address : ''}
+                                {watchCustomer?.address ? watchCustomer.address : ''}
                             </Typography>
                         </Typography>
                     </Box>
                 </Grid>
 
-                <Grid item xs={8} sm={6} sx={{ pb: 2 }}>
-                    <Box
-                        sx={{
-                            height: '100%',
-                            border: 1,
-                            borderColor: 'grey.300',
-                            px: 2,
-                            borderRadius: 2,
-                            boxShadow: 1
-                        }}
-                    >
-                    <Typography mb='20px' variant="subtitle2" sx={{ fontWeight: 'fontWeightBold', fontSize: 16, mt: 2 }}>
+                <Grid item xs={8} sm={6} sx={{ pb: 2, mb: 1 }} >
+                    <Box sx={{ border: 1, height: '100%', borderColor: 'grey.300', px: 2, borderRadius: 2, boxShadow: 1 }}>
+                        <Typography mb='20px' variant="subtitle2" sx={{ fontWeight: 'fontWeightBold', fontSize: 16, mt: 2 }}>
                         Thông tin nhân viên
                     </Typography>
         
@@ -405,17 +275,24 @@ const CreateImport: React.FC = () => {
 
                 <Grid item xs={8} sm={3}>
                     <FormInputDate
-                        size='small'
-                        name="importDate"
+                        name="exportDate"
                         control={control}
-                        label="Ngày nhập hàng"
+                        label="Ngày xuất hàng"
                         placeholder='x'
                     />
                 </Grid>
 
                 <Grid item xs={8} sm={3}>
                     <FormInputText
-                        size='small'
+                        name="precriptionId"
+                        control={control}
+                        label="Mã đơn thuốc"
+                        placeholder='Nhập mã đơn thuốc/toa thuốc'
+                    />
+                </Grid>
+
+                <Grid item xs={8} sm={6}>
+                    <FormInputText
                         name="note"
                         control={control}
                         label="Ghi chú"
@@ -423,41 +300,18 @@ const CreateImport: React.FC = () => {
                     />
                 </Grid>
 
-                <Grid item xs={8} sm={3}>
-                    <FormInputCurrency
-                        size='small'
-                        control={control}
-                        name='paid'
-                        label='Đã thanh toán'
-                        placeholder='Nhập số tiền đã thanh toán'
-                    />
-                    <ErrorMessage
-                        errors={errors}
-                        name="paid"
-                        render={({ message }) =><Typography color='#d32f2f' sx={{ fontSize: 13, mt:0.5 }}>{message}</Typography>}
-                    />
-                </Grid>
-
-                <Grid item xs={8} sm={3}>
-                    <FormInputDate
-                        size='small'
-                        name="maturityDate"
-                        control={control}
-                        label="Ngày đáo hạn"
-                        placeholder='x'
-                    />
-                </Grid>
+                
                 
                 <Grid item xs={12} sm={12} container>
-                    <Typography mb='20px' variant="subtitle2" sx={{ fontWeight: 600, fontSize: 16, mt: 2 }}>
+                    <Typography mb='20px' variant="subtitle2" sx={{ fontWeight: 'fontWeightBold', mt: 2 }}>
                         Thuốc đã chọn
                     </Typography>
-                    <TableImportSelectDrug
+                    <TableExportSelectDrug
                         rows={selectedDrugs}
                         tooltip='Nhấn để bỏ chọn thuốc'
-                        keyTable='selected-drug-category-table-key'
+                        keyTable='selected-drug-export-category-table-key'
                         action={unCheckDrugCategory}
-                        update={updateSelectedDrugs}
+                        update={updateQuantity}
                     /> 
                 </Grid>
 
@@ -468,15 +322,15 @@ const CreateImport: React.FC = () => {
                         gap: 4
                     }}
                 >
-                    <Typography variant="subtitle2">
+                    <Typography variant="subtitle2" sx={{  }}>
                         Tổng tiền (chưa tính VAT): { pay[0] ? pay[0].toLocaleString() : '_'} VND
                     </Typography>
 
-                    <Typography variant="subtitle2">
+                    <Typography variant="subtitle2" sx={{  }}>
                         Tiền thuế VAT: { pay[1] ? pay[1].toLocaleString() : '_'} VND
                     </Typography>
 
-                    <Typography variant="subtitle2" sx={{ color: "#148c07", fontWeight: 600,  }}>
+                    <Typography variant="subtitle2" sx={{ color: "#148c07"  }}>
                         Tổng tiền: { pay[2] ? pay[2].toLocaleString() : '_'} VND
                     </Typography>
                 </Grid>
@@ -484,7 +338,7 @@ const CreateImport: React.FC = () => {
                 <Grid item xs={12} sm={12} container 
                 >
                     <Box sx={{ display: 'flex', width: '100%' }}>
-                        <Typography mb='20px' variant="subtitle2" sx={{ fontWeight: 600, fontSize: 16, mt: 2 }}>
+                        <Typography mb='20px' variant="subtitle2" sx={{ fontWeight: 'fontWeightBold', mt: 2 }}>
                             Danh mục thuốc
                         </Typography>
                         <TextField
@@ -512,7 +366,6 @@ const CreateImport: React.FC = () => {
                             sx={{
                                 height: '70%',
                                 m: 'auto',
-                                fontWeight: 600,
                                 textTransform: 'none',
                             }}
                             onClick={ () => refetch()}
@@ -532,10 +385,11 @@ const CreateImport: React.FC = () => {
                                 columns={columns}
                                 keyTable='drug-category-table-key'
                                 action={checkDrugCategory}
-                                type='import'
+                                type='export'
                             />
                     }  
                 </Grid>
+               
 
                 <Grid item xs={12} sm={12} container 
                     sx={{
@@ -571,6 +425,4 @@ const CreateImport: React.FC = () => {
     )
 }
 
-
-
-export default CreateImport
+export default CreateExport

@@ -6,6 +6,8 @@ import { formatDate } from '../utils/format';
 import { ExportType } from '../types/ExportType';
 import { useNavigate } from 'react-router-dom';
 import { pathToUrl } from '../utils/path';
+import { ExportForm } from '../pages/export/CreateExport';
+import { defaultCatchErrorHandle, defaultOnSuccessHandle } from '../utils/helper';
 
 function createData({id, exportDate, staff, customer, note, prescriptionId}: ExportType) {
     return {
@@ -58,40 +60,27 @@ const useGetExport = () => {
   })
 }
 
-// const useCreateExport = () => {
-//   const queryClient = useQueryClient();
-//   const navigate = useNavigate();
+const useCreateExport = () => {
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
-//   return useMutation({
-//     mutationFn: async (data: ExportForm) => {
-//       return await axiosClient.post(API_EXPORT, data)
-//     },
-//     onSuccess: (response: any) => {
-//       if (response.data.message) {
-//         queryClient.invalidateQueries('Exports', { refetchInactive: true })
-//         navigate('/Exports')
-//         enqueueSnackbar(response.data.message, {
-//           autoHideDuration: 3000,
-//           variant: 'success'
-//         })  
-//       }
-//       else {
-//           enqueueSnackbar(response.data.errorMessage, {
-//             autoHideDuration: 3000,
-//             variant: 'error'
-//           }) 
-//       }
-//     },
-//     onError: (error: any) => {
-//       enqueueSnackbar('Lỗi server.',
-//         {
-//           autoHideDuration: 3000,
-//           variant: 'error'
-//         })
-//     }
-//   }
-//   )
-// }
+  return useMutation({
+    mutationFn: async (data: ExportForm) => {
+      return await axiosClient.post(API_EXPORT, data)
+        .then(response => {
+          console.log(response)
+          return response
+          })
+          .catch(error => {
+            defaultCatchErrorHandle(error)
+          }) 
+      },
+    onSuccess: (response: any) => {
+        queryClient.invalidateQueries('drug-categories', { refetchInactive: true })
+        defaultOnSuccessHandle(queryClient, navigate, response, 'exports', '/admin/exports')
+      }
+    })
+}
 
 // const useUpdateExport = () => {
 //   const queryClient = useQueryClient();
@@ -164,7 +153,7 @@ const useGetExport = () => {
 export {
   useGetExports,
   useGetExport,
-//   useCreateExport,
+  useCreateExport,
 //   useUpdateExport,
 //   useDeleteExport,
 }

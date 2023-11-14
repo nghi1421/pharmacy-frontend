@@ -1,3 +1,6 @@
+import { InputBasePropsSizeOverrides } from "@mui/material";
+import { OverridableStringUnion } from '@mui/types';
+
 export type Item = {
     value: string
     label: string
@@ -11,4 +14,5 @@ export interface FormInputListProps {
   initValue?: any[];
   list: Item[];
   placeholder: string;
+  size?:  OverridableStringUnion<"small" | "medium", InputBasePropsSizeOverrides>
 }

@@ -3,7 +3,5 @@ export type Customer = {
     name: string
     phoneNumber: string
     address: string
-    email: string
-    dob: string
     gender: number
 }

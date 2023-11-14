@@ -2,7 +2,7 @@ import { InputAdornment, TextField } from "@mui/material";
 import { FormInputFloatProps } from "../../types/props/FormInputFloatProps";
 import { Controller } from "react-hook-form";
 
-export const FormInputFloat: React.FC<FormInputFloatProps> = ({name, label, control, max, min, step, postfix, prefix}) => {
+export const FormInputFloat: React.FC<FormInputFloatProps> = ({name, label, control, max, min, step, postfix, prefix, size}) => {
     return (
         <Controller
             name={name}
@@ -13,7 +13,9 @@ export const FormInputFloat: React.FC<FormInputFloatProps> = ({name, label, cont
             }) => (
                 <TextField
                     helperText={error ? error.message : null}
+                    error={!!error}
                     fullWidth
+                    size={size ? size : 'small'}
                     type="number"
                     value={value}
                     label={label}

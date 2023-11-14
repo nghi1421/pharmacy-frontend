@@ -15,7 +15,6 @@ export interface CustomerForm {
     name: string;
     phoneNumber: string;
     gender: string;
-    email: string;
     address: string;
 }
 
@@ -23,7 +22,6 @@ const defaultValues = {
     name: "",
     phoneNumber: "",
     gender: '1',
-    email: '',
     address: ''
 };
 
@@ -39,10 +37,6 @@ const customerFormValidate: Yup.ObjectSchema<CustomerForm>
         .required('Số điện thoại bắt buộc.')
          // @ts-ignore
         .phoneNumber('Số điện thoại không hợp lệ.'),
-    email: yup
-        .string()
-        .required('Email bắt buộc.')
-        .email('Email không hợp lệ.'),
     gender: yup
         .string()
         .required('Giới tính bắt buộc')
@@ -87,18 +81,7 @@ const CreateCustomer: React.FC = () => {
                         placeholder='Nhập họ số điện thoại'
                     />
                 </Grid>
-                
-                <Grid item xs={8} sm={4}>
-                    <FormInputText
-                        name="email"
-                        control={control}
-                        label="Email"
-                        placeholder='Nhập email khách hàng'
-                    />
-                </Grid>
                     
-                <Address setAddress={setAddress} key={counter} />  
-
                 <Grid item xs={8} sm={2}>
                     <FormInputDropdown
                         name="gender"
@@ -108,6 +91,8 @@ const CreateCustomer: React.FC = () => {
                         list={genders}
                     />
                 </Grid>
+
+                <Address setAddress={setAddress} key={counter} size='small'/>  
 
                 <Grid item xs={12} sm={12} container 
                     sx={{

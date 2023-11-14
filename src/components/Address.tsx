@@ -1,8 +1,10 @@
 import {
     Autocomplete,
     Grid,
-    TextField
+    TextField,
+    TextFieldPropsSizeOverrides
 } from "@mui/material"
+import { OverridableStringUnion } from '@mui/types';
 import React, {
     ChangeEvent,
     useEffect,
@@ -18,13 +20,15 @@ import { District,
      Province,
      Ward } from "../types/Address";
 import { Item } from "../types/props/FormInputListProps";
+import globalEvent from "../utils/emitter";
 
 interface AddressProp {
     initAddress?: string,
     setAddress: (address: string) => void;
+    size?: OverridableStringUnion<"small" | "medium", TextFieldPropsSizeOverrides>
 }
 
-const Address: React.FC<AddressProp> = ({ setAddress, initAddress }) => {
+const Address: React.FC<AddressProp> = ({ setAddress, initAddress, size }) => {
     const [province, setProvince] = useState<Item|null>(null)
     const [district, setDistrict] = useState<Item|null>(null)
     const [ward, setWard] = useState<Item|null>(null)
@@ -32,16 +36,14 @@ const Address: React.FC<AddressProp> = ({ setAddress, initAddress }) => {
     const [districts, setDistricts] = useState<District[]>([])
     const [wards, setWards] = useState<Ward[]>([])
     const [detailAddress, setDetailAddress] = useState<string>('')
-    
+    const [oldAdress, setOldAddress] = useState<string>('')
     function getFullAddress(): string {
         return `${detailAddress}/${ward ? ward.label : ''}/${district ? district.label : ''}/${province ? province.label : ''}`
     }
 
     useEffect(() => {
-        if (initAddress) {
+        if (initAddress && initAddress !== oldAdress) {
             const splitAddress = initAddress.split('/') 
-
-            console.log(splitAddress)
 
             async function handledExistAddress(splitAddress: string[]) {
                 try {
@@ -56,7 +58,6 @@ const Address: React.FC<AddressProp> = ({ setAddress, initAddress }) => {
                             .find((province) => province.name === splitAddress[3])
                         if (provinceObj) {
                             localDistricts = await getDistrictsByProvinceCode(provinceObj.code)
-                            console.log(localDistricts);
                             setDistricts(localDistricts)
                             setProvince({ label: provinceObj.name, value: provinceObj.code })
                         }
@@ -83,8 +84,9 @@ const Address: React.FC<AddressProp> = ({ setAddress, initAddress }) => {
             }
 
             handledExistAddress(splitAddress);
+            setOldAddress(initAddress)
         }
-    }, [])
+    }, [initAddress, oldAdress])
     
     useEffect(() => {
         if (province) {
@@ -130,7 +132,7 @@ const Address: React.FC<AddressProp> = ({ setAddress, initAddress }) => {
 
     return (
         <>
-            <Grid item xs={4}>
+            <Grid item xs={size ? 3 : 4}>
                 <Autocomplete
                     options={provinces.map((province) => {return {label: province.name, value: province.code}})}
                     id='autocomplete'
@@ -139,10 +141,11 @@ const Address: React.FC<AddressProp> = ({ setAddress, initAddress }) => {
                     isOptionEqualToValue={(option, value) => option.value === value.value}
                     renderInput={(params) => (
                         <TextField
-                        {...params}
-                        placeholder={'Chọn tỉnh thành'}
-                        label='Tỉnh thành'
-                        variant="outlined"
+                            {...params}
+                            size={size ? size : 'small'}
+                            placeholder={'Chọn tỉnh thành'}
+                            label='Tỉnh thành'
+                            variant="outlined"
                         />
                     )}
                     onChange={(_, data) => setProvince(data)}
@@ -150,7 +153,7 @@ const Address: React.FC<AddressProp> = ({ setAddress, initAddress }) => {
 
             </Grid>
                 
-            <Grid item xs={4}>
+            <Grid item xs={size ? 3 : 4}>
                 <Autocomplete
                     key={province === null ? Math.random() : 'district-value'}
                     disabled={province === null ? true : false}
@@ -161,7 +164,9 @@ const Address: React.FC<AddressProp> = ({ setAddress, initAddress }) => {
                     isOptionEqualToValue={(option, value) => option.value === value.value}
                     renderInput={(params) => (
                         <TextField
-                        {...params}
+                            {...params}
+                            size={size ? size : 'small'}
+                            
                             placeholder={'Chọn quận huyện'}
                             label='Quận/Huyện'
                             variant="outlined"
@@ -171,7 +176,7 @@ const Address: React.FC<AddressProp> = ({ setAddress, initAddress }) => {
                 />
             </Grid>
 
-            <Grid item xs={4}>
+            <Grid item xs={size ? 3 : 4}>
                 <Autocomplete
                     key={province === null ? Math.random() : 'ward-value'}
                     disabled={district === null ? true : false}
@@ -183,6 +188,7 @@ const Address: React.FC<AddressProp> = ({ setAddress, initAddress }) => {
                     renderInput={(params) => (
                         <TextField
                             {...params}
+                            size={size ? size : 'small'}
                             placeholder={'Chọn xã phường thị'}
                             label='Xã/phường/thị trấn'
                             variant="outlined"
@@ -191,9 +197,10 @@ const Address: React.FC<AddressProp> = ({ setAddress, initAddress }) => {
                     onChange={(_, data) => setWard(data)}
                 />
             </Grid>
-            <Grid item xs={8} sm={4}>
+            <Grid item xs={8} sm={size ? 3 : 4}>
                 <TextField
                     id="address"
+                    size={size ? size : 'small'}
                     name="address"
                     label="Tên đường, hẻm, số nhà"
                     placeholder="Nhập số nhà"

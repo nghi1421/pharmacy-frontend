@@ -13,7 +13,7 @@ export const FormInputText: React.FC<FormInputProps> = ({ name, control, label, 
             fieldState: { error },
         }) => (
           <TextField
-              size={ size ? size : 'medium'}
+              size={ size ? size : 'small'}
               type={type ? type : 'text'}
               helperText={error ? error.message : null}
               error={!!error}

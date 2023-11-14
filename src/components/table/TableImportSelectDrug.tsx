@@ -23,7 +23,7 @@ import { NumericFormat } from "react-number-format";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { ColumnDrugCategory } from "../../pages/export/CreateExport";
+import { ColumnDrugCategory } from "../../pages/export/CreateExportOld";
 
 interface TableProps<T> {
     rows: T[]

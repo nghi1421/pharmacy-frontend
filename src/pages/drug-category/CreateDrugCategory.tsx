@@ -49,11 +49,14 @@ const drugCategoryVaidate: Yup.ObjectSchema<DrugCategoryForm> = yup.object({
         .required('Đơn vị nhập bắt bắt buộc.'),
     vat: yup
         .number()
-        .min(0, 'VAT phải lớn hơn 0')
-        .max(100, 'VAT phải là nhỏ hơn 100'),
+        .min(0, 'Thuế VAT phải lớn hơn 0')
+        .max(100, 'Thuế VAT phải là nhỏ hơn 100')
+        .typeError('Thuế VAT bắt buộc')
+    ,
     conversionQuantity: yup
         .number()
-        .min(1, 'Số lượng quy đổi phải lớn hơn 0'),
+        .min(1, 'Số lượng quy đổi phải lớn hơn 0')
+        .typeError('Số lượng quy đổi bắt buộc'),
     instruction: yup
         .string()
         .required('Hướng dẫn sử dụng thuốc bắt buộc.'),

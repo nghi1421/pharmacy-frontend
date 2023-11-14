@@ -19,8 +19,6 @@ const columnsList: Column[] = [
     { key: 'name', value: 'Họ tên' , sortable: true, searchable: true, enableSearch: false},
     { key: 'gender', value: 'Giới tính', sortable: true, searchable: true, enableSearch: false},
     { key: 'phoneNumber', value: 'Số điện thoại', sortable: true, searchable: true, enableSearch: false},
-    { key: 'dob', value: 'Ngày sinh', sortable: true, searchable: false},
-    { key: 'email', value: 'Email', sortable: true, searchable: true, enableSearch: false},
 ]
 
 const CustomerPage: React.FC<{}> = () => {

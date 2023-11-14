@@ -134,6 +134,7 @@ const EditStaff: React.FC = () => {
                                     <Controller
                                         render={({ field: { onChange, value } }) => (
                                             <Select
+                                                size='small'
                                                 onChange={onChange}
                                                 value={value}
                                                 label='Chức vụ'
