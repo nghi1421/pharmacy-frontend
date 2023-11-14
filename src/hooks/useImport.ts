@@ -7,8 +7,10 @@ import { ImportType } from '../types/ImportType';
 import { useNavigate } from 'react-router-dom';
 import { pathToUrl } from '../utils/path';
 import { ImportForm } from '../pages/import/CreateImport';
-import { defaultCatchErrorHandle, defaultOnSuccessHandle } from '../utils/helper';
+import { defaultCatchErrorHandle, defaultOnSuccessHandle, updateSearchParams } from '../utils/helper';
 import { UseFormSetError } from 'react-hook-form';
+import { Query } from '../types/Query';
+import { DataMetaResponse } from '../types/response/DataResponse';
 
 function createData({id, importDate, staff, provider, note, paid, maturityDate}: ImportType) {
     return {
@@ -21,21 +23,27 @@ function createData({id, importDate, staff, provider, note, paid, maturityDate}:
     };
 }
 
-const useGetImports = () => {
+const useGetImports = (query: Query) => {
+  const queryParams = updateSearchParams(query)
+
   return useQuery({
-    queryKey: ['imports'],
+    queryKey: ['imports', queryParams.toString()],
     queryFn: () => axiosClient
-      .get(API_IMPORT)
-      .then((response) => {
+      .get(`${API_IMPORT}?${queryParams.toString()}`)
+      .then((response): DataMetaResponse | undefined => {
         if (response.data.message) {
-          return response.data.data.map((myImport: ImportType) => createData(myImport))
+          return {
+            data: response.data.data.map((myImport: ImportType) => createData(myImport)),
+            meta: response.data.meta
+          }
         }
         enqueueSnackbar(response.data.errorMessage, {
           autoHideDuration: 3000,
           variant: 'error'
         })
-        return []
-      })
+        return undefined
+      }),
+  enabled: !!queryParams.toString()
   })
 };
 

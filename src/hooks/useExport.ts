@@ -7,7 +7,9 @@ import { ExportType } from '../types/ExportType';
 import { useNavigate } from 'react-router-dom';
 import { pathToUrl } from '../utils/path';
 import { ExportForm } from '../pages/export/CreateExport';
-import { defaultCatchErrorHandle } from '../utils/helper';
+import { defaultCatchErrorHandle, updateSearchParams } from '../utils/helper';
+import { DataMetaResponse } from '../types/response/DataResponse';
+import { Query } from '../types/Query';
 
 function createData({id, exportDate, staff, customer, note, prescriptionId}: ExportType) {
     return {
@@ -18,21 +20,27 @@ function createData({id, exportDate, staff, customer, note, prescriptionId}: Exp
     };
 }
 
-const useGetExports = () => {
+const useGetExports = (query: Query) => {
+  const queryParams = updateSearchParams(query)
+
   return useQuery({
-    queryKey: ['exports'],
+    queryKey: ['exports', queryParams.toString()],
     queryFn: () => axiosClient
-      .get(API_EXPORT)
-      .then((response) => {
+      .get(`${API_EXPORT}?${queryParams.toString()}`)
+      .then((response): DataMetaResponse | undefined => {
         if (response.data.message) {
-          return response.data.data.map((myExport: ExportType) => createData(myExport))
+          return {
+            data: response.data.data.map((myExport: ExportType) => createData(myExport)),
+            meta: response.data.meta
+          }
         }
         enqueueSnackbar(response.data.errorMessage, {
           autoHideDuration: 3000,
           variant: 'error'
         })
-        return []
-      })
+        return undefined
+      }),
+  enabled: !!queryParams.toString()
   })
 };
 

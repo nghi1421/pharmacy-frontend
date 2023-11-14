@@ -5,8 +5,14 @@ import { Add } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import CreateIcon from '@mui/icons-material/Create';
 import { useGetExport, useGetExports } from "../../hooks/useExport";
+import { PageHeader } from "../../components/PageHeader";
+import { TableExtension } from "../../components/table/TableExtension";
+import { GET_ARRAY_OF_KEY, GET_SEARCHABLE_KEY, GET_SEARCHABLE_LIST } from "../../utils/constants";
+import { getSearchColums } from "../../utils/helper";
+import { useSearchQuery } from "../../hooks/useSearchQuery";
+import { useSearchableList } from "../../hooks/useSearchableList";
 
-const columns: Column[] = [
+const columnsList: Column[] = [
     { key: 'id', value: 'Mã xuất thuốc', sortable: false, searchable: false},
     { key: 'staffName', value: 'Được tạo bởi' , sortable: false, searchable: false},
     { key: 'customerName', value: 'Người mua hàng', sortable: false, searchable: false},
@@ -16,49 +22,32 @@ const columns: Column[] = [
 ]
 
 const ExportPage: React.FC<{}> = () => {
-    let { data, isLoading } = useGetExports()
     const navigate = useNavigate()
-    const getStaff = useGetExport()
-    
+    const getImport = useGetExport()
+    const { query, actionChangePage, actionSort, actionSearch, updateQueryParams } =
+        useSearchQuery(getSearchColums(columnsList, GET_ARRAY_OF_KEY))
+    const { data, isLoading } = useGetExports(query)
+    const [columns, watchSearchList, control, setValue] = useSearchableList(columnsList, updateQueryParams)
+
     const clickAdd = () => {
         navigate('/admin/exports/create')
     }
     return (
         <Paper>
-            <Box sx={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'baseline',
-                p: 1,
-                m: 1,
-                bgcolor: 'background.paper',
-                borderRadius: 1,
-            }}
-            >
-                <Typography
-                    variant="h4"
-                    fontWeight='500'
-                    sx={{ px:3, py: 2 }}
-                >
-                    Quản lí bán hàng
-                </Typography>
-                <Button
-                    variant="contained"
-                    size="small"
-                    onClick={clickAdd}
-                >
-                    <Add></Add>
-                    <Typography
-                        color="inherit"
-                        fontSize='16px'
-                        marginLeft='4px'
-                    >
-                        Thêm mới
-                    </Typography>
-                </Button>
-            </Box>
+            <PageHeader
+                title='Quản lí xuất hàng'
+                clickAdd={clickAdd}
+            />
 
-            <Divider></Divider>
+            <TableExtension
+                setValue={setValue}
+                initValueSearch={query.searchTerm}
+                initSearchColumns={getSearchColums(columns, GET_SEARCHABLE_KEY)}
+                searchColumns={getSearchColums(columnsList, GET_SEARCHABLE_LIST)}
+                control={control}
+                actionSearch={actionSearch}
+                watchSearchList={watchSearchList}
+            />
             {
                 isLoading
                 ?   <Box sx={{
@@ -71,9 +60,16 @@ const ExportPage: React.FC<{}> = () => {
                     </Box> 
                 :
                     <TableComponent
-                        rows={data}
-                        keyTable='import-table'
+                        isLoading={isLoading}
+                        rows={data ? data.data : undefined}
+                        keyTable='export-table'
                         columns={columns}
+                        hasPagination={true}
+                        page={query.page}
+                        query={{ orderBy: query.orderBy, orderDirection: query.orderDirection }}
+                        actionSort={actionSort}
+                        actionChangePage={actionChangePage}
+                        totalPage={data ? data.meta.totalPage : undefined}
                         hasAction={true}
                         action={(rowValue: any) => 
                                 <TableCell
@@ -83,7 +79,7 @@ const ExportPage: React.FC<{}> = () => {
                                         <Tooltip title="Xem thông tin chi tiết">
                                             <IconButton
                                                 color='success'
-                                                onClick={() => { getStaff.mutate(rowValue.id) }}
+                                                onClick={() => { getImport.mutate(rowValue.id) }}
                                             >
                                                 <CreateIcon></CreateIcon>
                                             </IconButton>
