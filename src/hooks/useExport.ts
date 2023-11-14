@@ -12,6 +12,7 @@ import { DataMetaResponse } from '../types/response/DataResponse';
 import { Query } from '../types/Query';
 import { handleAddress } from '../utils/address';
 import { GenderEnum } from '../types/GenderEnum';
+import globalEvent from '../utils/emitter';
 
 function createData({id, exportDate, staff, customer, note, prescriptionId}: ExportType) {
     return {
@@ -38,6 +39,7 @@ function createDataExport({id, exportDate, staff, customer, note, prescriptionId
  // @ts-ignore
 function createDataExportDetail({ drug, expiryDate, price, quantity, unitPrice, vat }) {
   return {
+    drugId: drug.id,
     drugName: drug.name,
     price: formatCurrency(price),
     unitPrice: formatNumber(unitPrice),
@@ -82,6 +84,7 @@ const useGetExport = () => {
         const handleExport = createDataExport(response.data.data.export)
         const handleExportDetail = response.data.data.exportDetail.map(
           (exportDetail: any) => createDataExportDetail(exportDetail))
+        globalEvent.emit('close-sidebar')
         navigate( `/admin/exports/${exportId}/view`,
           {
             state: {
