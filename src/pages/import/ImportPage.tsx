@@ -1,7 +1,6 @@
-import { Box, Button, CircularProgress, Divider, IconButton, Paper, TableCell, Tooltip, Typography } from "@mui/material";
+import { Box, CircularProgress, IconButton, Paper, TableCell, Tooltip } from "@mui/material";
 import TableComponent from "../../components/table/TableComponent";
 import { Column } from "../../types/Column";
-import { Add } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import CreateIcon from '@mui/icons-material/Create';
 import { useGetImport, useGetImports } from "../../hooks/useImport";

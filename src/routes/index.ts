@@ -23,7 +23,8 @@ import EditProvider from "../pages/provider/EditProvider";
 import EditCustomer from "../pages/customer/EditCustomer";
 import EditStaff from "../pages/staff/EditStaff";
 import CreateImport from "../pages/import/CreateImport";
-import CreateExport from "../pages/export/CreateExport";
+import DetailExportPage from "../pages/export/DetailPage";
+import DetailImportPage from "../pages/import/DetailPage";
 
 export const dashboardRoutes: Array<Route> = [
     {      
@@ -172,7 +173,7 @@ export const formRoutes: Array<Route> = [
     {      
         key: 'drug-category-update-form-route',
         title: 'Form danh mục thuốc',
-        path: 'drug-categories/:drugdrCategoryId/edit',
+        path: 'drug-categories/:drugCategoryId/edit',
         icon: AttachMoney,
         element: EditDrugCategory
     },
@@ -184,10 +185,17 @@ export const formRoutes: Array<Route> = [
         element: CreateImport
     },
     {      
-        key: 'export-create-form-route',
+        key: 'import-detail-form-route',
         title: 'Form danh phieu xuat hang',
-        path: 'exports/create',
+        path: 'imports/:importId/view',
         icon: AttachMoney,
-        element: CreateExport
+        element: DetailImportPage
+    },
+    {      
+        key: 'export-detail-form-route',
+        title: 'Form danh phieu xuat hang',
+        path: 'exports/:exportId/view',
+        icon: AttachMoney,
+        element: DetailExportPage
     },
 ]

@@ -2,7 +2,7 @@ import { enqueueSnackbar } from 'notistack';
 import axiosClient from '../services/axios';
 import { API_EXPORT, API_EXPORT_WITH_ID} from '../utils/constants';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
-import { formatDate } from '../utils/format';
+import { formatCurrency, formatDate, formatNumber } from '../utils/format';
 import { ExportType } from '../types/ExportType';
 import { useNavigate } from 'react-router-dom';
 import { pathToUrl } from '../utils/path';
@@ -10,6 +10,8 @@ import { ExportForm } from '../pages/export/CreateExport';
 import { defaultCatchErrorHandle, updateSearchParams } from '../utils/helper';
 import { DataMetaResponse } from '../types/response/DataResponse';
 import { Query } from '../types/Query';
+import { handleAddress } from '../utils/address';
+import { GenderEnum } from '../types/GenderEnum';
 
 function createData({id, exportDate, staff, customer, note, prescriptionId}: ExportType) {
     return {
@@ -18,6 +20,31 @@ function createData({id, exportDate, staff, customer, note, prescriptionId}: Exp
         staffName: staff.name,
         exportDate: formatDate(exportDate),
     };
+}
+
+// @ts-ignore
+function createDataExport({id, exportDate, staff, customer, note, prescriptionId, totalPriceWithVat, totalPrice}) {
+    return {
+        id, note, prescriptionId,
+        staff: {...staff, address: handleAddress(staff.address)},
+        customer: {...customer, address: handleAddress(customer.address), gender: GenderEnum[customer.gender]},
+        exportDate: formatDate(exportDate),
+        totalPrice: formatCurrency(totalPrice),
+        totalPriceWithVat: formatCurrency(totalPriceWithVat),
+        vat: formatCurrency(totalPriceWithVat - totalPrice)
+    };
+}
+
+ // @ts-ignore
+function createDataExportDetail({ drug, expiryDate, price, quantity, unitPrice, vat }) {
+  return {
+    drugName: drug.name,
+    price: formatCurrency(price),
+    unitPrice: formatNumber(unitPrice),
+    quantity: formatNumber(quantity),
+    vat: `${vat * 100}%`,
+    expiryDate: formatDate(expiryDate),
+  }
 }
 
 const useGetExports = (query: Query) => {
@@ -52,9 +79,17 @@ const useGetExport = () => {
     mutationFn: (exportId: string) => axiosClient
       .get(pathToUrl(API_EXPORT_WITH_ID, { exportId }))
       .then((response) => {
-        navigate( `/admin/exports/${exportId}/edit`,
+        const handleExport = createDataExport(response.data.data.export)
+        const handleExportDetail = response.data.data.exportDetail.map(
+          (exportDetail: any) => createDataExportDetail(exportDetail))
+        navigate( `/admin/exports/${exportId}/view`,
           {
-            state: { ExportData: response.data.data }
+            state: {
+              exportData: {
+                export: handleExport,
+                exportDetail: handleExportDetail
+              }
+            }
           }
         )
 

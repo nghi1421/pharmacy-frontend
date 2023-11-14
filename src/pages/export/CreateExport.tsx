@@ -1,6 +1,6 @@
 import { Box, Button, CircularProgress, Grid, InputAdornment, Paper, TextField, Typography } from "@mui/material"
 import { useNavigate } from "react-router-dom"
-import React, { ReactInstance, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { getStaff } from "../../store/auth";
 import { FormInputText } from "../../components/form/FormInputText";
@@ -19,7 +19,7 @@ import { useSearchCustomer } from '../../hooks/useCustomer'
 import yup from "../../utils/yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useCreateExport } from "../../hooks/useExport";
-import ReactToPrint, { useReactToPrint } from "react-to-print";
+import { useReactToPrint } from "react-to-print";
 import ComponentToPrint from "./ComponentToPrint";
 import { enqueueSnackbar } from "notistack";
 
