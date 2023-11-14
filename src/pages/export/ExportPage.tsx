@@ -11,8 +11,8 @@ const columns: Column[] = [
     { key: 'staffName', value: 'Được tạo bởi' , sortable: false, searchable: false},
     { key: 'customerName', value: 'Người mua hàng', sortable: false, searchable: false},
     { key: 'note', value: 'Ghi chú', sortable: false, searchable: false},
-    { key: 'precriptionId', value: 'Mã lô hàng', sortable: false, searchable: false},
-    { key: 'importDate', value: 'Ngày xuất hàng', sortable: false, searchable: false},
+    { key: 'prescriptionId', value: 'Mã lô hàng', sortable: false, searchable: false},
+    { key: 'exportDate', value: 'Ngày xuất hàng', sortable: false, searchable: false},
 ]
 
 const ExportPage: React.FC<{}> = () => {

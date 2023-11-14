@@ -7,7 +7,7 @@ import { ExportType } from '../types/ExportType';
 import { useNavigate } from 'react-router-dom';
 import { pathToUrl } from '../utils/path';
 import { ExportForm } from '../pages/export/CreateExport';
-import { defaultCatchErrorHandle, defaultOnSuccessHandle } from '../utils/helper';
+import { defaultCatchErrorHandle } from '../utils/helper';
 
 function createData({id, exportDate, staff, customer, note, prescriptionId}: ExportType) {
     return {
@@ -77,7 +77,7 @@ const useCreateExport = () => {
       },
     onSuccess: (response: any) => {
         queryClient.invalidateQueries('drug-categories', { refetchInactive: true })
-        defaultOnSuccessHandle(queryClient, navigate, response, 'exports', '/admin/exports')
+        // defaultOnSuccessHandle(queryClient, navigate, response, 'exports', '/admin/exports')
       }
     })
 }

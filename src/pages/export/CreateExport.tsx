@@ -21,6 +21,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useCreateExport } from "../../hooks/useExport";
 import ReactToPrint, { useReactToPrint } from "react-to-print";
 import ComponentToPrint from "./ComponentToPrint";
+import { enqueueSnackbar } from "notistack";
 
 const useStyles = makeStyles({
   customTextField: {
@@ -115,7 +116,8 @@ const CreateExport: React.FC = () => {
         control: customerControl,
         watch,
         setValue: setValueCustomer,
-        clearErrors
+        clearErrors,
+        reset: resetCustomer
     } = useForm<CustomerForm>({
         defaultValues: defaultValuesCustomer,
         resolver: yupResolver(customerFormValidate)
@@ -133,7 +135,7 @@ const CreateExport: React.FC = () => {
     const [cloneDrugs, setCloneDrugs] = useState<any[]>([])
     const [selectedDrugs, setSelectedDrugs] = useState<any[]>([])
     const [pay, setPay] = useState<number[]>([0 , 0, 0])
-    const { handleSubmit, control } = useForm<ExportForm>({
+    const { handleSubmit, control, reset } = useForm<ExportForm>({
         defaultValues: defaultValuesExport,
         resolver: yupResolver(exportValidate)
     });
@@ -197,24 +199,20 @@ const CreateExport: React.FC = () => {
         
         handleSubmitCustomer((_) => {})()
         if (isInvalid) {
-            console.log('Sai')
+            if (selectedDrugs.length === 0) {
+                enqueueSnackbar('Vui lòng chọn ít nhất một danh mục thuốc.', {
+                    variant: 'warning',
+                    autoHideDuration: 3000
+                })
+            }
+            else {
+                enqueueSnackbar('Vui lòng kiểm tra dữ liệu.', {
+                    variant: 'warning',
+                    autoHideDuration: 3000
+                })
+            }
         }
         else {
-            // console.log('data mutation', {
-            //     customer: {
-            //         name: watch('name'),
-            //         phoneNumber: watch('phoneNumber'),
-            //         address: address,
-            //         gender: watch('gender') 
-            //     },
-            //     prescriptionId: data.prescriptionId,
-            //     staffId: staff.id,
-            //     exportDate: data.exportDate,
-            //     note: data.note,
-            //     exportDetails: selectedDrugs.map(drug => {
-            //         return { drugId: drug.id, quantity: drug.exportQuantity}
-            //     })
-            // })
             createExport.mutate({
                 customer: {
                     name: watch('name'),
@@ -231,8 +229,13 @@ const CreateExport: React.FC = () => {
                     return { drugId: drug.id, quantity: drug.exportQuantity}
                 })
             })
+            handlePrint();
+            setSelectedDrugs([]),
+            setDrugs(cloneDrugs)
+            setSearch(''),
+            reset()
+            resetCustomer()
         }
-        handlePrint();
     };
 
     const checkDrugCategory = (drugCategory: any) => {
@@ -417,7 +420,7 @@ const CreateExport: React.FC = () => {
 
                 <Grid item xs={12} sm={12} container 
                 >
-                    <Box sx={{ display: 'flex', width: '100%' }}>
+                    <Box sx={{ display: 'flex', width: '100%', gap: 1 }}>
                         <Typography mb='20px' variant="subtitle2" sx={{ fontWeight: 'fontWeightBold', mt: 2, fontSize: 16 }}>
                             Danh mục thuốc
                         </Typography>
@@ -425,7 +428,7 @@ const CreateExport: React.FC = () => {
                             onChange={handleSearchData}
                             classes={{ root: classes.customTextField }}
                             size='small'
-                            sx={{ flexGrow: 1, my :'auto', mr: '35%', ml: 2}}
+                            sx={{ flexGrow: 1, my :'auto', mr: '20%', ml: 2}}
                             label="Tìm kiếm"
                             value={search}
                             placeholder="Nhập thông tin danh mục thuốc theo tên"
@@ -440,6 +443,19 @@ const CreateExport: React.FC = () => {
                             }}
                         />
                         <Button
+                            variant="contained"
+                            color="primary"
+                            sx={{
+                                height: '70%',
+                                m: 'auto',
+                                textTransform: 'none',
+                            }}
+                            onClick={handleSubmit(onSubmit)}
+                        >
+                            Tạo phiếu & Xuất hóa đơn
+                        </Button>
+
+                        <Button
                             variant='contained'
                             color="success"
                             aria-label="Delete"
@@ -453,6 +469,20 @@ const CreateExport: React.FC = () => {
                             <ReplayIcon  />
                             Làm mới
                         </Button>
+
+                        <Button
+                            variant="contained"
+                            color="error"
+                            sx={{
+                                height: '70%',
+                                m: 'auto',
+                                textTransform: 'none',
+                            }}
+                            onClick={backToTable}
+                        >
+                            Quay về
+                        </Button>
+                        
                     </Box>
                     {
                         drugCategoryLoading
@@ -471,7 +501,7 @@ const CreateExport: React.FC = () => {
                 </Grid>
                
 
-                <Grid item xs={12} sm={12} container 
+                {/* <Grid item xs={12} sm={12} container 
                     sx={{
                         display: 'flex',
                         justifyContent: "end",
@@ -499,7 +529,7 @@ const CreateExport: React.FC = () => {
                     >
                         Quay về
                     </Button>
-                </Grid>
+                </Grid> */}
             </Grid>
             <div style={{ display: 'none' }}>
                 <ComponentToPrint ref={componentRef} />
