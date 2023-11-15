@@ -500,38 +500,8 @@ const CreateExport: React.FC = () => {
                     }  
                 </Grid>
                
-
-                {/* <Grid item xs={12} sm={12} container 
-                    sx={{
-                        display: 'flex',
-                        justifyContent: "end",
-                        gap: 2
-                    }}
-                >
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        sx={{
-                            textTransform: 'none',
-                        }}
-                        onClick={handleSubmit(onSubmit)}
-                    >
-                        Tạo phiếu & Xuất hóa đơn
-                    </Button>
-
-                    <Button
-                        variant="contained"
-                        color="error"
-                        sx={{
-                            textTransform: 'none',
-                        }}
-                        onClick={backToTable}
-                    >
-                        Quay về
-                    </Button>
-                </Grid> */}
             </Grid>
-            <div style={{ display: 'none' }}>
+            <div>
                 <ComponentToPrint ref={componentRef} />
             </div>
         </Paper>

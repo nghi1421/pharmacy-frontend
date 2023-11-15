@@ -25,6 +25,7 @@ import EditStaff from "../pages/staff/EditStaff";
 import CreateImport from "../pages/import/CreateImport";
 import DetailExportPage from "../pages/export/DetailPage";
 import DetailImportPage from "../pages/import/DetailPage";
+import CreateExport from "../pages/export/CreateExport";
 
 export const dashboardRoutes: Array<Route> = [
     {      
@@ -183,6 +184,13 @@ export const formRoutes: Array<Route> = [
         path: 'imports/create',
         icon: AttachMoney,
         element: CreateImport
+    },
+    {      
+        key: 'ex[prt-create-form-route',
+        title: 'Form danh phieu nhap hang',
+        path: 'exports/create',
+        icon: AttachMoney,
+        element: CreateExport
     },
     {      
         key: 'import-detail-form-route',

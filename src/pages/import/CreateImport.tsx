@@ -483,15 +483,15 @@ const CreateImport: React.FC = () => {
 
                 <Grid item xs={12} sm={12} container 
                 >
-                    <Box sx={{ display: 'flex', width: '100%' }}>
-                        <Typography mb='20px' variant="subtitle2" sx={{ fontWeight: 600, fontSize: 16, mt: 2 }}>
+                   <Box sx={{ display: 'flex', width: '100%', gap: 1 }}>
+                        <Typography mb='20px' variant="subtitle2" sx={{ fontWeight: 'fontWeightBold', mt: 2, fontSize: 16 }}>
                             Danh mục thuốc
                         </Typography>
                         <TextField
                             onChange={handleSearchData}
                             classes={{ root: classes.customTextField }}
                             size='small'
-                            sx={{ flexGrow: 1, my :'auto', mr: '35%', ml: 2}}
+                            sx={{ flexGrow: 1, my :'auto', mr: '20%', ml: 2}}
                             label="Tìm kiếm"
                             value={search}
                             placeholder="Nhập thông tin danh mục thuốc theo tên"
@@ -506,19 +506,44 @@ const CreateImport: React.FC = () => {
                             }}
                         />
                         <Button
+                            variant="contained"
+                            color="primary"
+                            sx={{
+                                height: '70%',
+                                m: 'auto',
+                                textTransform: 'none',
+                            }}
+                            onClick={handleSubmit(onSubmit)}
+                        >
+                            Tạo phiếu & Xuất hóa đơn
+                        </Button>
+
+                        <Button
                             variant='contained'
                             color="success"
                             aria-label="Delete"
                             sx={{
                                 height: '70%',
                                 m: 'auto',
-                                fontWeight: 600,
                                 textTransform: 'none',
                             }}
                             onClick={ () => refetch()}
                         >
                             <ReplayIcon  />
                             Làm mới
+                        </Button>
+
+                        <Button
+                            variant="contained"
+                            color="error"
+                            sx={{
+                                height: '70%',
+                                m: 'auto',
+                                textTransform: 'none',
+                            }}
+                            onClick={backToTable}
+                        >
+                            Quay về
                         </Button>
                     </Box>
                     {
@@ -535,36 +560,6 @@ const CreateImport: React.FC = () => {
                                 type='import'
                             />
                     }  
-                </Grid>
-
-                <Grid item xs={12} sm={12} container 
-                    sx={{
-                        display: 'flex',
-                        justifyContent: "end",
-                        gap: 2
-                    }}
-                >
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        sx={{
-                            textTransform: 'none',
-                        }}
-                        onClick={handleSubmit(onSubmit)}
-                    >
-                        Tạo phiếu
-                    </Button>
-
-                    <Button
-                        variant="contained"
-                        color="error"
-                        sx={{
-                            textTransform: 'none',
-                        }}
-                        onClick={backToTable}
-                    >
-                        Quay về
-                    </Button>
                 </Grid>
             </Grid>
         </Paper>

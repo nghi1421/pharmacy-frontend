@@ -2,7 +2,7 @@ import { enqueueSnackbar } from 'notistack';
 import axiosClient from '../services/axios';
 import { API_IMPORT, API_IMPORT_WITH_ID} from '../utils/constants';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
-import { formatCurrency, formatDate } from '../utils/format';
+import { formatCurrency, formatDate, formatNumber } from '../utils/format';
 import { ImportType } from '../types/ImportType';
 import { useNavigate } from 'react-router-dom';
 import { pathToUrl } from '../utils/path';
@@ -11,6 +11,8 @@ import { defaultCatchErrorHandle, defaultOnSuccessHandle, updateSearchParams } f
 import { UseFormSetError } from 'react-hook-form';
 import { Query } from '../types/Query';
 import { DataMetaResponse } from '../types/response/DataResponse';
+import { handleAddress } from '../utils/address';
+import globalEvent from '../utils/emitter';
 
 function createData({id, importDate, staff, provider, note, paid, maturityDate}: ImportType) {
     return {
@@ -21,6 +23,37 @@ function createData({id, importDate, staff, provider, note, paid, maturityDate}:
         staffName: staff.name,
         importDate: formatDate(importDate),
     };
+}
+
+// @ts-ignore
+function createDataImport({id, importDate, staff, provider, note, paid, maturityDate, totalPriceWithVat, totalPrice, vatValue}) {
+    return {
+        id, note,
+        staff: {...staff, address: handleAddress(staff.address)},
+        provider: {...provider, address: handleAddress(provider.address)},
+        importDate: formatDate(importDate),
+        maturityDate: formatDate(maturityDate),
+        rawPaid: paid,
+        rawMaturityDate: maturityDate,
+        paid: formatCurrency(paid),
+        totalPrice: formatCurrency(totalPrice),
+        totalPriceWithVat: formatCurrency(totalPriceWithVat),
+        vat: formatCurrency(vatValue)
+    };
+}
+
+ // @ts-ignore
+function createDataImportDetail({ drug, expiryDate, quantity, unitPrice, vat, batchId }) {
+  return {
+    drugId: drug.id,
+    unit: drug.unit,
+    drugName: drug.name,
+    unitPrice: formatNumber(unitPrice),
+    quantity: formatNumber(quantity),
+    vat: `${vat * 100}%`,
+    expiryDate: formatDate(expiryDate),
+    batchId: batchId,
+  }
 }
 
 const useGetImports = (query: Query) => {
@@ -52,12 +85,21 @@ const useGetImport = () => {
   const navigate = useNavigate();
 
   return useMutation({
-    mutationFn: (ImportId: string) => axiosClient
-      .get(pathToUrl(API_IMPORT_WITH_ID, { ImportId }))
+    mutationFn: (importId: number) => axiosClient
+      .get(pathToUrl(API_IMPORT_WITH_ID, { importId }))
       .then((response) => {
-        navigate( `/admin/imports/${ImportId}/edit`,
+        const handleImport = createDataImport(response.data.data.import)
+        const handleImportDetail = response.data.data.importDetail.map(
+          (importDetail: any) => createDataImportDetail(importDetail))
+        globalEvent.emit('close-sidebar')
+        navigate( `/admin/imports/${importId}/view`,
           {
-            state: { ImportData: response.data.data }
+            state: {
+              importData: {
+                import: handleImport,
+                importDetail: handleImportDetail
+              }
+            }
           }
         )
 

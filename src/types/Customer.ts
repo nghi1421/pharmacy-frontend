@@ -5,3 +5,11 @@ export type Customer = {
     address: string
     gender: number
 }
+
+export type CustomerData = {
+    id: number,
+    name: string
+    phoneNumber: string
+    address: string
+    gender: any
+}

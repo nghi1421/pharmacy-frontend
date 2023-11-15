@@ -3,7 +3,7 @@ import axiosClient from '../services/axios';
 import { API_EXPORT, API_EXPORT_WITH_ID} from '../utils/constants';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { formatCurrency, formatDate, formatNumber } from '../utils/format';
-import { ExportType } from '../types/ExportType';
+import { ExportRawData, ExportDetailRawData, ExportType, ExportPdfData, ExportData, ExportDetailData, ExportDetailPdf } from '../types/ExportType';
 import { useNavigate } from 'react-router-dom';
 import { pathToUrl } from '../utils/path';
 import { ExportForm } from '../pages/export/CreateExport';
@@ -23,8 +23,16 @@ function createData({id, exportDate, staff, customer, note, prescriptionId}: Exp
     };
 }
 
-// @ts-ignore
-function createDataExport({id, exportDate, staff, customer, note, prescriptionId, totalPriceWithVat, totalPrice}) {
+function createDataExport({
+  id,
+  exportDate,
+  staff,
+  customer,
+  note,
+  prescriptionId,
+  totalPriceWithVat,
+  totalPrice
+}: ExportRawData): ExportData {
     return {
         id, note, prescriptionId,
         staff: {...staff, address: handleAddress(staff.address)},
@@ -36,16 +44,26 @@ function createDataExport({id, exportDate, staff, customer, note, prescriptionId
     };
 }
 
- // @ts-ignore
-function createDataExportDetail({ drug, expiryDate, price, quantity, unitPrice, vat }) {
+
+function createDataExportDetail({ drug, expiryDate, price, quantity, unitPrice, vat }: ExportDetailRawData): ExportDetailData {
   return {
     drugId: drug.id,
+    unit: drug.minimalUnit,
     drugName: drug.name,
     price: formatCurrency(price),
-    unitPrice: formatNumber(unitPrice),
+    unitPrice: formatCurrency(unitPrice),
     quantity: formatNumber(quantity),
     vat: `${vat * 100}%`,
     expiryDate: formatDate(expiryDate),
+  }
+}
+
+function createExportDetailPdf({ drug, price, quantity, totalPrice }: ExportDetailRawData): ExportDetailPdf {
+  return {
+    drugName: drug.name,
+    quantity: `${formatNumber(quantity)} ${drug.minimalUnit}`,
+    price: formatCurrency(price),
+    total: formatCurrency(totalPrice),
   }
 }
 
@@ -122,8 +140,13 @@ const useCreateExport = () => {
           }) 
       },
     onSuccess: (response: any) => {
-        queryClient.invalidateQueries('drug-categories', { refetchInactive: true })
-        // defaultOnSuccessHandle(queryClient, navigate, response, 'exports', '/admin/exports')
+      queryClient.invalidateQueries('drug-categories', { refetchInactive: true })
+      const handleExport = createDataExport(response.data.data.export)
+      const handleExportDetail = response.data.data.exportDetail.map(
+        (exportDetail: any) => createExportDetailPdf(exportDetail))
+          
+      globalEvent.emit('send.export-pdf-data',
+        { exportData: handleExport, exportDetail: handleExportDetail } as ExportPdfData)
       }
     })
 }

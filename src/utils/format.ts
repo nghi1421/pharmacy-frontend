@@ -1,11 +1,11 @@
-import moment from "moment"
+import dayjs from "dayjs"
 
 export const formatDateTime = (datetime: string) => {
-    return moment(datetime).format('DD/MM/YYYY HH:mm:ss')
+    return dayjs(datetime).format('DD/MM/YYYY HH:mm:ss')
 }
 
 export const formatDate = (date: string) => {
-    return moment(date).format('DD/MM/YYYY')
+    return dayjs(date).format('DD/MM/YYYY')
 }
 
 export const formatNumber = (number: number) => number.toLocaleString()

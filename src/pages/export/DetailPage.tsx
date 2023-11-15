@@ -23,6 +23,7 @@ const customerRows: Item[] = [
 const columns = [
     { key: 'drugName', value: 'Tên thuốc' },
     { key: 'quantity', value: 'Số lượng bán'},
+    { key: 'unit', value: 'Đơn vị bán'},
     { key: 'unitPrice', value: 'Đơn giá' },
     { key: 'vat', value: 'Thuế VAT'},
     { key: 'expiryDate', value: 'Hạn sử dụng'},
@@ -31,7 +32,7 @@ const columns = [
 const DetailPage = () => {
     const { state } = useLocation()
     const navigate = useNavigate()
-    
+
     const backToTable = () => {
         navigate('/admin/exports')
     }
@@ -107,7 +108,7 @@ const DetailPage = () => {
                 <Grid container spacing={2} marginTop={1}>
                     <Grid item xs={12} sm={12} container>
                         <Typography mb='20px' variant="subtitle2" sx={{ fontWeight: 'fontWeightBold', mt: 2, fontSize: 16 }}>
-                            Chi tiết nhập
+                            Chi tiết xuất
                         </Typography>
                         <TableData
                             keyTable='export-detail'
