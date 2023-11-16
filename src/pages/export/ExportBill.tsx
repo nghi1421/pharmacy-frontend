@@ -1,25 +1,8 @@
 import { Grid, Paper, Typography } from "@mui/material";
 import { forwardRef } from "react";
 import TableData from "../../components/table/TableData";
-import { Item } from "../../types/props/FormInputListProps";
 import { ExportData, ExportDetailPdf } from "../../types/ExportType";
 import dayjs from "dayjs";
-
-const staffRows: Item[] = [
-    {value: 'id', label: 'Mã nhân viên'},
-    {value: 'name', label: 'Tên nhân viên'},
-    {value: 'phoneNumber', label: 'Số điện thoại'},
-    {value: 'email', label: 'Email'},
-    {value: 'address', label: 'Địa chỉ'},
-]
-
-const customerRows: Item[] = [
-    {value: 'id', label: 'Mã khách hàng'},
-    {value: 'name', label: 'Tên khách hàng'},
-    {value: 'phoneNumber', label: 'Số điện thoại'},
-    {value: 'gender', label: 'Giới tính'},
-    {value: 'address', label: 'Địa chỉ'},
-]
 
 const columns = [
   { key: 'drugName', value: 'Tên thuốc' },
@@ -33,14 +16,14 @@ interface ExportPDFProps {
     exportDetail: null | ExportDetailPdf[]
 }
 
-const ComponentToPrint: React.FC<ExportPDFProps> = forwardRef((props, ref) => {
+const ExportBill: React.FC<ExportPDFProps> = forwardRef((props, ref) => {
 
     return (
       <div ref={ref} style={{ padding: 4, margin: 4 }}>
         {
           props.exportData && props.exportDetail 
             ?
-            <Paper sx={{ px: 6, py: 4, width: 400 }}>
+            <Paper sx={{ px: 6, py: 4, width: 800 }}>
               <Typography variant="h5" fontWeight='bold' gutterBottom align="center" marginBottom={2}>
                   Hóa đơn bán hàng
               </Typography>
@@ -121,4 +104,4 @@ const ComponentToPrint: React.FC<ExportPDFProps> = forwardRef((props, ref) => {
     );
 })
 
-export default ComponentToPrint
+export default ExportBill

@@ -20,7 +20,7 @@ import yup from "../../utils/yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useCreateExport } from "../../hooks/useExport";
 import { useReactToPrint } from "react-to-print";
-import ComponentToPrint from "./ComponentToPrint";
+import ExportBill from "./ExportBill";
 import { enqueueSnackbar } from "notistack";
 import { ExportData, ExportDetailPdf } from "../../types/ExportType";
 
@@ -511,7 +511,7 @@ const CreateExport: React.FC = () => {
                
             </Grid>
             <div>
-                <ComponentToPrint
+                <ExportBill
                     ref={componentRef}
                     exportData={exportData}
                     exportDetail={exportDetailData}

@@ -26,6 +26,8 @@ import CreateImport from "../pages/import/CreateImport";
 import DetailExportPage from "../pages/export/DetailPage";
 import DetailImportPage from "../pages/import/DetailPage";
 import CreateExport from "../pages/export/CreateExport";
+import BarChartIcon from '@mui/icons-material/BarChart';
+import StatisticsPage from "../pages/statistics/StatisticsPage";
 
 export const dashboardRoutes: Array<Route> = [
     {      
@@ -90,7 +92,14 @@ export const dashboardRoutes: Array<Route> = [
         path: 'exports',
         icon: AttachMoney,
         element: ExportPage
-    }
+    },
+    {      
+        key: 'statistics-route',
+        title: 'Thống kê',
+        path: 'statistics',
+        icon: BarChartIcon,
+        element: StatisticsPage
+    },
 ]
 
 export const formRoutes: Array<Route> = [
