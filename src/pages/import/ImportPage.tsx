@@ -37,7 +37,7 @@ const ImportPage: React.FC<{}> = () => {
     return (
         <Paper>
            <PageHeader
-                title='Quản lí xuất hàng'
+                title='Quản lí nhập hàng'
                 clickAdd={clickAdd}
             />
 

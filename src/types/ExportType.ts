@@ -60,7 +60,7 @@ export type ExportDetailData = {
 export type ExportDetailPdf = {
     drugName: string
     quantity: string
-    price: string
+    unitPrice: string
     total: string
 }
 

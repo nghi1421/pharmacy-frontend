@@ -20,7 +20,6 @@ import { District,
      Province,
      Ward } from "../types/Address";
 import { Item } from "../types/props/FormInputListProps";
-import globalEvent from "../utils/emitter";
 
 interface AddressProp {
     initAddress?: string,
@@ -85,6 +84,11 @@ const Address: React.FC<AddressProp> = ({ setAddress, initAddress, size }) => {
 
             handledExistAddress(splitAddress);
             setOldAddress(initAddress)
+        }
+        
+        if (initAddress.length === 0) {
+            setProvince(null)
+            setDetailAddress('')
         }
     }, [initAddress, oldAdress])
     

@@ -1,10 +1,8 @@
 import { Grid, Paper, Typography } from "@mui/material";
-import { forwardRef, useEffect, useState } from "react";
-import { InfoBox } from "../../components/box/InfoBox";
+import { forwardRef } from "react";
 import TableData from "../../components/table/TableData";
 import { Item } from "../../types/props/FormInputListProps";
-import { ExportData, ExportDetailData, ExportDetailPdf, ExportPdfData } from "../../types/ExportType";
-import globalEvent from "../../utils/emitter";
+import { ExportData, ExportDetailPdf } from "../../types/ExportType";
 import dayjs from "dayjs";
 
 const staffRows: Item[] = [
@@ -26,28 +24,21 @@ const customerRows: Item[] = [
 const columns = [
   { key: 'drugName', value: 'Tên thuốc' },
   { key: 'quantity', value: 'SL' },
-  { key: 'price', value: 'Đơn giá' },
+  { key: 'unitPrice', value: 'Đơn giá' },
   { key: 'total', value: 'Thành tiền'},
 ]
 
-const ComponentToPrint = forwardRef((props, ref) => {
-  const [exportData, setExportData] = useState<ExportData | null>(null)
-  const [exportDetailData, setExportDetailData] = useState<ExportDetailPdf[] | null>(null)
-  useEffect(() => {
-    if (exportData && exportDetailData) {
-      globalEvent.off('send.export-pdf-data')
-    }
-    else {
-      globalEvent.on('send.export-pdf-data', (payload: ExportPdfData) => {
-          setExportData(payload.exportData)
-          setExportDetailData(payload.exportDetail)
-      }) 
-    }
-  })
+interface ExportPDFProps {
+    exportData: null | ExportData
+    exportDetail: null | ExportDetailPdf[]
+}
+
+const ComponentToPrint: React.FC<ExportPDFProps> = forwardRef((props, ref) => {
+
     return (
       <div ref={ref} style={{ padding: 4, margin: 4 }}>
         {
-          exportData && exportDetailData 
+          props.exportData && props.exportDetail 
             ?
             <Paper sx={{ px: 6, py: 4, width: 400 }}>
               <Typography variant="h5" fontWeight='bold' gutterBottom align="center" marginBottom={2}>
@@ -68,22 +59,21 @@ const ComponentToPrint = forwardRef((props, ref) => {
                     <Typography display="inline" sx={{ fontWeight: 'bold' }}>
                         ĐƠN HÀNG:
                     </Typography>
-
                     <Typography display="inline" sx={{ textDecoration: 'none'}}>
-                        { ` ${exportData.id}`}
+                        { ` ${props.exportData.id}`}
                     </Typography>
                 </Typography>
                     <Typography variant="subtitle2">
                         {`Thời gian: ${dayjs().format('DD/MM/YYYY HH:mm:ss')}` }
                     </Typography>
                     <Typography variant="subtitle2">
-                        {`Nhân viên: ${exportData.staff.id} - ${exportData.staff.name}` }
+                        {`Nhân viên: ${props.exportData.staff.id} - ${props.exportData.staff.name}` }
                     </Typography>
                     <Typography variant="subtitle2">
-                        {`Khách hàng: ${exportData.customer.name}` }
+                        {`Khách hàng: ${props.exportData.customer.name}` }
                     </Typography>
                     <Typography variant="subtitle2">
-                          {`SĐT: ${exportData.customer.phoneNumber}` }
+                          {`SĐT: ${props.exportData.customer.phoneNumber}` }
                       </Typography>
                   </Grid>
                     
@@ -95,7 +85,7 @@ const ComponentToPrint = forwardRef((props, ref) => {
                         
                         <TableData
                             keyTable='export-detail'
-                            rows={exportDetailData}
+                            rows={props.exportDetail}
                             columns={columns}
                             isLoading={false}
                         />
@@ -110,15 +100,15 @@ const ComponentToPrint = forwardRef((props, ref) => {
                         }}
                     >
                         <Typography variant="subtitle2">
-                            {`Tổng tiền (chưa tính VAT): ${exportData.totalPrice}` }
+                            {`Tổng tiền (chưa tính VAT): ${props.exportData.totalPrice}` }
                         </Typography>
 
                         <Typography variant="subtitle2">
-                            {`Tiền thuế VAT: ${exportData.vat}`}
+                            {`Tiền thuế VAT: ${props.exportData.vat}`}
                         </Typography>
 
                         <Typography variant="subtitle2">
-                            {`Tổng tiền: ${exportData.totalPriceWithVat}` }
+                            {`Tổng tiền: ${props.exportData.totalPriceWithVat}` }
                         </Typography>
                     </Grid>
                 </Grid>

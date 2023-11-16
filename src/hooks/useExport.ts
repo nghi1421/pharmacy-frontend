@@ -13,6 +13,7 @@ import { Query } from '../types/Query';
 import { handleAddress } from '../utils/address';
 import { GenderEnum } from '../types/GenderEnum';
 import globalEvent from '../utils/emitter';
+import { AxiosResponse } from 'axios';
 
 function createData({id, exportDate, staff, customer, note, prescriptionId}: ExportType) {
     return {
@@ -58,11 +59,11 @@ function createDataExportDetail({ drug, expiryDate, price, quantity, unitPrice, 
   }
 }
 
-function createExportDetailPdf({ drug, price, quantity, totalPrice }: ExportDetailRawData): ExportDetailPdf {
+function createExportDetailPdf({ drug, unitPrice, quantity, totalPrice }: ExportDetailRawData): ExportDetailPdf {
   return {
     drugName: drug.name,
     quantity: `${formatNumber(quantity)} ${drug.minimalUnit}`,
-    price: formatCurrency(price),
+    unitPrice: formatCurrency(unitPrice),
     total: formatCurrency(totalPrice),
   }
 }
@@ -124,31 +125,59 @@ const useGetExport = () => {
   })
 }
 
-const useCreateExport = () => {
+const useCreateExport = (
+  setExportData: (e: ExportData) => void,
+  setExportDetailData: (e: ExportDetailPdf[]) => void
+) => {
   const queryClient = useQueryClient();
-  const navigate = useNavigate();
 
   return useMutation({
     mutationFn: async (data: ExportForm) => {
       return await axiosClient.post(API_EXPORT, data)
-        .then(response => {
-          console.log(response)
+        .then((response): AxiosResponse<any, any> => {
           return response
-          })
-          .catch(error => {
-            defaultCatchErrorHandle(error)
-          }) 
-      },
+          // if (response.data.message) {
+            // const handleExport = createDataExport(response.data.data.export)
+            // const handleExportDetail = response.data.data.exportDetail.map(
+            //   (exportDetail: any) => createExportDetailPdf(exportDetail))
+            
+          //   return {
+          //     exportData: handleExport,
+          //     exportDetail: handleExportDetail,
+          //   } as ExportPdfData
+          // }
+          // else {
+          //   return response
+          // }
+        })
+        .catch(error => {
+          console.log(error);
+          defaultCatchErrorHandle(error)
+        })
+    },
     onSuccess: (response: any) => {
-      queryClient.invalidateQueries('drug-categories', { refetchInactive: true })
-      const handleExport = createDataExport(response.data.data.export)
-      const handleExportDetail = response.data.data.exportDetail.map(
-        (exportDetail: any) => createExportDetailPdf(exportDetail))
-          
-      globalEvent.emit('send.export-pdf-data',
-        { exportData: handleExport, exportDetail: handleExportDetail } as ExportPdfData)
+      console.log(response)
+      if (response.data.message) {
+        queryClient.invalidateQueries('drug-categories', { refetchInactive: true })
+        const handleExport = createDataExport(response.data.data.export)
+        const handleExportDetail = response.data.data.exportDetail.map(
+              (exportDetail: ExportDetailRawData) => createExportDetailPdf(exportDetail))
+        
+        setExportData(handleExport)
+        setExportDetailData(handleExportDetail)
+        enqueueSnackbar(response.data.message, {
+          autoHideDuration: 3000,
+          variant: 'success'
+        })
       }
-    })
+      else {
+        enqueueSnackbar(response.data.errorMessage, {
+          autoHideDuration: 3000,
+          variant: 'error'
+        })
+      }
+    }
+  })
 }
 
 // const useUpdateExport = () => {

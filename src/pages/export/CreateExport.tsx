@@ -22,6 +22,7 @@ import { useCreateExport } from "../../hooks/useExport";
 import { useReactToPrint } from "react-to-print";
 import ComponentToPrint from "./ComponentToPrint";
 import { enqueueSnackbar } from "notistack";
+import { ExportData, ExportDetailPdf } from "../../types/ExportType";
 
 const useStyles = makeStyles({
   customTextField: {
@@ -141,7 +142,9 @@ const CreateExport: React.FC = () => {
     });
     const [address, setAddress] = useState<string>('');
     const [search, setSearch] = useState<string>('')
-    const createExport = useCreateExport();
+    const [exportData, setExportData] = useState<ExportData | null>(null)    
+    const [exportDetailData, setExportDetailData] = useState<ExportDetailPdf[] | null>(null)    
+    const createExport = useCreateExport(setExportData, setExportDetailData);
     let componentRef = useRef<HTMLDivElement>(null);
     const handlePrint = useReactToPrint({
         content: () => componentRef.current,
@@ -193,6 +196,12 @@ const CreateExport: React.FC = () => {
         }
     }, [selectedDrugs])
 
+    useEffect(() => {
+        if (exportData && exportDetailData) {
+            handlePrint();
+        }
+    }, [exportData, exportDetailData])
+
     const onSubmit = (data: ExportForm) => {
         const isInvalid = selectedDrugs.length === 0
             || selectedDrugs.some(drug => drug.error.length > 0);
@@ -229,12 +238,12 @@ const CreateExport: React.FC = () => {
                     return { drugId: drug.id, quantity: drug.exportQuantity}
                 })
             })
-            handlePrint();
             setSelectedDrugs([]),
             setDrugs(cloneDrugs)
             setSearch(''),
             reset()
             resetCustomer()
+            setAddress('')
         }
     };
 
@@ -502,7 +511,11 @@ const CreateExport: React.FC = () => {
                
             </Grid>
             <div>
-                <ComponentToPrint ref={componentRef} />
+                <ComponentToPrint
+                    ref={componentRef}
+                    exportData={exportData}
+                    exportDetail={exportDetailData}
+                />
             </div>
         </Paper>
     )
