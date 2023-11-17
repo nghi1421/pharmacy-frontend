@@ -23,6 +23,7 @@ import { useReactToPrint } from "react-to-print";
 import ExportBill from "./ExportBill";
 import { enqueueSnackbar } from "notistack";
 import { ExportData, ExportDetailPdf } from "../../types/ExportType";
+import dayjs from "dayjs";
 
 const useStyles = makeStyles({
   customTextField: {
@@ -63,7 +64,7 @@ const defaultValuesCustomer = {
 
 const defaultValuesExport = {
     note: '',
-    exportDate: new Date(),
+    exportDate: new Date(dayjs().format('YYYY-MM-DD')),
     prescriptionId: '',
     exportDetails: [],
     staffId: 0,
@@ -90,7 +91,7 @@ const exportValidate: Yup.ObjectSchema<ExportForm> = yup.object({
         .max(255, 'Ghi chú không quá 255 kí tự'),
     exportDate: yup
         .date()
-        .max(new Date(), 'Thời gian xuất hàng không hợp lệ.'),
+        .max(new Date(dayjs().format('YYYY-MM-DD')), 'Thời gian xuất hàng không hợp lệ.'),
     prescriptionId: yup
         .string()
         .required('Mã toa thuốc bắt buộc')
@@ -510,7 +511,7 @@ const CreateExport: React.FC = () => {
                 </Grid>
                
             </Grid>
-            <div>
+            <div style={{ display: 'none' }}>
                 <ExportBill
                     ref={componentRef}
                     exportData={exportData}

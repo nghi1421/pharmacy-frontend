@@ -56,10 +56,10 @@ export interface ImportForm {
 
 const defaultValues = {
     note: '',
-    importDate: new Date(),
+    importDate: new Date(dayjs().format('YYYY-MM-DD')),
     paid: 0,
     provider: null,
-    maturityDate: new Date(),
+    maturityDate: new Date(dayjs().format('YYYY-MM-DD')),
     importDetails: [],
     providerId: 0,
     staffId: 0,
@@ -72,7 +72,7 @@ const importValidate: Yup.ObjectSchema<ImportForm> = yup.object({
         .max(255, 'Ghi chú không quá 255 kí tự'),
     importDate: yup
         .date()
-        .max(new Date(), 'Thời gian nhập hàng không hợp lệ.'),
+        .max(new Date(dayjs().format('YYYY-MM-DD')), 'Thời gian nhập hàng không hợp lệ.'),
     provider: yup
         .object()
         .typeError('Vui lòng chọn công ty dược.')
@@ -84,7 +84,7 @@ const importValidate: Yup.ObjectSchema<ImportForm> = yup.object({
     maturityDate: yup
         .date()
         .typeError('Ngày đáo hạn bắt buộc.')
-        .min(new Date(), 'Ngày đáo hạn phải sau hôm nay.'),
+        .min(new Date(dayjs().format('YYYY-MM-DD')), 'Ngày đáo hạn phải sau hôm nay.'),
 })
 
 const columns: ColumnDrugCategory[] = [
@@ -225,7 +225,7 @@ const CreateImport: React.FC = () => {
             checked: false,
             quantity: 0,
             unitPrice: 0,
-            expiryDate: new Date(),
+            expiryDate: new Date(dayjs().format('YYYY-MM-DD')),
             batchId: '',
             errors: ['', '', '', '']
         })

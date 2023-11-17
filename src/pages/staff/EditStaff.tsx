@@ -13,6 +13,7 @@ import { FormInputDate } from "../../components/form/FormInputDate";
 import { FormInputCheckBox } from "../../components/form/FormInputCheckBox";
 import { genders } from "../../utils/constants";
 import { useGetDataPositions } from "../../hooks/usePosition";
+import dayjs from "dayjs";
 
 export interface StaffEditForm {
     id: string;
@@ -27,8 +28,8 @@ export interface StaffEditForm {
     address: string;
 }
 
-const maxDate = new Date()
-maxDate.setFullYear(new Date().getFullYear() - 18)
+const maxDate = new Date(dayjs().format('YYYY-MM-DD'))
+maxDate.setFullYear(new Date(dayjs().format('YYYY-MM-DD')).getFullYear() - 18)
 
 //@ts-ignore
 const staffFormValidate: Yup.ObjectSchema<StaffForm> = yup.object({

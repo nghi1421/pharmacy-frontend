@@ -1,4 +1,4 @@
-import { Box, Button, Grid, Paper, Typography } from "@mui/material"
+import { Box, Button, CircularProgress, Grid, Paper, Typography } from "@mui/material"
 import MoneyImage from '../../assets/images/money.png'
 import SalesImage from '../../assets/images/sales.png'
 import PurchaseImage from '../../assets/images/purchase.png'
@@ -11,7 +11,7 @@ import yup from "../../utils/yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import LineChart from "../../components/chart/LineChart";
 import BarChart from "../../components/chart/BarChart";
-
+import { useGetStatisticsToday } from '../../hooks/useStatistics'
 const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
 
 // const data = {
@@ -64,11 +64,12 @@ const StatisticsPage = () => {
     } = useForm<StatisticsForm>({
         mode: 'all',
         defaultValues: {
-            startDate: new Date(),
-            endDate: new Date()
+            startDate: new Date(dayjs().format('YYYY-MM-DD')),
+            endDate: new Date(dayjs().format('YYYY-MM-DD'))
         },
         resolver: yupResolver(statsiticsValidate)
     });
+    const { data: statisticsToday, isLoading: isLoadingToday } = useGetStatisticsToday() 
 
     const onSubmit = (data: StatisticsForm) => {
         console.log(data)
@@ -124,24 +125,31 @@ const StatisticsPage = () => {
                             alt="No data."
                             src={MoneyImage}
                         />
-                        <CountUp
-                            end={160527.012}
-                            duration={2.75}
-                            decimals={3}
-                            decimal=","
-                            suffix=' VND'
-                        >
-                            {({ countUpRef }) => (
-                                <div style={{
-                                    width: '100%',
-                                    display: 'flex',
-                                    justifyItems: 'flex-end',
-                                    justifyContent: 'end'
-                                }}>
-                                    <span ref={countUpRef} style={{ fontSize: 20}} />
-                                </div>
-                            )}
-                        </CountUp>
+                        {
+                            isLoadingToday
+                                ?
+                                    <CircularProgress sx={{ margin: 'auto' }} />
+                                :
+                            <CountUp
+                                end={statisticsToday.salesEarnings}
+                                duration={2.75}
+                                decimals={3}
+                                decimal="."
+                                suffix=' VND'
+                            >
+                                {({ countUpRef }) => (
+                                    <div style={{
+                                        width: '100%',
+                                        display: 'flex',
+                                        justifyItems: 'flex-end',
+                                        justifyContent: 'end'
+                                    }}>
+                                        <span ref={countUpRef} style={{ fontSize: 20}} />
+                                    </div>
+                                )}
+                            </CountUp>
+                        }
+                        
                     </Box>
                 </Paper>
             </Grid>
@@ -186,22 +194,29 @@ const StatisticsPage = () => {
                             }}
                             src={SalesImage}
                         />
-                        <CountUp
-                            end={1232}
-                            duration={2.75}
-                            decimal=","
-                        >
-                            {({ countUpRef }) => (
-                                <div style={{
-                                    width: '100%',
-                                    display: 'flex',
-                                    justifyItems: 'flex-end',
-                                    justifyContent: 'end'
-                                }}>
-                                    <span ref={countUpRef} style={{ fontSize: 20}} />
-                                </div>
-                            )}
-                        </CountUp>
+                        {
+                            isLoadingToday
+                                ?
+                                    <CircularProgress sx={{ margin: 'auto' }} />
+                                :
+                             <CountUp
+                                end={statisticsToday.salesCount}
+                                duration={2.75}
+                                decimal=","
+                            >
+                                {({ countUpRef }) => (
+                                    <div style={{
+                                        width: '100%',
+                                        display: 'flex',
+                                        justifyItems: 'flex-end',
+                                        justifyContent: 'end'
+                                    }}>
+                                        <span ref={countUpRef} style={{ fontSize: 20}} />
+                                    </div>
+                                )}
+                            </CountUp>
+                        }
+                       
                     </Box>
                 </Paper>
             </Grid>
@@ -246,22 +261,29 @@ const StatisticsPage = () => {
                             }}
                             src={PurchaseImage}
                         />
-                        <CountUp
-                            end={23}
-                            duration={2.75}
-                            decimal=","
-                        >
-                            {({ countUpRef }) => (
-                                <div style={{
-                                    width: '100%',
-                                    display: 'flex',
-                                    justifyItems: 'flex-end',
-                                    justifyContent: 'end'
-                                }}>
-                                    <span ref={countUpRef} style={{ fontSize: 20}} />
-                                </div>
-                            )}
-                        </CountUp>
+
+                         {
+                            isLoadingToday
+                                ?
+                                    <CircularProgress sx={{ margin: 'auto' }} />
+                                :
+                             <CountUp
+                                end={statisticsToday.customerPurchases}
+                                duration={2.75}
+                                decimal=","
+                            >
+                                {({ countUpRef }) => (
+                                    <div style={{
+                                        width: '100%',
+                                        display: 'flex',
+                                        justifyItems: 'flex-end',
+                                        justifyContent: 'end'
+                                    }}>
+                                        <span ref={countUpRef} style={{ fontSize: 20}} />
+                                    </div>
+                                )}
+                            </CountUp>
+                        }
                     </Box>
                 </Paper>
             </Grid>

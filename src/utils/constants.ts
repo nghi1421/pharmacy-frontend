@@ -25,6 +25,8 @@ export const API_IMPORT_WITH_ID = 'imports/:importId';
 export const API_EXPORT_WITH_ID = 'exports/:exportId';
 export const API_TYPE_BY_USE_WITH_ID = 'type-by-uses/:typeId';
 
+export const API_GET_STATISTICS_TODAY = 'statistics/sales-count-today';
+
 export const API_STAFF_UPDATE_STATUS = 'staffs/:staffId/update-status'
 
 export const genders: Item[] = [

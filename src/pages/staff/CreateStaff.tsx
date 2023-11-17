@@ -23,6 +23,7 @@ import { FormInputCheckBox } from "../../components/form/FormInputCheckBox";
 import * as Yup from 'yup'
 import { useGetDataPositions } from "../../hooks/usePosition";
 import { useCreateStaff } from "../../hooks/useStaff";
+import dayjs from "dayjs";
 
 export interface StaffForm {
     name: string;
@@ -40,7 +41,7 @@ const defaultValues = {
     name: "",
     phoneNumber: "",
     gender: '1',
-    dob: new Date(),
+    dob: new Date(dayjs().format('YYYY-MM-DD')),
     email: '',
     identification: '',
     positionId: '1',
@@ -48,8 +49,8 @@ const defaultValues = {
     address: '',
 };
 
-const maxDate = new Date()
-maxDate.setFullYear(new Date().getFullYear() - 18)
+const maxDate = new Date(dayjs().format('YYYY-MM-DD'))
+maxDate.setFullYear(new Date(dayjs().format('YYYY-MM-DD')).getFullYear() - 18)
 
 //@ts-ignore
 const staffFormValidate: Yup.ObjectSchema<StaffForm> = yup.object({

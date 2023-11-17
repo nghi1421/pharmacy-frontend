@@ -9,6 +9,7 @@ import { FormInputDate } from "../../components/form/FormInputDate"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { useForm } from "react-hook-form"
 import yup from "../../utils/yup"
+import dayjs from "dayjs"
 
 const staffRows: Item[] = [
     {value: 'id', label: 'Mã nhân viên'},
@@ -51,7 +52,7 @@ const importValidate: Yup.ObjectSchema<ImportForm> = yup.object({
     maturityDate: yup
         .date()
         .typeError('Ngày đáo hạn bắt buộc.')
-        .min(new Date(), 'Ngày đáo hạn phải sau hôm nay.'),
+        .min(new Date(dayjs().format('YYYY-MM-DD')), 'Ngày đáo hạn phải sau hôm nay.'),
 })
 
 const DetailPage = () => {
