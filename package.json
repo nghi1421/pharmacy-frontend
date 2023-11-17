@@ -24,6 +24,7 @@
     "@types/prop-types": "^15.7.8",
     "@types/react-helmet": "^6.1.7",
     "axios": "^1.5.1",
+    "chart.js": "^4.4.0",
     "dayjs": "^1.11.10",
     "hanhchinhvn": "^1.6.0",
     "hoist-non-react-statics": "^3.3.2",
