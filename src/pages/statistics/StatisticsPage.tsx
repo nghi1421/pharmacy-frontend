@@ -1,71 +1,36 @@
 import { Box, Button, Grid, Paper, Typography } from "@mui/material"
-import BarChartIcon from '@mui/icons-material/BarChart';
-import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import MoneyImage from '../../assets/images/money.png'
 import SalesImage from '../../assets/images/sales.png'
 import PurchaseImage from '../../assets/images/purchase.png'
-import dayjs, { Dayjs } from 'dayjs';
+import dayjs from 'dayjs';
 import CountUp from 'react-countup';
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { FormInputDate } from "../../components/form/FormInputDate";
 import { useForm } from "react-hook-form";
 import yup from "../../utils/yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Line } from 'react-chartjs-2';
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-} from 'chart.js';
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
-);
-
-export const options = {
-  responsive: true,
-  plugins: {
-    legend: {
-      position: 'bottom' as const,
-    },
-    title: {
-      display: true,
-    },
-  },
-};
+import LineChart from "../../components/chart/LineChart";
+import BarChart from "../../components/chart/BarChart";
 
 const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
 
-export const data = {
-  labels,
-  datasets: [
-    {
-        id: '1',
-      label: 'Dataset 1',
-      data: [100, 200, 244, 211, 673, 234, 123],
-      borderColor: 'rgb(255, 99, 132)',
-      backgroundColor: 'rgba(255, 99, 132, 0.5)',
-    },
-    {
-        id: '2',
-      label: 'Dataset 2',
-      data: [589, 246, 100, 593, 789, 246, 23],
-      borderColor: 'rgb(53, 162, 235)',
-      backgroundColor: 'rgba(53, 162, 235, 0.5)',
-    },
-  ],
-};
+// const data = {
+//   labels,
+//   datasets: [
+//     {
+//       label: 'Dataset 1',
+//       data: [100, 200, 244, 211, 673, 234, 123],
+//       borderColor: 'rgb(255, 99, 132)',
+//       backgroundColor: 'rgba(255, 99, 132, 0.5)',
+//     },
+//     {
+//       label: 'Dataset 2',
+//       data: [589, 246, 100, 593, 789, 246, 23],
+//       borderColor: 'rgb(53, 162, 235)',
+//       backgroundColor: 'rgba(53, 162, 235, 0.5)',
+//     },
+//   ],
+// };
 
 interface StatisticsForm {
     startDate: Date;
@@ -342,42 +307,63 @@ const StatisticsPage = () => {
                             </Button>
                         </Grid>
                         <Grid item xs={8} sm={6}>
-                            <Line options={options} data={{
+                            <LineChart
+                                title='Doanh thu'
+                                data={{
                                 labels,
                                 datasets: [
                                     {
-                                    label: 'Sản phẩm 1',
-                                    data: [100, 200, 244, 211, 673, 234, 123],
-                                    borderColor: 'rgb(255, 99, 132)',
-                                    backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                                        label: 'Dataset 1',
+                                        data: [100, 200, 244, 211, 673, 234, 123],
+                                        borderColor: 'rgb(255, 99, 132)',
+                                        backgroundColor: 'rgba(255, 99, 132, 0.5)',
                                     },
                                     {
-                                    label: 'Sản phẩm 2',
-                                    data: [589, 246, 100, 593, 789, 246, 23],
-                                    borderColor: 'rgb(53, 162, 235)',
-                                    backgroundColor: 'rgba(53, 162, 235, 0.5)',
+                                        label: 'Dataset 2',
+                                        data: [589, 246, 100, 593, 789, 246, 23],
+                                        borderColor: 'rgb(53, 162, 235)',
+                                        backgroundColor: 'rgba(53, 162, 235, 0.5)',
                                     },
                                 ],
-                            }} />;
+                            }}
+                            />;
                         </Grid>
                         <Grid item xs={8} sm={6}>
-                            <Line options={options} data={{
-                                labels,
-                                datasets: [
-                                    {
-                                    label: 'Sản phẩm 1',
-                                    data: [100, 200, 244, 211, 673, 234, 123],
-                                    borderColor: 'rgb(255, 99, 132)',
-                                    backgroundColor: 'rgba(255, 99, 132, 0.5)',
-                                    },
-                                    {
-                                    label: 'Sản phẩm 2',
-                                    data: [589, 246, 100, 593, 789, 246, 23],
-                                    borderColor: 'rgb(53, 162, 235)',
-                                    backgroundColor: 'rgba(53, 162, 235, 0.5)',
-                                    },
-                                ],
-                            }} />;
+                            <LineChart
+                                title='Doanh số'
+                                data={{
+                                    labels,
+                                    datasets: [
+                                        {
+                                            label: 'Dataset 1',
+                                            data: [100, 200, 244, 211, 673, 234, 123],
+                                            borderColor: 'rgb(255, 99, 132)',
+                                            backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                                        },
+                                        {
+                                            label: 'Dataset 2',
+                                            data: [589, 246, 100, 593, 789, 246, 23],
+                                            borderColor: 'rgb(53, 162, 235)',
+                                            backgroundColor: 'rgba(53, 162, 235, 0.5)',
+                                        },
+                                    ],
+                                }}
+                            />
+                        </Grid>
+                        <Grid item xs={8} sm={6}>
+                            <BarChart
+                                title='Mua sản phẩm'
+                                data={{
+                                    labels,
+                                    datasets: [
+                                        {
+                                        label: 'Dataset 1',
+                                        data: [100,23,123,653,345,235,690],
+                                        backgroundColor: 'rgba(53, 162, 235, 0.5)',
+                                        },
+                                    ],
+                                }}
+                            />;
                         </Grid>
                     </Grid>
                 </Paper>
