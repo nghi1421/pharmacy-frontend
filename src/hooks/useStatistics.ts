@@ -26,7 +26,6 @@ const useGetStatisticsToday = () => {
 
 const useGetStatistics = () => {
     const [searchParams, setSearchParams] = useSearchParams();
-    console.log(searchParams.toString().length)
     if (searchParams.toString().length === 0) {
         const query = `startDate=${dayjs().format('DD-MM-YYYY')}&endDate=${dayjs().format('DD-MM-YYYY')}`
         return useQuery({

@@ -1,4 +1,4 @@
-import { Box, Button, CircularProgress, Grid, Paper, Typography } from "@mui/material"
+import { Box, Button, Chip, CircularProgress, Grid, Paper, Stack, Typography, withStyles } from "@mui/material"
 import MoneyImage from '../../assets/images/money.png'
 import SalesImage from '../../assets/images/sales.png'
 import PurchaseImage from '../../assets/images/purchase.png'
@@ -11,31 +11,21 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import LineChart from "../../components/chart/LineChart";
 import BarChart from "../../components/chart/BarChart";
 import { useGetStatistics, useGetStatisticsToday } from '../../hooks/useStatistics'
-import useStatisticsQuery from "../../hooks/useStatisticsQuery";
 import { useSearchParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import useDateRange from "../../hooks/useDateRange";
 const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
-
-// const data = {
-//   labels,
-//   datasets: [
-//     {
-//       label: 'Dataset 1',
-//       data: [100, 200, 244, 211, 673, 234, 123],
-//       borderColor: 'rgb(255, 99, 132)',
-//       backgroundColor: 'rgba(255, 99, 132, 0.5)',
-//     },
-//     {
-//       label: 'Dataset 2',
-//       data: [589, 246, 100, 593, 789, 246, 23],
-//       borderColor: 'rgb(53, 162, 235)',
-//       backgroundColor: 'rgba(53, 162, 235, 0.5)',
-//     },
-//   ],
-// };
 
 export interface StatisticsForm {
     startDate: Date;
     endDate: Date;
+}
+
+interface DateRange {
+    id: number
+    label: string
+    value: string[]
+    checked: boolean
 }
 
 const today =  dayjs().format('DD-MM-YYYY')
@@ -61,6 +51,10 @@ const StatisticsPage = () => {
         handleSubmit,
         watch,
         control,
+        setValue,
+        formState,
+        clearErrors,
+        formState: { isValidating }
     } = useForm<StatisticsForm>({
         mode: 'all',
         defaultValues: {
@@ -69,27 +63,93 @@ const StatisticsPage = () => {
         },
         resolver: yupResolver(statsiticsValidate)
     });
-    const [_, setSearchParams] = useSearchParams();
-    
     const { data: statisticsToday, isLoading: isLoadingToday } = useGetStatisticsToday()
-    
-    // const { query, setQuery, execute} = useStatisticsQuery({
-    //     startDate: today,
-    //     endDate: today,
-    // })
-
     const { isLoading: isLoadingStatistics, data: statisticsData } = useGetStatistics()
+    const {
+        dateRanges,
+        chooseDateRange,
+        updateStatisticsQuery,
+        updateDateRange
+    } = useDateRange(setValue, clearErrors)
 
     const onSubmit = (data: StatisticsForm) => {
-        let searchQuery = new URLSearchParams();
-        searchQuery.set('startDate', dayjs(data.startDate).format('DD-MM-YYYY'))
-        searchQuery.set('endDate', dayjs(data.endDate).format('DD-MM-YYYY'))
-        setSearchParams(searchQuery)
+        updateStatisticsQuery(data.startDate, data.endDate)
     }
 
+    const watchAllFields = watch()
 
+    useEffect(() => {
+        if (formState.isValid && !isValidating) {
+            updateDateRange(
+                dayjs(watchAllFields.startDate).format('DD-MM-YYYY'),
+                dayjs(watchAllFields.endDate).format('DD-MM-YYYY')
+            )
+        }
+    }, [formState, watchAllFields, isValidating])
     return (
-        <Grid spacing={4} container>
+        <Grid spacing={3} container>
+            <Grid item xs={8} sm={12}>
+                <Paper sx={{ px: 3, py: 2 }}>
+                    <Typography
+                            variant="h4"
+                            fontWeight='500'
+                            sx={{ pb: 2, marginBottom: 2 }}
+                        >
+                        Thống kê { dayjs(watch('startDate')).format('DD/MM/YYYY')} - { dayjs(watch('endDate')).format('DD/MM/YYYY')}
+                    </Typography>
+                    <Grid spacing={2} container>
+                        <Grid item xs={8} sm={3}>
+                            <FormInputDate
+                                name="startDate"
+                                control={control}
+                                label="Từ ngày"
+                                placeholder='x'
+                            />
+                        </Grid>
+                        <Grid item xs={8} sm={3}>
+                            <FormInputDate
+                                name="endDate"
+                                control={control}
+                                label="Đến ngày"
+                                placeholder='x'
+                            />
+                        </Grid>
+                        <Grid item xs={8} sm={3}>
+                            <Button
+                                variant="contained"
+                                color="success"
+                                sx={{
+                                    height: 40,
+                                    m: 'auto',
+                                    textTransform: 'none',
+                                }}
+                                onClick={handleSubmit(onSubmit)}
+                            >
+                                Thống kê
+                            </Button>
+                        </Grid>
+                        <Grid item xs={8} sm={12}>
+                            <Stack direction="row" spacing={1}>
+                                {
+                                    dateRanges.map((dateRange) => 
+                                        <Chip
+                                            label={dateRange.label}
+                                            color="primary"
+                                            sx={{ cursor: dateRange.checked ? 'not-allowed' : 'pointer' }}
+                                            variant={dateRange.checked ? "filled" : "outlined"}
+                                            onClick={() => {
+                                               chooseDateRange(dateRange)
+                                            }}
+                                        />
+                                    )
+                                }
+                            </Stack> 
+                        </Grid>
+      
+                    </Grid>
+
+                </Paper>
+            </Grid>
             <Grid item xs={8} sm={4}>
                 <Paper sx={{
                     zIndex: 0,
@@ -294,129 +354,100 @@ const StatisticsPage = () => {
                 </Paper>
             </Grid>
 
-            <Grid item xs={8} sm={12}>
+            <Grid item xs={8} sm={6}>
                 <Paper sx={{ px: 3, py: 2 }}>
-                    <Typography
-                            variant="h4"
-                            fontWeight='500'
-                            sx={{ pb: 2, marginBottom: 2 }}
-                        >
-                        Thống kê { dayjs(watch('startDate')).format('DD/MM/YYYY')} - { dayjs(watch('endDate')).format('DD/MM/YYYY')}
-                    </Typography>
-                    <Grid spacing={2} container>
-                        <Grid item xs={8} sm={3}>
-                            <FormInputDate
-                                name="startDate"
-                                control={control}
-                                label="Từ ngày"
-                                placeholder='x'
-                            />
-                        </Grid>
-                        <Grid item xs={8} sm={3}>
-                            <FormInputDate
-                                name="endDate"
-                                control={control}
-                                label="Đến ngày"
-                                placeholder='x'
-                            />
-                        </Grid>
-                        <Grid item xs={8} sm={3}>
-                            <Button
-                                variant="contained"
-                                color="success"
-                                sx={{
-                                    height: '100%',
-                                    m: 'auto',
-                                    textTransform: 'none',
-                                }}
-                                onClick={handleSubmit(onSubmit)}
-                            >
-                                Thống kê
-                            </Button>
-                        </Grid>
-                        <Grid item xs={8} sm={6}>
-                            {
-                                isLoadingStatistics 
-                                    ?
-                                <CircularProgress sx={{ margin: 'auto' }} />
-                                    :
-                                <LineChart
-                                title='Doanh thu'
-                                data={{
-                                    labels: statisticsData.labels,
-                                    datasets: [
-                                        {
-                                            label: 'Doanh số',
-                                            data: statisticsData.salesEarningsList,
-                                            borderColor: 'rgb(53, 162, 235)',
-                                            backgroundColor: 'rgba(53, 162, 235, 0.5)',
-                                        },
-                                    ],
-                                }}
-                                />
-                            }
-                            
-                        </Grid>
-                        <Grid item xs={8} sm={6}>
-                            {
-                                isLoadingStatistics 
-                                    ?
-                                <CircularProgress sx={{ margin: 'auto' }} />
-                                    :
-                                <LineChart
-                                title='Doanh số'
-                                data={{
-                                    labels: statisticsData.labels,
-                                    datasets: [
-                                        {
-                                            label: 'Doanh số',
-                                            data: statisticsData.salesCountList,
-                                            borderColor: 'rgb(53, 162, 235)',
-                                            backgroundColor: 'rgba(53, 162, 235, 0.5)',
-                                        },
-                                    ],
-                                }}
-                                />
-                            }
-                        </Grid>
-                        <Grid item xs={8} sm={6}>
-                            {
-                                isLoadingStatistics 
-                                    ?
-                                <CircularProgress sx={{ margin: 'auto' }} />
-                                    :
-                                <LineChart
-                                title='Lượt khách'
-                                data={{
-                                    labels: statisticsData.labels,
-                                    datasets: [
-                                        {
-                                            label: 'Lượt khách',
-                                            data: statisticsData.customerPurchasesList,
-                                            borderColor: 'rgb(53, 162, 235)',
-                                            backgroundColor: 'rgba(53, 162, 235, 0.5)',
-                                        },
-                                    ],
-                                }}
-                                />
-                            }
-                            {/* <BarChart
-                                title='Mua sản phẩm'
-                                data={{
-                                    labels,
-                                    datasets: [
-                                        {
-                                            label: 'Dataset 1',
-                                            data: [100,23,123,653,345,235,690],
-                                            backgroundColor: 'rgba(53, 162, 235, 0.5)',
-                                        },
-                                    ],
-                                }}
-                            />; */}
-                        </Grid>
-                    </Grid>
+                    {
+                        isLoadingStatistics 
+                            ?
+                        <CircularProgress sx={{ margin: 'auto' }} />
+                            :
+                        <LineChart
+                            title='Biểu đồ doanh thu'
+                            data={{
+                                labels: statisticsData.labels,
+                                datasets: [
+                                    {
+                                        label: 'Doanh thu',
+                                        data: statisticsData.salesEarningsList,
+                                        borderColor: 'rgb(53, 162, 235)',
+                                        backgroundColor: 'rgba(53, 162, 235, 0.5)',
+                                    },
+                                ],
+    
+                            }}
+                        />
+                    }
                 </Paper>
             </Grid>
+
+            <Grid item xs={8} sm={6}>
+                <Paper sx={{ px: 3, py: 2 }}>
+                    {
+                        isLoadingStatistics 
+                            ?
+                        <CircularProgress sx={{ margin: 'auto' }} />
+                            :
+                        <LineChart
+                        title='Biểu đồ doanh số'
+                        data={{
+                            labels: statisticsData.labels,
+                            datasets: [
+                                {
+                                    label: 'Doanh số',
+                                    data: statisticsData.salesCountList,
+                                    borderColor: 'rgb(53, 162, 235)',
+                                    backgroundColor: 'rgba(53, 162, 235, 0.5)',
+                                },
+                            ],
+                        }}
+                        />
+                    }
+                </Paper>
+            </Grid>
+
+            <Grid item xs={8} sm={6}>
+                <Paper sx={{ px: 3, py: 2 }}>
+                    {
+                        isLoadingStatistics 
+                            ?
+                        <CircularProgress sx={{ margin: 'auto' }} />
+                            :
+                        <LineChart
+                        title='Lượt khách'
+                        data={{
+                            labels: statisticsData.labels,
+                            datasets: [
+                                {
+                                    label: 'Lượt khách',
+                                    data: statisticsData.customerPurchasesList,
+                                    borderColor: 'rgb(53, 162, 235)',
+                                    backgroundColor: 'rgba(53, 162, 235, 0.5)',
+                                },
+                            ],
+                        }}
+                        />
+                    }
+                </Paper>
+            </Grid>
+
+            <Grid item xs={8} sm={6}>
+                <Paper sx={{ px: 3, py: 2 }}>
+                    <BarChart
+                        title='Biểu đồ doanh số sản phẩm'
+                        data={{
+                            labels,
+                            datasets: [
+                                {
+                                    label: 'Dataset 1',
+                                    data: [100,23,123,653,345,235,690],
+                                    backgroundColor: 'rgba(53, 162, 235, 0.5)',
+                                },
+                            ],
+                        }}
+                    />;
+                </Paper>
+            </Grid>
+
         </Grid>
     )
 }

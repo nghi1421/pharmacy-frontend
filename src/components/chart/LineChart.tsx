@@ -26,6 +26,40 @@ ChartJS.register(
 
 const defautlOption: ChartOptions<'line'> = {
   responsive: true,
+  animation: false,
+  normalized: true,
+  transitions: {
+    active: {
+      animations: {
+        x: {
+          from: 0
+        },
+        y: {
+          from: 0
+        }
+      },
+    },
+    show: {
+      animations: {
+        x: {
+          from: 0
+        },
+        y: {
+          from: 0
+        }
+      }
+    },
+    hide: {
+      animations: {
+        x: {
+          to: 0
+        },
+        y: {
+          to: 0
+        }
+      }
+    }
+  },
   plugins: {
     legend: {
       position: 'bottom' as const,
@@ -33,6 +67,7 @@ const defautlOption: ChartOptions<'line'> = {
     title: {
       display: true,
     },
+    
   },
 };
 
@@ -64,7 +99,7 @@ const LineChart: React.FC<LineChartProps> = ({ data, options, title }) => {
         <React.Fragment>
             <Line
                 options={options ? options : defautlOption}
-                data={ data }
+                data={data}
             />
             <Typography
                     variant="body2"
