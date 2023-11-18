@@ -26,13 +26,15 @@ ChartJS.register(
 
 const defautlOption: ChartOptions<'line'> = {
   responsive: true,
-  animation: false,
+  animation: {
+    duration: 200,
+  },
   normalized: true,
   transitions: {
     active: {
       animations: {
         x: {
-          from: 0
+          from: 1
         },
         y: {
           from: 0
@@ -42,7 +44,7 @@ const defautlOption: ChartOptions<'line'> = {
     show: {
       animations: {
         x: {
-          from: 0
+          from: 1
         },
         y: {
           from: 0
@@ -51,14 +53,20 @@ const defautlOption: ChartOptions<'line'> = {
     },
     hide: {
       animations: {
-        x: {
-          to: 0
+        x: {  
+          to: 1
         },
         y: {
           to: 0
         }
       }
     }
+  },
+  elements: {
+      line: {
+        borderJoinStyle: 'round',
+        tension: 0.5
+      }
   },
   plugins: {
     legend: {
@@ -99,7 +107,7 @@ const LineChart: React.FC<LineChartProps> = ({ data, options, title }) => {
         <React.Fragment>
             <Line
                 options={options ? options : defautlOption}
-                data={data}
+            data={data}
             />
             <Typography
                     variant="body2"

@@ -1,4 +1,3 @@
-import { keyframes } from "@emotion/react"
 import dayjs from "dayjs"
 import { useEffect, useState } from "react"
 import { useSearchParams } from "react-router-dom"
@@ -15,7 +14,7 @@ interface DateRange {
     endDate: string
 }
 
-const useDateRange = (setValue: any, clearErrors: any) => {
+const useDateRange = (setValue: any) => {
     const [dateRanges, setDateRanges] = useState<DateRangeItem[]>([
         {
             id: 1,

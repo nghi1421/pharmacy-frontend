@@ -55,7 +55,6 @@ const StatisticsPage = () => {
         control,
         setValue,
         formState,
-        clearErrors,
         formState: { isValidating }
     } = useForm<StatisticsForm>({
         mode: 'all',
@@ -73,7 +72,7 @@ const StatisticsPage = () => {
         getCurrentDateRange,
         updateStatisticsQuery,
         updateDateRange
-    } = useDateRange(setValue, clearErrors)
+    } = useDateRange(setValue)
     const onSubmit = (data: StatisticsForm) => {
         updateStatisticsQuery(data.startDate, data.endDate)
     }
