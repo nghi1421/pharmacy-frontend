@@ -4,6 +4,8 @@ import { QueryClient } from "react-query";
 import { Query } from "../types/Query";
 import { Column } from "../types/Column";
 import { Item } from "../types/props/FormInputListProps";
+import { StatisticsQuery } from "../hooks/useStatistics";
+import dayjs from "dayjs";
 
 export enum SearchColumnsOption {
     GET_ARRAY_OF_KEY = 1,
@@ -62,7 +64,6 @@ export const defaultCatchErrorHandle = (
                 variant: 'error'
             })   
         }
-         
     }
 }
 
@@ -79,6 +80,12 @@ export const updateSearchParams = (query: Query): URLSearchParams => {
     return queryParams;
 }
 
+export const updateStatisticsParams = (query: StatisticsQuery): URLSearchParams => {
+    const queryParams = new URLSearchParams();
+    queryParams.set('startDate', query.startDate)
+    queryParams.set('endDate', query.endDate)
+    return queryParams;
+}
 
 export const getSearchColums = (columns: Column[], option: SearchColumnsOption = 1): any[] => {
     switch (option) {

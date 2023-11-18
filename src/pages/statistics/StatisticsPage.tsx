@@ -4,14 +4,15 @@ import SalesImage from '../../assets/images/sales.png'
 import PurchaseImage from '../../assets/images/purchase.png'
 import dayjs from 'dayjs';
 import CountUp from 'react-countup';
-import { useEffect } from "react";
 import { FormInputDate } from "../../components/form/FormInputDate";
 import { useForm } from "react-hook-form";
 import yup from "../../utils/yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import LineChart from "../../components/chart/LineChart";
 import BarChart from "../../components/chart/BarChart";
-import { useGetStatisticsToday } from '../../hooks/useStatistics'
+import { useGetStatistics, useGetStatisticsToday } from '../../hooks/useStatistics'
+import useStatisticsQuery from "../../hooks/useStatisticsQuery";
+import { useSearchParams } from "react-router-dom";
 const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
 
 // const data = {
@@ -32,11 +33,12 @@ const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
 //   ],
 // };
 
-interface StatisticsForm {
+export interface StatisticsForm {
     startDate: Date;
     endDate: Date;
 }
 
+const today =  dayjs().format('DD-MM-YYYY')
  // @ts-ignore
 const statsiticsValidate: Yup.ObjectSchema<StatisticsForm> = yup.object({
     startDate: yup
@@ -59,8 +61,6 @@ const StatisticsPage = () => {
         handleSubmit,
         watch,
         control,
-        formState,
-        formState: { isValidating }
     } = useForm<StatisticsForm>({
         mode: 'all',
         defaultValues: {
@@ -69,19 +69,25 @@ const StatisticsPage = () => {
         },
         resolver: yupResolver(statsiticsValidate)
     });
-    const { data: statisticsToday, isLoading: isLoadingToday } = useGetStatisticsToday() 
+    const [_, setSearchParams] = useSearchParams();
+    
+    const { data: statisticsToday, isLoading: isLoadingToday } = useGetStatisticsToday()
+    
+    // const { query, setQuery, execute} = useStatisticsQuery({
+    //     startDate: today,
+    //     endDate: today,
+    // })
+
+    const { isLoading: isLoadingStatistics, data: statisticsData } = useGetStatistics()
 
     const onSubmit = (data: StatisticsForm) => {
-        console.log(data)
+        let searchQuery = new URLSearchParams();
+        searchQuery.set('startDate', dayjs(data.startDate).format('DD-MM-YYYY'))
+        searchQuery.set('endDate', dayjs(data.endDate).format('DD-MM-YYYY'))
+        setSearchParams(searchQuery)
     }
 
-    const data = watch();
 
-  useEffect(() => {
-    if (formState.isValid && !isValidating) {
-      
-    }
-  }, [formState, data, isValidating]);
     return (
         <Grid spacing={4} container>
             <Grid item xs={8} sm={4}>
@@ -329,68 +335,88 @@ const StatisticsPage = () => {
                             </Button>
                         </Grid>
                         <Grid item xs={8} sm={6}>
-                            <LineChart
+                            {
+                                isLoadingStatistics 
+                                    ?
+                                <CircularProgress sx={{ margin: 'auto' }} />
+                                    :
+                                <LineChart
                                 title='Doanh thu'
                                 data={{
-                                labels,
-                                datasets: [
-                                    {
-                                        label: 'Dataset 1',
-                                        data: [100, 200, 244, 211, 673, 234, 123],
-                                        borderColor: 'rgb(255, 99, 132)',
-                                        backgroundColor: 'rgba(255, 99, 132, 0.5)',
-                                    },
-                                    {
-                                        label: 'Dataset 2',
-                                        data: [589, 246, 100, 593, 789, 246, 23],
-                                        borderColor: 'rgb(53, 162, 235)',
-                                        backgroundColor: 'rgba(53, 162, 235, 0.5)',
-                                    },
-                                ],
-                            }}
-                            />;
-                        </Grid>
-                        <Grid item xs={8} sm={6}>
-                            <LineChart
-                                title='Doanh số'
-                                data={{
-                                    labels,
+                                    labels: statisticsData.labels,
                                     datasets: [
                                         {
-                                            label: 'Dataset 1',
-                                            data: [100, 200, 244, 211, 673, 234, 123],
-                                            borderColor: 'rgb(255, 99, 132)',
-                                            backgroundColor: 'rgba(255, 99, 132, 0.5)',
-                                        },
-                                        {
-                                            label: 'Dataset 2',
-                                            data: [589, 246, 100, 593, 789, 246, 23],
+                                            label: 'Doanh số',
+                                            data: statisticsData.salesEarningsList,
                                             borderColor: 'rgb(53, 162, 235)',
                                             backgroundColor: 'rgba(53, 162, 235, 0.5)',
                                         },
                                     ],
                                 }}
-                            />
+                                />
+                            }
+                            
                         </Grid>
                         <Grid item xs={8} sm={6}>
-                            <BarChart
+                            {
+                                isLoadingStatistics 
+                                    ?
+                                <CircularProgress sx={{ margin: 'auto' }} />
+                                    :
+                                <LineChart
+                                title='Doanh số'
+                                data={{
+                                    labels: statisticsData.labels,
+                                    datasets: [
+                                        {
+                                            label: 'Doanh số',
+                                            data: statisticsData.salesCountList,
+                                            borderColor: 'rgb(53, 162, 235)',
+                                            backgroundColor: 'rgba(53, 162, 235, 0.5)',
+                                        },
+                                    ],
+                                }}
+                                />
+                            }
+                        </Grid>
+                        <Grid item xs={8} sm={6}>
+                            {
+                                isLoadingStatistics 
+                                    ?
+                                <CircularProgress sx={{ margin: 'auto' }} />
+                                    :
+                                <LineChart
+                                title='Lượt khách'
+                                data={{
+                                    labels: statisticsData.labels,
+                                    datasets: [
+                                        {
+                                            label: 'Lượt khách',
+                                            data: statisticsData.customerPurchasesList,
+                                            borderColor: 'rgb(53, 162, 235)',
+                                            backgroundColor: 'rgba(53, 162, 235, 0.5)',
+                                        },
+                                    ],
+                                }}
+                                />
+                            }
+                            {/* <BarChart
                                 title='Mua sản phẩm'
                                 data={{
                                     labels,
                                     datasets: [
                                         {
-                                        label: 'Dataset 1',
-                                        data: [100,23,123,653,345,235,690],
-                                        backgroundColor: 'rgba(53, 162, 235, 0.5)',
+                                            label: 'Dataset 1',
+                                            data: [100,23,123,653,345,235,690],
+                                            backgroundColor: 'rgba(53, 162, 235, 0.5)',
                                         },
                                     ],
                                 }}
-                            />;
+                            />; */}
                         </Grid>
                     </Grid>
                 </Paper>
             </Grid>
-            
         </Grid>
     )
 }
