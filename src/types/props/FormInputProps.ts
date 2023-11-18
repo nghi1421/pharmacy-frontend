@@ -9,4 +9,5 @@ export interface FormInputProps {
   placeholder: string;
   type?: string
   size?: OverridableStringUnion<'small' | 'medium', TextFieldPropsSizeOverrides>;
+  withTime?: boolean
 }

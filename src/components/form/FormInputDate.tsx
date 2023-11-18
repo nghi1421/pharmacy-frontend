@@ -7,7 +7,7 @@ import { FormInputProps } from "../../types/props/FormInputProps";
 import dayjs from "dayjs";
 import React from "react";
 
-export const FormInputDate: React.FC<FormInputProps> = ({ name, control, label,size }) => {
+export const FormInputDate: React.FC<FormInputProps> = ({ name, control, label,size, withTime }) => {
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -21,7 +21,7 @@ export const FormInputDate: React.FC<FormInputProps> = ({ name, control, label,s
                   value={dayjs(value)}
                   onChange={onChange}
                   disableFuture
-                  format="DD-MM-YYYY"
+                  format={ withTime ? "DD-MM-YYYY HH:mm:ss": "DD-MM-YYYY"}
                   label={label}
                   slotProps={{
                     textField: {

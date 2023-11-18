@@ -64,7 +64,7 @@ const defaultValuesCustomer = {
 
 const defaultValuesExport = {
     note: '',
-    exportDate: new Date(dayjs().format('YYYY-MM-DD')),
+    exportDate: new Date(dayjs().format('YYYY-MM-DD HH:mm:ss')),
     prescriptionId: '',
     exportDetails: [],
     staffId: 0,
@@ -91,7 +91,7 @@ const exportValidate: Yup.ObjectSchema<ExportForm> = yup.object({
         .max(255, 'Ghi chú không quá 255 kí tự'),
     exportDate: yup
         .date()
-        .max(new Date(dayjs().format('YYYY-MM-DD')), 'Thời gian xuất hàng không hợp lệ.'),
+        .max(new Date(dayjs().add(1, 'day').format('YYYY-MM-DD')), 'Thời gian xuất hàng không hợp lệ.'),
     prescriptionId: yup
         .string()
         .required('Mã toa thuốc bắt buộc')
@@ -313,7 +313,7 @@ const CreateExport: React.FC = () => {
                 Thông tin phiếu xuất hàng
             </Typography>
             <Box sx={{ display: 'flex', gap: 2 }}>
-                <Grid container spacing={1.5} width='70%' sx={{ flex: 5 }}>
+                <Grid container spacing={1.5} sx={{ flex: 4 }}>
                     <Grid item xs={8} sm={4}>
                         <Controller
                             name='phoneNumber'
@@ -359,21 +359,22 @@ const CreateExport: React.FC = () => {
                             list={genders}
                         />
                     </Grid>
-                    <Address setAddress={setAddress} size='small' initAddress={address} />
+                    <Address gridSize={6} setAddress={setAddress} size='small' initAddress={address} />
                     
                 </Grid>
 
                 <Grid container spacing={1.5} width='30%' sx={{ flex: 2 }}>
-                    <Grid item xs={8} sm={6}>
+                    <Grid item xs={8} sm={12}>
                         <FormInputDate
                             name="exportDate"
                             control={control}
                             label="Ngày xuất hàng"
                             placeholder='x'
+                            withTime={true}
                         />
                     </Grid>
 
-                    <Grid item xs={8} sm={6}>
+                    <Grid item xs={8} sm={12}>
                         <FormInputText
                             name="prescriptionId"
                             control={control}

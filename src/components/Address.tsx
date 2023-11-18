@@ -25,9 +25,10 @@ interface AddressProp {
     initAddress?: string,
     setAddress: (address: string) => void;
     size?: OverridableStringUnion<"small" | "medium", TextFieldPropsSizeOverrides>
+    gridSize?: number
 }
 
-const Address: React.FC<AddressProp> = ({ setAddress, initAddress, size }) => {
+const Address: React.FC<AddressProp> = ({ setAddress, initAddress, size, gridSize }) => {
     const [province, setProvince] = useState<Item|null>(null)
     const [district, setDistrict] = useState<Item|null>(null)
     const [ward, setWard] = useState<Item|null>(null)
@@ -136,7 +137,7 @@ const Address: React.FC<AddressProp> = ({ setAddress, initAddress, size }) => {
 
     return (
         <>
-            <Grid item xs={size ? 3 : 4}>
+            <Grid item xs={gridSize ? gridSize : 3}>
                 <Autocomplete
                     options={provinces.map((province) => {return {label: province.name, value: province.code}})}
                     id='autocomplete'
@@ -157,7 +158,7 @@ const Address: React.FC<AddressProp> = ({ setAddress, initAddress, size }) => {
 
             </Grid>
                 
-            <Grid item xs={size ? 3 : 4}>
+            <Grid item xs={gridSize ? gridSize : 4}>
                 <Autocomplete
                     key={province === null ? Math.random() : 'district-value'}
                     disabled={province === null ? true : false}
@@ -180,7 +181,7 @@ const Address: React.FC<AddressProp> = ({ setAddress, initAddress, size }) => {
                 />
             </Grid>
 
-            <Grid item xs={size ? 3 : 4}>
+            <Grid item xs={gridSize ? gridSize : 4}>
                 <Autocomplete
                     key={province === null ? Math.random() : 'ward-value'}
                     disabled={district === null ? true : false}
@@ -201,7 +202,7 @@ const Address: React.FC<AddressProp> = ({ setAddress, initAddress, size }) => {
                     onChange={(_, data) => setWard(data)}
                 />
             </Grid>
-            <Grid item xs={8} sm={size ? 3 : 4}>
+            <Grid item xs={8} sm={gridSize ? gridSize : 4}>
                 <TextField
                     id="address"
                     size={size ? size : 'small'}

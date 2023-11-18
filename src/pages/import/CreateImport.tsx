@@ -56,7 +56,7 @@ export interface ImportForm {
 
 const defaultValues = {
     note: '',
-    importDate: new Date(dayjs().format('YYYY-MM-DD')),
+    importDate: new Date(dayjs().format('YYYY-MM-DD HH:mm:ss')),
     paid: 0,
     provider: null,
     maturityDate: new Date(dayjs().format('YYYY-MM-DD')),
@@ -72,7 +72,7 @@ const importValidate: Yup.ObjectSchema<ImportForm> = yup.object({
         .max(255, 'Ghi chú không quá 255 kí tự'),
     importDate: yup
         .date()
-        .max(new Date(dayjs().format('YYYY-MM-DD')), 'Thời gian nhập hàng không hợp lệ.'),
+        .max(new Date(dayjs().add(1,'day').format('YYYY-MM-DD')), 'Thời gian nhập hàng không hợp lệ.'),
     provider: yup
         .object()
         .typeError('Vui lòng chọn công ty dược.')
@@ -410,6 +410,7 @@ const CreateImport: React.FC = () => {
                         control={control}
                         label="Ngày nhập hàng"
                         placeholder='x'
+                        withTime={true}
                     />
                 </Grid>
 
