@@ -1,4 +1,4 @@
-import { Box, Button, Chip, CircularProgress, Grid, Paper, Stack, Typography, withStyles } from "@mui/material"
+import { Box, Button, Chip, CircularProgress, Grid, Paper, Stack, Typography } from "@mui/material"
 import MoneyImage from '../../assets/images/money.png'
 import SalesImage from '../../assets/images/sales.png'
 import PurchaseImage from '../../assets/images/purchase.png'
@@ -11,8 +11,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import LineChart from "../../components/chart/LineChart";
 import BarChart from "../../components/chart/BarChart";
 import { useGetStatistics, useGetStatisticsToday } from '../../hooks/useStatistics'
-import { useSearchParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import useDateRange from "../../hooks/useDateRange";
 const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
 
@@ -21,29 +20,32 @@ export interface StatisticsForm {
     endDate: Date;
 }
 
-interface DateRange {
-    id: number
-    label: string
-    value: string[]
-    checked: boolean
-}
-
-const today =  dayjs().format('DD-MM-YYYY')
  // @ts-ignore
 const statsiticsValidate: Yup.ObjectSchema<StatisticsForm> = yup.object({
     startDate: yup
         .date()
         .when('endDate',
             (endDate, schema, val) => {
-                if (endDate) {
-                    // @ts-ignore
-                    const endDateValue = new Date(endDate + 48000)
-                    return schema.max(endDateValue,'Ngày bắt đầu phải trước ngày kết thúc')
+                const start = dayjs(val.value.toString()).startOf('day')
+                const end = dayjs(endDate.toString()).endOf('day')
+                console.log(val)
+                if (start.diff(end, 'day') !== 0) {
+                    return schema.max(new Date(dayjs(endDate.toString()).endOf('day').toString()),'Ngày bắt đầu phải trước ngày kết thúc.')
                 }
                 return schema;
             }),
     endDate: yup
         .date()
+        .when('startDate',
+            (startDate, schema, val) => {
+                const end = dayjs(val.value.toString()).startOf('day')
+                const start = dayjs(startDate.toString()).endOf('day')
+                console.log(val)
+                if (start.diff(end, 'day') !== 0) {
+                    return schema.max(new Date(dayjs(startDate.toString()).endOf('day').toString()),'Ngày kết thúc phải sau ngày bắt đầu.')
+                }
+                return schema;
+            }),
 });
 
 const StatisticsPage = () => {
@@ -68,10 +70,10 @@ const StatisticsPage = () => {
     const {
         dateRanges,
         chooseDateRange,
+        getCurrentDateRange,
         updateStatisticsQuery,
         updateDateRange
     } = useDateRange(setValue, clearErrors)
-
     const onSubmit = (data: StatisticsForm) => {
         updateStatisticsQuery(data.startDate, data.endDate)
     }
@@ -95,7 +97,7 @@ const StatisticsPage = () => {
                             fontWeight='500'
                             sx={{ pb: 2, marginBottom: 2 }}
                         >
-                        Thống kê { dayjs(watch('startDate')).format('DD/MM/YYYY')} - { dayjs(watch('endDate')).format('DD/MM/YYYY')}
+                        Thống kê { getCurrentDateRange().startDate } - { getCurrentDateRange().endDate }
                     </Typography>
                     <Grid spacing={2} container>
                         <Grid item xs={8} sm={3}>

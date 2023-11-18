@@ -3,21 +3,26 @@ import dayjs from "dayjs"
 import { useEffect, useState } from "react"
 import { useSearchParams } from "react-router-dom"
 
-interface DateRange {
+interface DateRangeItem {
     id: number
     label: string
     value: string[]
     checked: boolean
 }
 
+interface DateRange {
+    startDate: string
+    endDate: string
+}
+
 const useDateRange = (setValue: any, clearErrors: any) => {
-    const [dateRanges, setDateRanges] = useState<DateRange[]>([
+    const [dateRanges, setDateRanges] = useState<DateRangeItem[]>([
         {
             id: 1,
             label: 'Hôm nay',
             value: [
-                dayjs().format('DD-MM-YYYY'),
-                dayjs().format('DD-MM-YYYY')
+                dayjs().startOf('day').format('DD-MM-YYYY'),
+                dayjs().endOf('day').format('DD-MM-YYYY')
             ],
             checked: true
         },
@@ -77,9 +82,9 @@ const useDateRange = (setValue: any, clearErrors: any) => {
         setSearchParams(searchQuery)
     }
 
-    const chooseDateRange = (dateRange: DateRange) => {
-        const startDate = new Date(dayjs(dateRange.value[0], 'DD-MM-YYYY').toString())
-        const endDate = new Date(dayjs(dateRange.value[1], 'DD-MM-YYYY').toString())
+    const chooseDateRange = (dateRange: DateRangeItem) => {
+        const startDate = new Date(dayjs(dateRange.value[0], 'DD-MM-YYYY 00:00:00').toString())
+        const endDate = new Date(dayjs(dateRange.value[1], 'DD-MM-YYYY 23:59:59').toString())
         setDateRanges(dateRanges.map((drange) => {
             return drange.id === dateRange.id
                 ? { ...drange, checked: true }
@@ -87,7 +92,6 @@ const useDateRange = (setValue: any, clearErrors: any) => {
         }))
         setValue('startDate', startDate, { shouldValidate: true })
         setValue('endDate', endDate, { shouldValidate: true })
-        updateStatisticsQuery(startDate, endDate)
     }
 
     const updateDateRange = (startDate: string, endDate: string) => {
@@ -109,11 +113,23 @@ const useDateRange = (setValue: any, clearErrors: any) => {
         }
     }, [])
 
+    const getCurrentDateRange = (): DateRange => {
+        return {
+            startDate: searchParams.get('startDate')
+                ? dayjs(searchParams.get('startDate') as string, 'DD-MM-YYYY').format('DD/MM/YYYY')
+                : dayjs().format('DD/MM/YYYY'),
+            endDate: searchParams.get('endDate')
+                ? dayjs(searchParams.get('endDate') as string, 'DD-MM-YYYY').format('DD/MM/YYYY')
+                : dayjs().format('DD/MM/YYYY'),
+        }
+    }
+
     return {
         dateRanges,
         chooseDateRange,
         updateStatisticsQuery,
         updateDateRange,
+        getCurrentDateRange
     }
 }
 
