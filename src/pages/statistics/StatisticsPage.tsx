@@ -2,6 +2,7 @@ import { Box, Button, Chip, CircularProgress, Grid, Paper, Stack, Typography } f
 import MoneyImage from '../../assets/images/money.png'
 import SalesImage from '../../assets/images/sales.png'
 import PurchaseImage from '../../assets/images/purchase.png'
+import PutInCartImage from '../../assets/images/put-in-cart.png'
 import dayjs from 'dayjs';
 import CountUp from 'react-countup';
 import { FormInputDate } from "../../components/form/FormInputDate";
@@ -11,9 +12,10 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import LineChart from "../../components/chart/LineChart";
 import BarChart from "../../components/chart/BarChart";
 import EmptyImage from '../../assets/images/no-data.jpg'
-import { useGetStatistics, useGetStatisticsToday } from '../../hooks/useStatistics'
+import { useGetStatistics } from '../../hooks/useStatistics'
 import React, { useEffect } from "react";
 import useDateRange from "../../hooks/useDateRange";
+import PieChart from "../../components/chart/PieChart";
 
 export interface StatisticsForm {
     startDate: Date;
@@ -35,7 +37,6 @@ const statsiticsValidate: Yup.ObjectSchema<StatisticsForm> = yup.object({
             }),
     endDate: yup
         .date()
-        .max(new Date(dayjs().endOf('day').toString()), 'Ngày kết thúc không hợp lệ.')
 });
 
 const StatisticsPage = () => {
@@ -52,7 +53,6 @@ const StatisticsPage = () => {
         },
         resolver: yupResolver(statsiticsValidate)
     });
-    const { data: statisticsToday, isLoading: isLoadingToday } = useGetStatisticsToday()
     const { isLoading: isLoadingStatistics, data: statisticsData } = useGetStatistics()
     const {
         dateRanges,
@@ -139,14 +139,13 @@ const StatisticsPage = () => {
                         </Grid>
       
                     </Grid>
-
                 </Paper>
             </Grid>
             {
-                statisticsData 
+                !isLoadingStatistics && statisticsData
                     ? 
                     <React.Fragment>
-                        <Grid item xs={8} sm={4}>
+                        <Grid item xs={8} sm={3}>
                             <Paper sx={{
                                 zIndex: 0,
                                 overflow: 'hidden',
@@ -169,7 +168,7 @@ const StatisticsPage = () => {
                                         fontWeight='500'
                                         sx={{ pb: 2 }}
                                     >
-                                        Doanh thu trong ngày
+                                        Doanh thu
                                     </Typography>
 
                                     <Box
@@ -188,12 +187,12 @@ const StatisticsPage = () => {
                                         src={MoneyImage}
                                     />
                                     {
-                                        isLoadingToday
+                                        isLoadingStatistics
                                             ?
                                                 <CircularProgress sx={{ margin: 'auto' }} />
                                             :
                                         <CountUp
-                                            end={statisticsToday.salesEarnings}
+                                            end={statisticsData.salesEarnings}
                                             duration={2.75}
                                             decimals={3}
                                             decimal="."
@@ -216,7 +215,7 @@ const StatisticsPage = () => {
                             </Paper>
                         </Grid>
                                 
-                        <Grid item xs={8} sm={4}>
+                        <Grid item xs={8} sm={3}>
                             <Paper sx={{
                                 zIndex: 0,
                                 overflow: 'hidden',
@@ -239,7 +238,7 @@ const StatisticsPage = () => {
                                         fontWeight='500'
                                         sx={{ pb: 2 }}
                                     >
-                                        Doanh số trong ngày
+                                        Doanh số
                                     </Typography>
 
                                     <Box
@@ -257,12 +256,12 @@ const StatisticsPage = () => {
                                         src={SalesImage}
                                     />
                                     {
-                                        isLoadingToday
+                                        isLoadingStatistics
                                             ?
                                                 <CircularProgress sx={{ margin: 'auto' }} />
                                             :
                                         <CountUp
-                                            end={statisticsToday.salesCount}
+                                            end={statisticsData.salesCount}
                                             duration={2.75}
                                             decimal=","
                                         >
@@ -282,8 +281,74 @@ const StatisticsPage = () => {
                                 </Box>
                             </Paper>
                         </Grid>
+                        
+                        <Grid item xs={8} sm={3}>
+                            <Paper sx={{
+                                zIndex: 0,
+                                overflow: 'hidden',
+                            }}>
+                                <Box sx={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    position: 'relative',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'baseline',
+                                    p: 1,
+                                    m: 1,
+                                    bgcolor: 'background.paper',
+                                    borderRadius: 1,
+                                }}
+                                >
+                                    <Typography
+                                        variant="h5"
+                                        fontWeight='500'
+                                        sx={{ pb: 2 }}
+                                    >
+                                        Số lượng nhập
+                                    </Typography>
 
-                        <Grid item xs={8} sm={4}>
+                                    <Box
+                                        component="img"
+                                        sx={{
+                                            position: 'absolute',
+                                            height: 80,
+                                            width: 80,
+                                            overflow: 'hidden',
+                                            boxSizing: 'border-box',
+                                            opacity: 0.2,
+                                            top: 40,
+                                            left: -15
+                                        }}
+                                        src={PutInCartImage}
+                                    />
+
+                                    {
+                                        isLoadingStatistics
+                                            ?
+                                                <CircularProgress sx={{ margin: 'auto' }} />
+                                            :
+                                        <CountUp
+                                            end={statisticsData.importQuantity}
+                                            duration={2.75}
+                                            decimal=","
+                                        >
+                                            {({ countUpRef }) => (
+                                                <div style={{
+                                                    width: '100%',
+                                                    display: 'flex',
+                                                    justifyItems: 'flex-end',
+                                                    justifyContent: 'end'
+                                                }}>
+                                                    <span ref={countUpRef} style={{ fontSize: 20}} />
+                                                </div>
+                                            )}
+                                        </CountUp>
+                                    }
+                                </Box>
+                            </Paper>
+                        </Grid>
+
+                        <Grid item xs={8} sm={3}>
                             <Paper sx={{
                                 zIndex: 0,
                                 overflow: 'hidden',
@@ -306,7 +371,7 @@ const StatisticsPage = () => {
                                         fontWeight='500'
                                         sx={{ pb: 2 }}
                                     >
-                                        Lượt khách trong ngày
+                                        Lượt khách
                                     </Typography>
 
                                     <Box
@@ -325,12 +390,12 @@ const StatisticsPage = () => {
                                     />
 
                                     {
-                                        isLoadingToday
+                                        isLoadingStatistics
                                             ?
                                                 <CircularProgress sx={{ margin: 'auto' }} />
                                             :
                                         <CountUp
-                                            end={statisticsToday.customerPurchases}
+                                            end={statisticsData.customerPurchases}
                                             duration={2.75}
                                             decimal=","
                                         >
@@ -410,12 +475,10 @@ const StatisticsPage = () => {
                                         ?
                                     <CircularProgress sx={{ margin: 'auto' }} />
                                         :
-                                    <LineChart
-                                        title='Lượt khách'
-                                        labels={statisticsData.labels}
-                                        data={statisticsData.customerPurchasesList}
-                                        xlabel='lượt khách'
-                                        isFormatCurrentcy={false}
+                                    <PieChart
+                                        title='Danh mục thuốc'
+                                        labels={statisticsData.topSales.map((data: any) => data.name)}
+                                        data={statisticsData.topSales.map((data: any) => data.sales)}
                                     />
                                 }
                             </Paper>

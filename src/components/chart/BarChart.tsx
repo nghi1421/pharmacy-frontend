@@ -9,7 +9,7 @@ const defaultLineChartOption = {
   },
   plotOptions: {
     bar: {
-      borderRadius: 10,
+      // borderRadius: 10,
       dataLabels: {
         position: 'top', // top, center, bottom
       },

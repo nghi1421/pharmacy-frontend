@@ -1,9 +1,9 @@
 import { useQuery } from "react-query"
 import axiosClient from "../services/axios"
 import { API_GET_STATISTICS, API_GET_STATISTICS_TODAY } from "../utils/constants"
-import { updateStatisticsParams } from "../utils/helper"
 import { useSearchParams } from "react-router-dom"
 import dayjs from "dayjs"
+import { enqueueSnackbar } from "notistack"
 
 export interface StatisticsQuery {
     startDate: string
@@ -25,7 +25,7 @@ const useGetStatisticsToday = () => {
 }
 
 const useGetStatistics = () => {
-    const [searchParams, setSearchParams] = useSearchParams();
+    const [searchParams, _] = useSearchParams();
     if (searchParams.toString().length === 0) {
         const query = `startDate=${dayjs().format('DD-MM-YYYY')}&endDate=${dayjs().format('DD-MM-YYYY')}`
         return useQuery({
@@ -37,6 +37,10 @@ const useGetStatistics = () => {
                         if (response.data.message) {
                             return response.data.data
                         }
+                        enqueueSnackbar(response.data.errorMessage, {
+                            variant: 'error',
+                            autoHideDuration: 3000
+                        })
                         return response
                     
                     }),
