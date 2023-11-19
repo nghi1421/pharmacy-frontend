@@ -10,10 +10,10 @@ import yup from "../../utils/yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import LineChart from "../../components/chart/LineChart";
 import BarChart from "../../components/chart/BarChart";
+import EmptyImage from '../../assets/images/no-data.jpg'
 import { useGetStatistics, useGetStatisticsToday } from '../../hooks/useStatistics'
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import useDateRange from "../../hooks/useDateRange";
-const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
 
 export interface StatisticsForm {
     startDate: Date;
@@ -28,24 +28,14 @@ const statsiticsValidate: Yup.ObjectSchema<StatisticsForm> = yup.object({
             (endDate, schema, val) => {
                 const start = dayjs(val.value.toString()).startOf('day')
                 const end = dayjs(endDate.toString()).endOf('day')
-                console.log(val)
-                if (start.diff(end, 'day') !== 0) {
-                    return schema.max(new Date(dayjs(endDate.toString()).endOf('day').toString()),'Ngày bắt đầu phải trước ngày kết thúc.')
+                if (start.diff(end, 'day') + 1 !== 0) {
+                    return schema.max(new Date(end.toString()),'Ngày bắt đầu phải trước ngày kết thúc.')
                 }
                 return schema;
             }),
     endDate: yup
         .date()
-        .when('startDate',
-            (startDate, schema, val) => {
-                const end = dayjs(val.value.toString()).startOf('day')
-                const start = dayjs(startDate.toString()).endOf('day')
-                console.log(val)
-                if (start.diff(end, 'day') !== 0) {
-                    return schema.max(new Date(dayjs(startDate.toString()).endOf('day').toString()),'Ngày kết thúc phải sau ngày bắt đầu.')
-                }
-                return schema;
-            }),
+        .max(new Date(dayjs().endOf('day').toString()), 'Ngày kết thúc không hợp lệ.')
 });
 
 const StatisticsPage = () => {
@@ -54,13 +44,11 @@ const StatisticsPage = () => {
         watch,
         control,
         setValue,
-        formState,
-        formState: { isValidating }
     } = useForm<StatisticsForm>({
         mode: 'all',
         defaultValues: {
-            startDate: new Date(dayjs().format('YYYY-MM-DD')),
-            endDate: new Date(dayjs().format('YYYY-MM-DD'))
+            startDate: new Date(dayjs().startOf('day').format('YYYY-MM-DD HH:mm:ss')),
+            endDate: new Date(dayjs().endOf('day').format('YYYY-MM-DD HH:mm:ss'))
         },
         resolver: yupResolver(statsiticsValidate)
     });
@@ -73,20 +61,23 @@ const StatisticsPage = () => {
         updateStatisticsQuery,
         updateDateRange
     } = useDateRange(setValue)
+    const watchStartDate = watch('startDate')
+    const watchEndDate = watch('endDate')
     const onSubmit = (data: StatisticsForm) => {
+        updateDateRange(
+            dayjs(data.startDate).format('DD-MM-YYYY'),
+            dayjs(data.endDate).format('DD-MM-YYYY')
+        )
         updateStatisticsQuery(data.startDate, data.endDate)
     }
 
-    const watchAllFields = watch()
-
     useEffect(() => {
-        if (formState.isValid && !isValidating) {
-            updateDateRange(
-                dayjs(watchAllFields.startDate).format('DD-MM-YYYY'),
-                dayjs(watchAllFields.endDate).format('DD-MM-YYYY')
-            )
-        }
-    }, [formState, watchAllFields, isValidating])
+        updateDateRange(
+            dayjs(watchStartDate).format('DD-MM-YYYY'),
+            dayjs(watchEndDate).format('DD-MM-YYYY')
+        )
+    }, [watchStartDate, watchEndDate])
+
     return (
         <Grid spacing={3} container>
             <Grid item xs={8} sm={12}>
@@ -151,303 +142,317 @@ const StatisticsPage = () => {
 
                 </Paper>
             </Grid>
-            <Grid item xs={8} sm={4}>
-                <Paper sx={{
-                    zIndex: 0,
-                    overflow: 'hidden',
-                }}>
-                    <Box sx={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        position: 'relative',
-                        justifyContent: 'space-between',
-                        alignItems: 'baseline',
-                        p: 1,
-                        m: 1,
-                        bgcolor: 'background.paper',
-                        borderRadius: 1,
-                
-                    }}
-                    >
-                        <Typography
-                            variant="h5"
-                            fontWeight='500'
-                            sx={{ pb: 2 }}
-                        >
-                            Doanh thu trong ngày
-                        </Typography>
-
-                        <Box
-                            component="img"
-                            sx={{
-                                position: 'absolute',
-                                height: 80,
-                                width: 80,
+            {
+                statisticsData 
+                    ? 
+                    <React.Fragment>
+                        <Grid item xs={8} sm={4}>
+                            <Paper sx={{
+                                zIndex: 0,
                                 overflow: 'hidden',
-                                boxSizing: 'border-box',
-                                opacity: 0.2,
-                                top: 40,
-                                left: -15
-                            }}
-                            alt="No data."
-                            src={MoneyImage}
-                        />
-                        {
-                            isLoadingToday
-                                ?
-                                    <CircularProgress sx={{ margin: 'auto' }} />
-                                :
-                            <CountUp
-                                end={statisticsToday.salesEarnings}
-                                duration={2.75}
-                                decimals={3}
-                                decimal="."
-                                suffix=' VND'
-                            >
-                                {({ countUpRef }) => (
-                                    <div style={{
-                                        width: '100%',
-                                        display: 'flex',
-                                        justifyItems: 'flex-end',
-                                        justifyContent: 'end'
-                                    }}>
-                                        <span ref={countUpRef} style={{ fontSize: 20}} />
-                                    </div>
-                                )}
-                            </CountUp>
-                        }
-                        
-                    </Box>
-                </Paper>
-            </Grid>
-                    
-            <Grid item xs={8} sm={4}>
-                <Paper sx={{
-                    zIndex: 0,
-                    overflow: 'hidden',
-                }}>
-                    <Box sx={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        position: 'relative',
-                        justifyContent: 'space-between',
-                        alignItems: 'baseline',
-                        p: 1,
-                        m: 1,
-                        bgcolor: 'background.paper',
-                        borderRadius: 1,
-                
-                    }}
-                    >
-                        <Typography
-                            variant="h5"
-                            fontWeight='500'
-                            sx={{ pb: 2 }}
-                        >
-                            Doanh số trong ngày
-                        </Typography>
+                            }}>
+                                <Box sx={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    position: 'relative',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'baseline',
+                                    p: 1,
+                                    m: 1,
+                                    bgcolor: 'background.paper',
+                                    borderRadius: 1,
+                            
+                                }}
+                                >
+                                    <Typography
+                                        variant="h5"
+                                        fontWeight='500'
+                                        sx={{ pb: 2 }}
+                                    >
+                                        Doanh thu trong ngày
+                                    </Typography>
 
-                        <Box
-                            component="img"
-                            sx={{
-                                position: 'absolute',
-                                height: 80,
-                                width: 80,
-                                overflow: 'hidden',
-                                boxSizing: 'border-box',
-                                opacity: 0.2,
-                                top: 40,
-                                left: -15
-                            }}
-                            src={SalesImage}
-                        />
-                        {
-                            isLoadingToday
-                                ?
-                                    <CircularProgress sx={{ margin: 'auto' }} />
-                                :
-                             <CountUp
-                                end={statisticsToday.salesCount}
-                                duration={2.75}
-                                decimal=","
-                            >
-                                {({ countUpRef }) => (
-                                    <div style={{
-                                        width: '100%',
-                                        display: 'flex',
-                                        justifyItems: 'flex-end',
-                                        justifyContent: 'end'
-                                    }}>
-                                        <span ref={countUpRef} style={{ fontSize: 20}} />
-                                    </div>
-                                )}
-                            </CountUp>
-                        }
-                       
-                    </Box>
-                </Paper>
-            </Grid>
-
-            <Grid item xs={8} sm={4}>
-                <Paper sx={{
-                    zIndex: 0,
-                    overflow: 'hidden',
-                }}>
-                    <Box sx={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        position: 'relative',
-                        justifyContent: 'space-between',
-                        alignItems: 'baseline',
-                        p: 1,
-                        m: 1,
-                        bgcolor: 'background.paper',
-                        borderRadius: 1,
-                
-                    }}
-                    >
-                        <Typography
-                            variant="h5"
-                            fontWeight='500'
-                            sx={{ pb: 2 }}
-                        >
-                            Lượt khách trong ngày
-                        </Typography>
-
-                        <Box
-                            component="img"
-                            sx={{
-                                position: 'absolute',
-                                height: 80,
-                                width: 80,
-                                overflow: 'hidden',
-                                boxSizing: 'border-box',
-                                opacity: 0.2,
-                                top: 40,
-                                left: -15
-                            }}
-                            src={PurchaseImage}
-                        />
-
-                         {
-                            isLoadingToday
-                                ?
-                                    <CircularProgress sx={{ margin: 'auto' }} />
-                                :
-                             <CountUp
-                                end={statisticsToday.customerPurchases}
-                                duration={2.75}
-                                decimal=","
-                            >
-                                {({ countUpRef }) => (
-                                    <div style={{
-                                        width: '100%',
-                                        display: 'flex',
-                                        justifyItems: 'flex-end',
-                                        justifyContent: 'end'
-                                    }}>
-                                        <span ref={countUpRef} style={{ fontSize: 20}} />
-                                    </div>
-                                )}
-                            </CountUp>
-                        }
-                    </Box>
-                </Paper>
-            </Grid>
-
-            <Grid item xs={8} sm={6}>
-                <Paper sx={{ px: 3, py: 2 }}>
-                    {
-                        isLoadingStatistics 
-                            ?
-                        <CircularProgress sx={{ margin: 'auto' }} />
-                            :
-                        <LineChart
-                            title='Biểu đồ doanh thu'
-                            data={{
-                                labels: statisticsData.labels,
-                                datasets: [
+                                    <Box
+                                        component="img"
+                                        sx={{
+                                            position: 'absolute',
+                                            height: 80,
+                                            width: 80,
+                                            overflow: 'hidden',
+                                            boxSizing: 'border-box',
+                                            opacity: 0.2,
+                                            top: 40,
+                                            left: -15
+                                        }}
+                                        alt="No data."
+                                        src={MoneyImage}
+                                    />
                                     {
-                                        label: 'Doanh thu',
-                                        data: statisticsData.salesEarningsList,
-                                        borderColor: 'rgb(53, 162, 235)',
-                                        backgroundColor: 'rgba(53, 162, 235, 0.5)',
-                                    },
-                                ],
-    
+                                        isLoadingToday
+                                            ?
+                                                <CircularProgress sx={{ margin: 'auto' }} />
+                                            :
+                                        <CountUp
+                                            end={statisticsToday.salesEarnings}
+                                            duration={2.75}
+                                            decimals={3}
+                                            decimal="."
+                                            suffix=' VND'
+                                        >
+                                            {({ countUpRef }) => (
+                                                <div style={{
+                                                    width: '100%',
+                                                    display: 'flex',
+                                                    justifyItems: 'flex-end',
+                                                    justifyContent: 'end'
+                                                }}>
+                                                    <span ref={countUpRef} style={{ fontSize: 20}} />
+                                                </div>
+                                            )}
+                                        </CountUp>
+                                    }
+                                    
+                                </Box>
+                            </Paper>
+                        </Grid>
+                                
+                        <Grid item xs={8} sm={4}>
+                            <Paper sx={{
+                                zIndex: 0,
+                                overflow: 'hidden',
+                            }}>
+                                <Box sx={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    position: 'relative',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'baseline',
+                                    p: 1,
+                                    m: 1,
+                                    bgcolor: 'background.paper',
+                                    borderRadius: 1,
+                            
+                                }}
+                                >
+                                    <Typography
+                                        variant="h5"
+                                        fontWeight='500'
+                                        sx={{ pb: 2 }}
+                                    >
+                                        Doanh số trong ngày
+                                    </Typography>
+
+                                    <Box
+                                        component="img"
+                                        sx={{
+                                            position: 'absolute',
+                                            height: 80,
+                                            width: 80,
+                                            overflow: 'hidden',
+                                            boxSizing: 'border-box',
+                                            opacity: 0.2,
+                                            top: 40,
+                                            left: -15
+                                        }}
+                                        src={SalesImage}
+                                    />
+                                    {
+                                        isLoadingToday
+                                            ?
+                                                <CircularProgress sx={{ margin: 'auto' }} />
+                                            :
+                                        <CountUp
+                                            end={statisticsToday.salesCount}
+                                            duration={2.75}
+                                            decimal=","
+                                        >
+                                            {({ countUpRef }) => (
+                                                <div style={{
+                                                    width: '100%',
+                                                    display: 'flex',
+                                                    justifyItems: 'flex-end',
+                                                    justifyContent: 'end'
+                                                }}>
+                                                    <span ref={countUpRef} style={{ fontSize: 20}} />
+                                                </div>
+                                            )}
+                                        </CountUp>
+                                    }
+                                
+                                </Box>
+                            </Paper>
+                        </Grid>
+
+                        <Grid item xs={8} sm={4}>
+                            <Paper sx={{
+                                zIndex: 0,
+                                overflow: 'hidden',
+                            }}>
+                                <Box sx={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    position: 'relative',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'baseline',
+                                    p: 1,
+                                    m: 1,
+                                    bgcolor: 'background.paper',
+                                    borderRadius: 1,
+                            
+                                }}
+                                >
+                                    <Typography
+                                        variant="h5"
+                                        fontWeight='500'
+                                        sx={{ pb: 2 }}
+                                    >
+                                        Lượt khách trong ngày
+                                    </Typography>
+
+                                    <Box
+                                        component="img"
+                                        sx={{
+                                            position: 'absolute',
+                                            height: 80,
+                                            width: 80,
+                                            overflow: 'hidden',
+                                            boxSizing: 'border-box',
+                                            opacity: 0.2,
+                                            top: 40,
+                                            left: -15
+                                        }}
+                                        src={PurchaseImage}
+                                    />
+
+                                    {
+                                        isLoadingToday
+                                            ?
+                                                <CircularProgress sx={{ margin: 'auto' }} />
+                                            :
+                                        <CountUp
+                                            end={statisticsToday.customerPurchases}
+                                            duration={2.75}
+                                            decimal=","
+                                        >
+                                            {({ countUpRef }) => (
+                                                <div style={{
+                                                    width: '100%',
+                                                    display: 'flex',
+                                                    justifyItems: 'flex-end',
+                                                    justifyContent: 'end'
+                                                }}>
+                                                    <span ref={countUpRef} style={{ fontSize: 20}} />
+                                                </div>
+                                            )}
+                                        </CountUp>
+                                    }
+                                </Box>
+                            </Paper>
+                        </Grid>
+
+                        <Grid item xs={8} sm={6}>
+                            <Paper sx={{ px: 3, py: 2 }}>
+                                {
+                                    isLoadingStatistics 
+                                        ?
+                                    <CircularProgress sx={{ margin: 'auto' }} />
+                                        :
+                                    <LineChart
+                                        title='Biểu đồ doanh thu'
+                                        labels={statisticsData.labels}
+                                        data={statisticsData.salesEarningsList}
+                                        xlabel='doanh thu'
+                                        isFormatCurrentcy={true}
+                                    />
+                                }
+                            </Paper>
+                        </Grid>
+
+                        <Grid item xs={8} sm={6}>
+                            <Paper sx={{ px: 3, py: 2 }}>
+                                {
+                                    isLoadingStatistics 
+                                        ?
+                                    <CircularProgress sx={{ margin: 'auto' }} />
+                                        :
+                                    <LineChart
+                                        title='Biểu đồ doanh số'
+                                        labels={statisticsData.labels}
+                                        data={statisticsData.salesCountList}
+                                        xlabel='doanh số'
+                                        isFormatCurrentcy={false}
+                                    />
+                                }
+                            </Paper>
+                        </Grid>
+
+                        <Grid item xs={8} sm={6}>
+                            <Paper sx={{ px: 3, py: 2 }}>
+                                {
+                                    isLoadingStatistics 
+                                        ?
+                                    <CircularProgress sx={{ margin: 'auto' }} />
+                                        :
+                                    <BarChart
+                                        title='Lượt khách'
+                                        labels={statisticsData.labels}
+                                        data={statisticsData.customerPurchasesList}
+                                        xlabel='lượt khách'
+                                    />
+                                }
+                            </Paper>
+                        </Grid>
+
+                        <Grid item xs={8} sm={6}>
+                            <Paper sx={{ px: 3, py: 2 }}>
+                                {
+                                    isLoadingStatistics 
+                                        ?
+                                    <CircularProgress sx={{ margin: 'auto' }} />
+                                        :
+                                    <LineChart
+                                        title='Lượt khách'
+                                        labels={statisticsData.labels}
+                                        data={statisticsData.customerPurchasesList}
+                                        xlabel='lượt khách'
+                                        isFormatCurrentcy={false}
+                                    />
+                                }
+                            </Paper>
+                        </Grid>
+                    </React.Fragment>
+                    :
+                    <Grid item xs={8} sm={12}>
+                        <Paper
+                            sx={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                justifyContent: 'center',
+                                justifyItems: 'center',
+                                alignItems: 'center'
                             }}
-                        />
-                    }
-                </Paper>
-            </Grid>
-
-            <Grid item xs={8} sm={6}>
-                <Paper sx={{ px: 3, py: 2 }}>
-                    {
-                        isLoadingStatistics 
-                            ?
-                        <CircularProgress sx={{ margin: 'auto' }} />
-                            :
-                        <LineChart
-                        title='Biểu đồ doanh số'
-                        data={{
-                            labels: statisticsData.labels,
-                            datasets: [
-                                {
-                                    label: 'Doanh số',
-                                    data: statisticsData.salesCountList,
-                                    borderColor: 'rgb(53, 162, 235)',
-                                    backgroundColor: 'rgba(53, 162, 235, 0.5)',
-                                },
-                            ],
-                        }}
-                        />
-                    }
-                </Paper>
-            </Grid>
-
-            <Grid item xs={8} sm={6}>
-                <Paper sx={{ px: 3, py: 2 }}>
-                    {
-                        isLoadingStatistics 
-                            ?
-                        <CircularProgress sx={{ margin: 'auto' }} />
-                            :
-                        <LineChart
-                        title='Lượt khách'
-                        data={{
-                            labels: statisticsData.labels,
-                            datasets: [
-                                {
-                                    label: 'Lượt khách',
-                                    data: statisticsData.customerPurchasesList,
-                                    borderColor: 'rgb(53, 162, 235)',
-                                    backgroundColor: 'rgba(53, 162, 235, 0.5)',
-                                },
-                            ],
-                        }}
-                        />
-                    }
-                </Paper>
-            </Grid>
-
-            <Grid item xs={8} sm={6}>
-                <Paper sx={{ px: 3, py: 2 }}>
-                    <BarChart
-                        title='Biểu đồ doanh số sản phẩm'
-                        data={{
-                            labels,
-                            datasets: [
-                                {
-                                    label: 'Dataset 1',
-                                    data: [100,23,123,653,345,235,690],
-                                    backgroundColor: 'rgba(53, 162, 235, 0.5)',
-                                },
-                            ],
-                        }}
-                    />;
-                </Paper>
-            </Grid>
+                        >
+                            <Box
+                                component="img"
+                                sx={{
+                                    height: 150,
+                                    width: 150,
+                                }}
+                                alt="No data."
+                                src={EmptyImage}
+                            />
+                            <Typography
+                                variant="h6"
+                                fontWeight='500'
+                                
+                            sx={{ opacity: '0.3', pb: 4}}
+                            >
+                            Không có dữ liệu
+                            </Typography>
+                        </Paper>
+                    </Grid>
+            }
+            
 
         </Grid>
     )

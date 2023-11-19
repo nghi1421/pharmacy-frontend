@@ -44,6 +44,15 @@ const useDateRange = (setValue: any) => {
             checked: false
         },
         {
+            id: 7,
+            label: 'Trong tháng',
+            value: [
+                dayjs().startOf('month').format('DD-MM-YYYY'),
+                dayjs().format('DD-MM-YYYY')
+            ],
+            checked: false
+        },
+        {
             id: 4,
             label: '30 ngày trước',
             value: [
@@ -89,8 +98,8 @@ const useDateRange = (setValue: any) => {
                 ? { ...drange, checked: true }
                 : { ...drange, checked: false }
         }))
-        setValue('startDate', startDate, { shouldValidate: true })
-        setValue('endDate', endDate, { shouldValidate: true })
+        setValue('startDate', startDate)
+        setValue('endDate', endDate)
     }
 
     const updateDateRange = (startDate: string, endDate: string) => {
