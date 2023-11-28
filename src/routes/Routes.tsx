@@ -6,10 +6,10 @@ import { dashboardRoutes, formRoutes } from "./index";
 import MainLayout from "../layouts/MainLayout";
 import AuthLayout from "../layouts/AuthLayout";
 import Login from '../pages/Login'
-import ErrorPage from "../error-page";
 import SalesLayout from "../layouts/SalesLayout";
-import ExportPage from "../pages/export/ExportPage";
 import CreateExport from "../pages/export/CreateExport";
+import { NotFound404 } from "../pages/NotFound404";
+import { Forbidden403 } from "../pages/Forbidden403";
 
 const ModifiedMainLayout = () => {
     return (
@@ -39,7 +39,13 @@ const AppRoutes: React.FC = () => {
         <Routes>
             <Route
                 path="*"
-                element={ <ErrorPage />}
+                element={ <NotFound404 />}
+            />
+            
+            <Route
+                key='403-page'
+                path='403'
+                element={<Forbidden403 />}
             />
 
             <Route path='admin' element={<ModifiedMainLayout />}>
@@ -48,7 +54,7 @@ const AppRoutes: React.FC = () => {
                         key={route.key}
                         path={route.path}
                         element={<route.element />}
-                        errorElement={ <ErrorPage/>}
+                        errorElement={ <NotFound404/>}
                     />
                 ))}
 
@@ -57,7 +63,7 @@ const AppRoutes: React.FC = () => {
                         key={route.key}
                         path={route.path}
                         element={<route.element />}
-                        errorElement={ <ErrorPage/>}
+                        errorElement={ <NotFound404/>}
                     />
                 ))}
             </Route>
@@ -67,7 +73,7 @@ const AppRoutes: React.FC = () => {
                     key='sales-create-form'
                     path='create'
                     element={<CreateExport />}
-                    errorElement={ <ErrorPage/>}
+                    errorElement={ <NotFound404/>}
                 />
             </Route>
 
@@ -75,7 +81,7 @@ const AppRoutes: React.FC = () => {
                 <Route key='login-route'
                     path='/login'
                     element={<Login />}
-                    errorElement={ <ErrorPage/>}
+                    errorElement={ <NotFound404/>}
                 />
             </Route>
             

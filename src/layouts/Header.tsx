@@ -50,6 +50,9 @@ const Header: React.FC<HeaderProps> = ({ open, setOpen, preventOpen }) => {
   const accessToken = getAccessToken()
 
   useEffect(() => {
+    if (!staff) {
+      navigate('/login')
+    }
     if (!accessToken) {
       freshToken.mutate()
     }

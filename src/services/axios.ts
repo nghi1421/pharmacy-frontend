@@ -3,6 +3,7 @@ import { backendUrl } from "../config/config";
 import { getAccessToken, setAccessToken, setStaff } from "../store/auth";
 import { enqueueSnackbar } from "notistack";
 import { API_FRESH_TOKEN } from "../utils/constants";
+import { useNavigate } from "react-router-dom";
 
 let token = getAccessToken();
 let customerConfig = {
@@ -32,24 +33,29 @@ axiosClient.interceptors.request.use(
 );
 
 axiosClient.interceptors.response.use(
-(response) => response
-, async (error) => {
-    const { response: { status } } = error;
-    if (status == 401) {
-        await axiosClient.post(API_FRESH_TOKEN)
-            .then(response => {
-                setAccessToken(response.data.accessToken)
-            })
-            .catch(_ => {
-                setAccessToken(null)
-                setStaff(null)
-                enqueueSnackbar('Phiên đăng nhập đã hết hạn.', {
-                    variant: 'error',
-                    autoHideDuration: 3000
+    (response) => response
+    , async (error) => {
+        const { response: { status } } = error;
+        if (status == 401) {
+            await axiosClient.post(API_FRESH_TOKEN)
+                .then(response => {
+                    setAccessToken(response.data.accessToken)
                 })
-            }) 
+                .catch(_ => {
+                    setAccessToken(null)
+                    setStaff(null)
+                    enqueueSnackbar('Phiên đăng nhập đã hết hạn.', {
+                        variant: 'error',
+                        autoHideDuration: 3000
+                    })
+                }) 
+        }
+        else if (status == 403) {
+            //@ts-ignore
+            window.location = '/403'
+        }
+        return Promise.reject(error);
     }
-    return Promise.reject(error);
-});
+);
 
 export default axiosClient;

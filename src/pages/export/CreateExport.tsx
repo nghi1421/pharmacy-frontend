@@ -261,7 +261,7 @@ const CreateExport: React.FC = () => {
         else {
             setDrugs(data)
         }
-        selectedDrugs.push({...drugCategory, checked: false, exportQuantity: 0, error: ''})
+        selectedDrugs.push({...drugCategory, checked: false, exportQuantity: 1, error: ''})
     }
 
     const unCheckDrugCategory = (drugCategory: any) => {
