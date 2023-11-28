@@ -3,29 +3,28 @@ import { backendUrl } from "../config/config";
 import { getAccessToken, setAccessToken, setStaff } from "../store/auth";
 import { enqueueSnackbar } from "notistack";
 import { API_FRESH_TOKEN } from "../utils/constants";
-import { useNavigate } from "react-router-dom";
+import { ConstructionOutlined } from "@mui/icons-material";
 
 let token = getAccessToken();
-let customerConfig = {
+let custom = {
     "Authorization" : "",
     "Content-Type" : "application/json"
 };
 if (token) {
-    customerConfig["Authorization"] = `Bearer ${token}`;
+    custom["Authorization"] = `Bearer ${token}`;
 }
 
 const axiosClient = axios.create({
     withCredentials: true,
     baseURL: backendUrl,
-    headers : customerConfig
+    headers: custom,
 }) 
 
 axiosClient.interceptors.request.use(
     (config: InternalAxiosRequestConfig<any>) => {
-        const token = getAccessToken()
         const newHeaders = new AxiosHeaders({
             ...config.headers,
-            'Authorization':  `Bearer ${token}`,
+            'Authorization':  `Bearer ${getAccessToken()}`,
         });
         return {...config, headers: newHeaders};
     },
@@ -35,22 +34,26 @@ axiosClient.interceptors.request.use(
 axiosClient.interceptors.response.use(
     (response) => response
     , async (error) => {
-        const { response: { status } } = error;
+        const { config ,response: { status } } = error;
         if (status == 401) {
-            await axiosClient.post(API_FRESH_TOKEN)
-                .then(response => {
-                    setAccessToken(response.data.accessToken)
+            try {
+                const { data } = await axiosClient.post(API_FRESH_TOKEN)
+                setAccessToken(data.accessToken)
+                axiosClient(config)
+            }
+            catch (_error) {
+                setAccessToken(null)
+                setStaff(null)
+                enqueueSnackbar('Phiên đăng nhập đã hết hạn.', {
+                    variant: 'error',
+                    autoHideDuration: 3000
                 })
-                .catch(_ => {
-                    setAccessToken(null)
-                    setStaff(null)
-                    enqueueSnackbar('Phiên đăng nhập đã hết hạn.', {
-                        variant: 'error',
-                        autoHideDuration: 3000
-                    })
-                }) 
+                //@ts-ignore
+                window.location = '/login'
+            }
         }
-        else if (status == 403) {
+
+        if (status == 403) {
             //@ts-ignore
             window.location = '/403'
         }
