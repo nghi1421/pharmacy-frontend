@@ -1,15 +1,19 @@
 import { AccountCircle } from "@mui/icons-material"
 import { Divider, IconButton, Menu, MenuItem, Toolbar, Typography, styled } from "@mui/material"
 import MuiAppBar, { AppBarProps as MuiAppBarProps  } from '@mui/material/AppBar';
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import MenuIcon from '@mui/icons-material/Menu';
 import { getAccessToken, getStaff, setAccessToken, setStaff } from "../store/auth";
 import { useNavigate } from "react-router-dom";
 import { enqueueSnackbar } from "notistack";
+import { AuthContext } from "../App";
+import { useRefreshToken } from "../hooks/useAuth";
+
 
 interface HeaderProps {
   open: boolean;
   setOpen: (newOpen: boolean) => void
+  preventOpen?: boolean
 }
 
 interface AppBarProps extends MuiAppBarProps {
@@ -36,16 +40,18 @@ const AppBar = styled(MuiAppBar, {
   }),
 }));
 
-const Header: React.FC<HeaderProps> = ({ open, setOpen }) => {
+const Header: React.FC<HeaderProps> = ({ open, setOpen, preventOpen }) => {
   const [avatarEl, setAvatarEl] = useState<HTMLButtonElement | null>(null);
+  const { setRoleId } =  useContext(AuthContext)
+  const freshToken = useRefreshToken()
   const staff = getStaff();
-  const accessToken = getAccessToken();
   const navigate = useNavigate()
   const openSetting = Boolean(avatarEl);
+  const accessToken = getAccessToken()
 
   useEffect(() => {
-    if (!staff || !accessToken) {
-      navigate('/login')
+    if (!accessToken) {
+      freshToken.mutate()
     }
   })
 
@@ -60,6 +66,7 @@ const Header: React.FC<HeaderProps> = ({ open, setOpen }) => {
   const handleLogout = () => {
     setStaff(null);
     setAccessToken(null);
+    setRoleId(null)
     navigate('/login')
     enqueueSnackbar('Đăng xuất thành công.', {
       variant: 'success',
@@ -77,18 +84,24 @@ const Header: React.FC<HeaderProps> = ({ open, setOpen }) => {
               pr: '24px',
             }}
           >
-            <IconButton
-              edge="start"
-              color="inherit"
-              aria-label="open drawer"
-              onClick={toggleDrawer}
-              sx={{
-                marginRight: '36px',
-                ...(open && { display: 'none' }),
-              }}
-            >
-              <MenuIcon />
-            </IconButton>
+            {
+              preventOpen ?
+              null
+              :
+              <IconButton
+                edge="start"
+                color="inherit"
+                aria-label="open drawer"
+                onClick={toggleDrawer}
+                sx={{
+                  marginRight: '36px',
+                  ...(open && { display: 'none' }),
+                }}
+              >
+                <MenuIcon />
+              </IconButton>
+            }
+            
             <Typography
               component="h1"
               variant="h6"

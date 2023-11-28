@@ -4,6 +4,7 @@ export const APP_TITLE = 'Quản lí nhà thuốc';
 export const APP_DESCRIPTION = 'Web được phát triển phục vụ việc quản lí nhà thuốc Việt Nam.';
 
 export const API_LOGIN = 'login';
+export const API_FRESH_TOKEN = 'refresh-token';
 
 export const API_USER = 'users';
 export const API_STAFF = 'staffs';

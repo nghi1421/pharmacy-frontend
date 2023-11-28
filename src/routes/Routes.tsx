@@ -7,6 +7,9 @@ import MainLayout from "../layouts/MainLayout";
 import AuthLayout from "../layouts/AuthLayout";
 import Login from '../pages/Login'
 import ErrorPage from "../error-page";
+import SalesLayout from "../layouts/SalesLayout";
+import ExportPage from "../pages/export/ExportPage";
+import CreateExport from "../pages/export/CreateExport";
 
 const ModifiedMainLayout = () => {
     return (
@@ -20,6 +23,13 @@ const ModifiedAuthLayout = () => {
         <AuthLayout>
             <Outlet />
         </AuthLayout>
+    )
+};
+const ModifiedSalesLayout = () => {
+    return (
+        <SalesLayout>
+            <Outlet />
+        </SalesLayout>
     )
 };
 
@@ -50,9 +60,18 @@ const AppRoutes: React.FC = () => {
                         errorElement={ <ErrorPage/>}
                     />
                 ))}
-
             </Route>
-                <Route element={<ModifiedAuthLayout />}>
+
+            <Route path='sales' element={<ModifiedSalesLayout />}>
+                 <Route
+                    key='sales-create-form'
+                    path='create'
+                    element={<CreateExport />}
+                    errorElement={ <ErrorPage/>}
+                />
+            </Route>
+
+            <Route element={<ModifiedAuthLayout />}>
                 <Route key='login-route'
                     path='/login'
                     element={<Login />}

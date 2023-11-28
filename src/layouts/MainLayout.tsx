@@ -40,45 +40,45 @@ const Layout: React.FC<LayoutProps> = ({ children }): ReactElement => {
   else 
     return (
         <Box sx={{ display: 'flex' }}>
-        <CssBaseline />
-        
-        <Header open={ open } setOpen={ setOpen } />
-        
-          <Drawer variant="permanent" open={open} SlideProps={{ unmountOnExit: true }}>
-            <Toolbar
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'flex-end',
-                px: [1],
-              }}
-            >
-              <IconButton onClick={toggleDrawer}>
-                <ChevronLeftIcon />
-              </IconButton>
-            </Toolbar>
-          <Divider />
+          <CssBaseline />
           
-          <SideBar/>
+          <Header open={ open } setOpen={ setOpen } />
           
-          </Drawer>
-            <Box
-              component="main"
-              sx={{
-                backgroundColor: (theme) =>
-                  theme.palette.mode === 'light'
-                    ? theme.palette.grey[100]
-                    : theme.palette.grey[900],
-                flexGrow: 1,
-                height: '100vh',
-                overflow: 'auto',
-              }}
-            >
-            <Toolbar />
-              <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
-                 { children }
-              </Container>
-            </Box>
+            <Drawer variant="permanent" open={open} SlideProps={{ unmountOnExit: true }}>
+              <Toolbar
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'flex-end',
+                  px: [1],
+                }}
+              >
+                <IconButton onClick={toggleDrawer}>
+                  <ChevronLeftIcon />
+                </IconButton>
+              </Toolbar>
+            <Divider />
+            
+            <SideBar/>
+            
+            </Drawer>
+              <Box
+                component="main"
+                sx={{
+                  backgroundColor: (theme) =>
+                    theme.palette.mode === 'light'
+                      ? theme.palette.grey[100]
+                      : theme.palette.grey[900],
+                  flexGrow: 1,
+                  height: '100vh',
+                  overflow: 'auto',
+                }}
+              >
+              <Toolbar />
+                <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
+                  { children }
+                </Container>
+              </Box>
         </Box>
     );
 };

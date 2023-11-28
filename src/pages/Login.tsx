@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { Avatar, Box, Button, Container, CssBaseline, Grid, Link, Typography } from '@mui/material'
 import '../assets/styles/index.css'
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -6,24 +6,23 @@ import * as Yup from 'yup'
 import { FormInputText } from '../components/form/FormInputText.tsx'
 import { useForm } from 'react-hook-form'
 import yup from '../utils/yup.ts'
-import { enqueueSnackbar } from 'notistack';
-import { login } from '../hooks/useAuth.ts';
-import { Navigate, useNavigate } from 'react-router-dom';
-import { getAccessToken, getStaff, setAccessToken, setStaff } from '../store/auth.ts';
-import { handleAddress } from '../utils/address.ts';
+import { Navigate } from 'react-router-dom';
+import { getAccessToken, setAccessToken, setStaff } from '../store/auth.ts';
+import { AuthContext } from '../App.tsx';
+import { useLogin } from '../hooks/useAuth.ts';
 
-interface AuthForm {
+export interface LoginForm {
     username: string
     password: string
 }
 
-const defaultValues: AuthForm = {
+const defaultValues: LoginForm = {
     username: '',
     password: '',
 }
 
  // @ts-ignore
-const authFormValidate: Yup.ObjectSchema<TypeByUseEditForm> = yup.object({
+const authFormValidate: Yup.ObjectSchema<LoginForm> = yup.object({
     username: yup
         .string()
         .required('Tên đăng nhập bắt buộc.')
@@ -35,37 +34,33 @@ const authFormValidate: Yup.ObjectSchema<TypeByUseEditForm> = yup.object({
 })
 
 const Login: React.FC = () => {
-    const navigate = useNavigate()
-    const staff = getStaff()
+    
+    const { roleId, setRoleId } = useContext(AuthContext)
+    const login = useLogin()
     const accessToken = getAccessToken()
-    const { handleSubmit, control } = useForm<AuthForm>({
+    const { handleSubmit, control } = useForm<LoginForm>({
         defaultValues: defaultValues,
         resolver: yupResolver(authFormValidate)
     });
 
-    const onSubmit = async (data: AuthForm) => {
-        const response = await login(data.username, data.password);
-        if (response.data.message) {
-            setStaff({...response.data.data.staff, address: handleAddress(response.data.data.staff.address)})
-            setAccessToken(response.data.accessToken);
-            enqueueSnackbar(
-                response.data.message, {
-                autoHideDuration: 3000,
-                variant: 'success'
-            })
-            navigate('/admin/users')
-        }
-        else {
-            enqueueSnackbar(
-                response.data.errorMessage, {
-                autoHideDuration: 3000,
-                variant: 'error'
-            })
-        }
+    const onSubmit = async (data: LoginForm) => {
+        login.mutate(data);
     };
         
-    if (staff && accessToken) {
-        return <Navigate replace to='/admin/users'/>
+    if (accessToken && roleId) {
+        switch (roleId) {
+            case 1: {
+                return <Navigate replace to='/admin/users'/>
+            }
+            case 2: {
+                return <Navigate replace to='/sales/create'/>
+            }
+            default: {
+                setStaff(null)
+                setAccessToken(null)
+                setRoleId(null)
+            }
+        }
     }
     else 
     return (
