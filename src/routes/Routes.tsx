@@ -7,7 +7,7 @@ import MainLayout from "../layouts/MainLayout";
 import AuthLayout from "../layouts/AuthLayout";
 import Login from '../pages/Login'
 import SalesLayout from "../layouts/SalesLayout";
-import CreateExport from "../pages/export/CreateExport";
+import CreateExport from "../pages/export/SalesExport";
 import { NotFound404 } from "../pages/NotFound404";
 import { Forbidden403 } from "../pages/Forbidden403";
 

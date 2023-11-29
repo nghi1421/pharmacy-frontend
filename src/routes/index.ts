@@ -25,9 +25,10 @@ import EditStaff from "../pages/staff/EditStaff";
 import CreateImport from "../pages/import/CreateImport";
 import DetailExportPage from "../pages/export/DetailPage";
 import DetailImportPage from "../pages/import/DetailPage";
-import CreateExport from "../pages/export/CreateExport";
+import SalesExport from "../pages/export/SalesExport";
 import BarChartIcon from '@mui/icons-material/BarChart';
 import StatisticsPage from "../pages/statistics/StatisticsPage";
+import CancelExport from "../pages/export/CancelExport";
 
 export const dashboardRoutes: Array<Route> = [
     {      
@@ -195,11 +196,18 @@ export const formRoutes: Array<Route> = [
         element: CreateImport
     },
     {      
-        key: 'ex[prt-create-form-route',
+        key: 'export-create-form-route',
         title: 'Form danh phieu nhap hang',
-        path: 'exports/create',
+        path: 'sales-exports/create',
         icon: AttachMoney,
-        element: CreateExport
+        element: SalesExport
+    },
+    {      
+        key: 'create-cancel-export-form-route',
+        title: 'Form danh phieu nhap hang',
+        path: 'cancel-exports/create',
+        icon: AttachMoney,
+        element: CancelExport
     },
     {      
         key: 'import-detail-form-route',

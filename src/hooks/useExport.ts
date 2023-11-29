@@ -1,12 +1,12 @@
 import { enqueueSnackbar } from 'notistack';
 import axiosClient from '../services/axios';
-import { API_EXPORT, API_EXPORT_WITH_ID} from '../utils/constants';
+import { API_CANCEL_EXPORT, API_EXPORT, API_EXPORT_WITH_ID} from '../utils/constants';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { formatCurrency, formatDate, formatNumber } from '../utils/format';
-import { ExportRawData, ExportDetailRawData, ExportType, ExportPdfData, ExportData, ExportDetailData, ExportDetailPdf } from '../types/ExportType';
+import { ExportRawData, ExportDetailRawData, ExportType, ExportData, ExportDetailData, ExportDetailPdf } from '../types/ExportType';
 import { useNavigate } from 'react-router-dom';
 import { pathToUrl } from '../utils/path';
-import { ExportForm } from '../pages/export/CreateExport';
+import { ExportForm } from '../pages/export/SalesExport';
 import { defaultCatchErrorHandle, updateSearchParams } from '../utils/helper';
 import { DataMetaResponse } from '../types/response/DataResponse';
 import { Query } from '../types/Query';
@@ -14,6 +14,7 @@ import { handleAddress } from '../utils/address';
 import { GenderEnum } from '../types/GenderEnum';
 import globalEvent from '../utils/emitter';
 import { AxiosResponse } from 'axios';
+import { CancelExportForm } from '../pages/export/CancelExport';
 
 function createData({id, exportDate, staff, customer, note, prescriptionId}: ExportType) {
     return {
@@ -180,6 +181,61 @@ const useCreateExport = (
   })
 }
 
+const useCreateCancelExport = (
+  setExportData: (e: ExportData) => void,
+  setExportDetailData: (e: ExportDetailPdf[]) => void
+) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: CancelExportForm) => {
+      return await axiosClient.post(API_CANCEL_EXPORT, data)
+        .then((response): AxiosResponse<any, any> => {
+          return response
+          // if (response.data.message) {
+            // const handleExport = createDataExport(response.data.data.export)
+            // const handleExportDetail = response.data.data.exportDetail.map(
+            //   (exportDetail: any) => createExportDetailPdf(exportDetail))
+            
+          //   return {
+          //     exportData: handleExport,
+          //     exportDetail: handleExportDetail,
+          //   } as ExportPdfData
+          // }
+          // else {
+          //   return response
+          // }
+        })
+        .catch(error => {
+          console.log(error);
+          defaultCatchErrorHandle(error)
+        })
+    },
+    onSuccess: (response: any) => {
+      console.log(response)
+      if (response.data.message) {
+        queryClient.invalidateQueries('drug-categories', { refetchInactive: true })
+        const handleExport = createDataExport(response.data.data.export)
+        const handleExportDetail = response.data.data.exportDetail.map(
+              (exportDetail: ExportDetailRawData) => createExportDetailPdf(exportDetail))
+        
+        setExportData(handleExport)
+        setExportDetailData(handleExportDetail)
+        enqueueSnackbar(response.data.message, {
+          autoHideDuration: 3000,
+          variant: 'success'
+        })
+      }
+      else {
+        enqueueSnackbar(response.data.errorMessage, {
+          autoHideDuration: 3000,
+          variant: 'error'
+        })
+      }
+    }
+  })
+}
+
 // const useUpdateExport = () => {
 //   const queryClient = useQueryClient();
 //   const navigate = useNavigate();
@@ -252,6 +308,5 @@ export {
   useGetExports,
   useGetExport,
   useCreateExport,
-//   useUpdateExport,
-//   useDeleteExport,
+  useCreateCancelExport 
 }

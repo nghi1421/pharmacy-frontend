@@ -47,7 +47,7 @@ const ExportBill: React.FC<ExportPDFProps> = forwardRef((props, ref) => {
                     </Typography>
                 </Typography>
                     <Typography variant="subtitle2">
-                        {`Thời gian: ${dayjs(props.exportData.exportDate).format('DD/MM/YYYY HH:mm:ss')}` }
+                        {`Thời gian: ${props.exportData.exportDate}` }
                     </Typography>
                     <Typography variant="subtitle2">
                         {`Nhân viên: ${props.exportData.staff.id} - ${props.exportData.staff.name}` }

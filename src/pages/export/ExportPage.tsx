@@ -1,15 +1,17 @@
-import { Box, CircularProgress, IconButton, Paper, TableCell, Tooltip } from "@mui/material";
+import { Box, Button, CircularProgress, IconButton, Paper, TableCell, Tooltip, Typography } from "@mui/material";
 import TableComponent from "../../components/table/TableComponent";
 import { Column } from "../../types/Column";
 import { useNavigate } from "react-router-dom";
 import CreateIcon from '@mui/icons-material/Create';
 import { useGetExport, useGetExports } from "../../hooks/useExport";
-import { PageHeader } from "../../components/PageHeader";
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import { TableExtension } from "../../components/table/TableExtension";
 import { GET_ARRAY_OF_KEY, GET_SEARCHABLE_KEY, GET_SEARCHABLE_LIST } from "../../utils/constants";
 import { getSearchColums } from "../../utils/helper";
 import { useSearchQuery } from "../../hooks/useSearchQuery";
 import { useSearchableList } from "../../hooks/useSearchableList";
+import { green, red } from "@mui/material/colors";
+import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 
 const columnsList: Column[] = [
     { key: 'id', value: 'Mã xuất thuốc', sortable: false, searchable: false},
@@ -28,15 +30,70 @@ const ExportPage: React.FC<{}> = () => {
     const { data, isLoading } = useGetExports(query)
     const [columns, watchSearchList, control, setValue] = useSearchableList(columnsList, updateQueryParams)
 
-    const clickAdd = () => {
-        navigate('/admin/exports/create')
-    }
     return (
         <Paper>
-            <PageHeader
-                title='Quản lí xuất hàng'
-                clickAdd={clickAdd}
-            />
+            <Box sx={{
+                display: 'flex',
+                gap: 2,
+                justifyContent: 'space-between',
+                alignItems: 'baseline',
+                p: 1,
+                m: 1,
+                bgcolor: 'background.paper',
+                borderRadius: 1,
+            }}
+            >
+                <Typography
+                    variant="h4"
+                    fontWeight='500'
+                    sx={{ px:3, py: 2, flex: 1 }}
+                >
+                    Quản lí xuất hàng
+                </Typography>
+                <Button
+                    variant="contained"
+                    sx={{
+                        backgroundColor: green[500],
+                        '&:hover': {
+                            backgroundColor: green[700],
+                        }
+                    }}
+                    size="small"
+                    onClick={() => navigate('/admin/sales-exports/create')}
+                >
+                    <AttachMoneyIcon></AttachMoneyIcon>
+                    <Typography
+                        textTransform='none'
+                        variant='button'
+                        color='inheric'
+                        marginLeft='4px'
+                    >
+                        Bán hàng
+                    </Typography>
+                </Button>
+
+                <Button
+                    variant="contained"
+                    sx={{
+                        backgroundColor: red[600],
+                        '&:hover': {
+                            backgroundColor: red[800],
+                        }
+                    }}
+                    size="small"
+                    onClick={() => navigate('/admin/cancel-exports/create')}
+                >
+                    <HighlightOffIcon></HighlightOffIcon>
+                    <Typography
+                        textTransform='none'
+                        variant='button'
+                        color='inheric'
+                        marginLeft='4px'
+                    >
+                        Hủy hàng
+                    </Typography>
+                </Button>
+            </Box>
 
             <TableExtension
                 setValue={setValue}

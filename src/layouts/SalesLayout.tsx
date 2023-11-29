@@ -4,6 +4,7 @@ import { Container, Toolbar } from '@mui/material';
 import Header from "./Header";
 import { getAccessToken, getStaff } from "../store/auth";
 import { Navigate } from "react-router-dom";
+import { TodaySales } from "../components/TodaySales";
 
 interface LayoutProps {
   children: ReactNode;
@@ -34,10 +35,10 @@ const SalesLayout: React.FC<LayoutProps> = ({ children }): ReactElement => {
                   height: '100vh',
                   overflow: 'auto',
                 }}
-              >
+          >
               <Toolbar />
                 <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
-                  { children }
+                {children}
                 </Container>
               </Box>
         </Box>

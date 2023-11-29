@@ -7,7 +7,7 @@ import { GenderEnum } from '../types/GenderEnum';
 import { useNavigate } from 'react-router-dom';
 import { pathToUrl } from '../utils/path';
 import { CustomerForm } from '../pages/customer/CreateCustomer';
-import { CustomerForm as CustomerWithId } from '../pages/export/CreateExport';
+import { CustomerForm as CustomerWithId } from '../pages/export/SalesExport';
 import { CustomerEditForm } from '../pages/customer/EditCustomer';
 import { defaultCatchErrorHandle, defaultOnSuccessHandle, updateSearchParams } from '../utils/helper';
 import { UseFormSetError } from 'react-hook-form';

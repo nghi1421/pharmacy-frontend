@@ -11,4 +11,4 @@ export const formatDate = (date: string) => {
 export const formatNumber = (number: number) => number.toLocaleString()
 
 export const formatCurrency = (money: number) => 
-    `${money.toLocaleString()} VND`;
+    `${money.toLocaleString()}đ`;

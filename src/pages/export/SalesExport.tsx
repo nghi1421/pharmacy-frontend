@@ -24,6 +24,7 @@ import ExportBill from "./ExportBill";
 import { enqueueSnackbar } from "notistack";
 import { ExportData, ExportDetailPdf } from "../../types/ExportType";
 import dayjs from "dayjs";
+import { TodaySales } from "../../components/TodaySales";
 
 const useStyles = makeStyles({
   customTextField: {
@@ -108,7 +109,7 @@ const columns: ColumnDrugCategory[] = [
     { key: 'use', value: 'Công dụng'},
 ]
 
-const CreateExport: React.FC = () => {
+const SalesExport: React.FC = () => {
     const navigate = useNavigate()
     const classes = useStyles();
     const staff = getStaff();
@@ -144,7 +145,8 @@ const CreateExport: React.FC = () => {
     const [address, setAddress] = useState<string>('');
     const [search, setSearch] = useState<string>('')
     const [exportData, setExportData] = useState<ExportData | null>(null)    
-    const [exportDetailData, setExportDetailData] = useState<ExportDetailPdf[] | null>(null)    
+    const [exportDetailData, setExportDetailData] = useState<ExportDetailPdf[] | null>(null)
+    const [selectedExport, setSelectedExport] = useState<number|null>(null)
     const createExport = useCreateExport(setExportData, setExportDetailData);
     let componentRef = useRef<HTMLDivElement>(null);
     const handlePrint = useReactToPrint({
@@ -308,219 +310,224 @@ const CreateExport: React.FC = () => {
     }
 
     return (
-        <Paper sx={{ px: 6, py: 4 }}>
-            <Typography variant="h4" gutterBottom mb='20px'>
-                Thông tin phiếu xuất hàng
-            </Typography>
-            <Box sx={{ display: 'flex', gap: 2 }}>
-                <Grid container spacing={1.5} sx={{ flex: 4 }}>
-                    <Grid item xs={8} sm={4}>
-                        <Controller
-                            name='phoneNumber'
-                            control={customerControl}
-                            render={({
-                                field: { onChange, value },
-                                fieldState: { error },
-                            }) => (
-                            <TextField
-                                size='small'
-                                type='text'
-                                helperText={error ? error.message : null}
-                                error={!!error}
-                                onChange={onChange}
-                                onBlur={() => {
-                                    searchCustomer.mutate(watch('phoneNumber'))
-                                }
-                                }
-                                value={value}
-                                fullWidth
-                                label="Số điện thoại khách hàng"
-                                variant="outlined"
-                                placeholder='Nhập số điện thoại khách hàng'
+        <Box sx={{ display: 'flex', gap: 2 }}>
+            <Paper sx={{ px: 6, py: 4, flex: 3 }}>
+                <Typography variant="h4" gutterBottom mb='20px'>
+                    Thông tin bán hàng
+                </Typography>
+                <Box sx={{ display: 'flex', gap: 2 }}>
+                    <Grid container spacing={1.5} sx={{ flex: 4 }}>
+                        <Grid item xs={8} sm={4}>
+                            <Controller
+                                name='phoneNumber'
+                                control={customerControl}
+                                render={({
+                                    field: { onChange, value },
+                                    fieldState: { error },
+                                }) => (
+                                <TextField
+                                    size='small'
+                                    type='text'
+                                    helperText={error ? error.message : null}
+                                    error={!!error}
+                                    onChange={onChange}
+                                    onBlur={() => {
+                                        searchCustomer.mutate(watch('phoneNumber'))
+                                    }
+                                    }
+                                    value={value}
+                                    fullWidth
+                                    label="Số điện thoại khách hàng"
+                                    variant="outlined"
+                                    placeholder='Nhập số điện thoại khách hàng'
+                                />
+                                )}
                             />
-                            )}
-                        />
-                    </Grid>
-                    <Grid item xs={8} sm={6}>
-                        <FormInputText
-                            size="small"
-                            name="name"     
-                            control={customerControl}
-                            label="Họ và tên khách hàng"
-                            placeholder='Nhập họ và tên khách hàng'
-                        />
-                    </Grid>
-                    <Grid item xs={8} sm={2}>
-                        <FormInputDropdown
-                            name="gender"
-                            control={customerControl}
-                            label="Giới tính"
-                            placeholder='Giới tính'
-                            list={genders}
-                        />
-                    </Grid>
-                    <Address gridSize={6} setAddress={setAddress} size='small' initAddress={address} />
-                    
-                </Grid>
-
-                <Grid container spacing={1.5} width='30%' sx={{ flex: 2 }}>
-                    <Grid item xs={8} sm={12}>
-                        <FormInputDate
-                            name="exportDate"
-                            control={control}
-                            label="Ngày xuất hàng"
-                            placeholder='x'
-                            withTime={true}
-                        />
-                    </Grid>
-
-                    <Grid item xs={8} sm={12}>
-                        <FormInputText
-                            name="prescriptionId"
-                            control={control}
-                            label="Mã đơn thuốc"
-                            placeholder='Nhập mã đơn thuốc/toa thuốc'
-                        />
-                    </Grid>
-
-                    <Grid item xs={8} sm={12}>
-                        <FormInputText
-                            name="note"
-                            control={control}
-                            label="Ghi chú"
-                            placeholder='Nhập ghi chú'
-                        />
-                    </Grid>
-                </Grid>
-            </Box>
-                
-                
-            <Grid container spacing={3} marginTop={2}>
-                <Grid item xs={12} sm={12} container>
-                    <Typography mb='20px' variant="subtitle2" sx={{ fontWeight: 'fontWeightBold', mt: 2, fontSize: 16 }}>
-                        Thuốc đã chọn
-                    </Typography>
-                    <TableExportSelectDrug
-                        rows={selectedDrugs}
-                        tooltip='Nhấn để bỏ chọn thuốc'
-                        keyTable='selected-drug-export-category-table-key'
-                        action={unCheckDrugCategory}
-                        update={updateQuantity}
-                    /> 
-                </Grid>
-
-                <Grid item xs={12} sm={12} container 
-                    sx={{
-                        display: 'flex',
-                        justifyContent: "end",
-                        gap: 4
-                    }}
-                >
-                    <Typography variant="subtitle2" sx={{  }}>
-                        Tổng tiền (chưa tính VAT): { pay[0] ? pay[0].toLocaleString() : '_'} VND
-                    </Typography>
-
-                    <Typography variant="subtitle2" sx={{  }}>
-                        Tiền thuế VAT: { pay[1] ? pay[1].toLocaleString() : '_'} VND
-                    </Typography>
-
-                    <Typography variant="subtitle2" sx={{ color: "#148c07"  }}>
-                        Tổng tiền: { pay[2] ? pay[2].toLocaleString() : '_'} VND
-                    </Typography>
-                </Grid>
-
-                <Grid item xs={12} sm={12} container 
-                >
-                    <Box sx={{ display: 'flex', width: '100%', gap: 1 }}>
-                        <Typography mb='20px' variant="subtitle2" sx={{ fontWeight: 'fontWeightBold', mt: 2, fontSize: 16 }}>
-                            Danh mục thuốc
-                        </Typography>
-                        <TextField
-                            onChange={handleSearchData}
-                            classes={{ root: classes.customTextField }}
-                            size='small'
-                            sx={{ flexGrow: 1, my :'auto', mr: '20%', ml: 2}}
-                            label="Tìm kiếm"
-                            value={search}
-                            placeholder="Nhập thông tin danh mục thuốc theo tên"
-                            InputProps={{
-                                endAdornment: (
-                                    <InputAdornment
-                                        position='end'
-                                    >
-                                        <SearchIcon />
-                                    </InputAdornment>
-                                )
-                            }}
-                        />
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            sx={{
-                                height: '70%',
-                                m: 'auto',
-                                textTransform: 'none',
-                            }}
-                            onClick={handleSubmit(onSubmit)}
-                        >
-                            Tạo phiếu & Xuất hóa đơn
-                        </Button>
-
-                        <Button
-                            variant='contained'
-                            color="success"
-                            aria-label="Delete"
-                            sx={{
-                                height: '70%',
-                                m: 'auto',
-                                textTransform: 'none',
-                            }}
-                            onClick={ () => refetch()}
-                        >
-                            <ReplayIcon  />
-                            Làm mới
-                        </Button>
-
-                        <Button
-                            variant="contained"
-                            color="error"
-                            sx={{
-                                height: '70%',
-                                m: 'auto',
-                                textTransform: 'none',
-                            }}
-                            onClick={backToTable}
-                        >
-                            Quay về
-                        </Button>
+                        </Grid>
+                        <Grid item xs={8} sm={6}>
+                            <FormInputText
+                                size="small"
+                                name="name"     
+                                control={customerControl}
+                                label="Họ và tên khách hàng"
+                                placeholder='Nhập họ và tên khách hàng'
+                            />
+                        </Grid>
+                        <Grid item xs={8} sm={2}>
+                            <FormInputDropdown
+                                name="gender"
+                                control={customerControl}
+                                label="Giới tính"
+                                placeholder='Giới tính'
+                                list={genders}
+                            />
+                        </Grid>
+                        <Address gridSize={6} setAddress={setAddress} size='small' initAddress={address} />
                         
-                    </Box>
-                    {
-                        drugCategoryLoading
-                        ?
-                            <CircularProgress sx={{ margin: 'auto' }} />
-                        :
-                            <TableDrugCategories
-                                rows={drugs}
-                                tooltip='Nhấn để chọn thuốc'
-                                columns={columns}
-                                keyTable='drug-category-table-key'
-                                action={checkDrugCategory}
-                                type='export'
+                    </Grid>
+
+                    <Grid container spacing={1.5} width='30%' sx={{ flex: 2 }}>
+                        <Grid item xs={8} sm={12}>
+                            <FormInputDate
+                                name="exportDate"
+                                control={control}
+                                label="Ngày xuất hàng"
+                                placeholder='x'
+                                withTime={true}
                             />
-                    }  
+                        </Grid>
+
+                        <Grid item xs={8} sm={12}>
+                            <FormInputText
+                                name="prescriptionId"
+                                control={control}
+                                label="Mã đơn thuốc"
+                                placeholder='Nhập mã đơn thuốc/toa thuốc'
+                            />
+                        </Grid>
+
+                        <Grid item xs={8} sm={12}>
+                            <FormInputText
+                                name="note"
+                                control={control}
+                                label="Ghi chú"
+                                placeholder='Nhập ghi chú'
+                            />
+                        </Grid>
+                    </Grid>
+                </Box>
+                    
+                    
+                <Grid container spacing={3} marginTop={2}>
+                    <Grid item xs={12} sm={12} container>
+                        <Typography mb='20px' variant="subtitle2" sx={{ fontWeight: 'fontWeightBold', mt: 2, fontSize: 16 }}>
+                            Thuốc đã chọn
+                        </Typography>
+                        <TableExportSelectDrug
+                            rows={selectedDrugs}
+                            tooltip='Nhấn để bỏ chọn thuốc'
+                            keyTable='selected-drug-export-category-table-key'
+                            action={unCheckDrugCategory}
+                            update={updateQuantity}
+                        /> 
+                    </Grid>
+
+                    <Grid item xs={12} sm={12} container 
+                        sx={{
+                            display: 'flex',
+                            justifyContent: "end",
+                            gap: 4
+                        }}
+                    >
+                        <Typography variant="subtitle2" sx={{  }}>
+                            Tổng tiền (chưa tính VAT): { pay[0] ? pay[0].toLocaleString() : '_'} VND
+                        </Typography>
+
+                        <Typography variant="subtitle2" sx={{  }}>
+                            Tiền thuế VAT: { pay[1] ? pay[1].toLocaleString() : '_'} VND
+                        </Typography>
+
+                        <Typography variant="subtitle2" sx={{ color: "#148c07"  }}>
+                            Tổng tiền: { pay[2] ? pay[2].toLocaleString() : '_'} VND
+                        </Typography>
+                    </Grid>
+
+                    <Grid item xs={12} sm={12} container 
+                    >
+                        <Box sx={{ display: 'flex', width: '100%', gap: 1 }}>
+                            <Typography mb='20px' variant="subtitle2" sx={{ fontWeight: 'fontWeightBold', mt: 2, fontSize: 16 }}>
+                                Danh mục thuốc
+                            </Typography>
+                            <TextField
+                                onChange={handleSearchData}
+                                classes={{ root: classes.customTextField }}
+                                size='small'
+                                sx={{ flexGrow: 1, my :'auto', mr: '20%', ml: 2}}
+                                label="Tìm kiếm"
+                                value={search}
+                                placeholder="Nhập thông tin danh mục thuốc theo tên"
+                                InputProps={{
+                                    endAdornment: (
+                                        <InputAdornment
+                                            position='end'
+                                        >
+                                            <SearchIcon />
+                                        </InputAdornment>
+                                    )
+                                }}
+                            />
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                sx={{
+                                    height: '70%',
+                                    m: 'auto',
+                                    textTransform: 'none',
+                                }}
+                                onClick={handleSubmit(onSubmit)}
+                            >
+                                Tạo phiếu & Xuất hóa đơn
+                            </Button>
+
+                            <Button
+                                variant='contained'
+                                color="success"
+                                aria-label="Delete"
+                                sx={{
+                                    height: '70%',
+                                    m: 'auto',
+                                    textTransform: 'none',
+                                }}
+                                onClick={ () => refetch()}
+                            >
+                                <ReplayIcon  />
+                                Làm mới
+                            </Button>
+
+                            <Button
+                                variant="contained"
+                                color="error"
+                                sx={{
+                                    height: '70%',
+                                    m: 'auto',
+                                    textTransform: 'none',
+                                }}
+                                onClick={backToTable}
+                            >
+                                Quay về
+                            </Button>
+                            
+                        </Box>
+                        {
+                            drugCategoryLoading
+                            ?
+                                <CircularProgress sx={{ margin: 'auto' }} />
+                            :
+                                <TableDrugCategories
+                                    rows={drugs}
+                                    tooltip='Nhấn để chọn thuốc'
+                                    columns={columns}
+                                    keyTable='drug-category-table-key'
+                                    action={checkDrugCategory}
+                                    type='export'
+                                />
+                        }  
+                    </Grid>
+                
                 </Grid>
-               
-            </Grid>
-            <div style={{ display: 'none' }}>
-                <ExportBill
-                    ref={componentRef}
-                    exportData={exportData}
-                    exportDetail={exportDetailData}
-                />
-            </div>
-        </Paper>
+                <div style={{ display: 'none' }}>
+                    <ExportBill
+                        ref={componentRef}
+                        exportData={exportData}
+                        exportDetail={exportDetailData}
+                    />
+                </div>
+                
+            </Paper>
+            <Box sx={{ flex: 1, px: 2, py: 1}}></Box>
+            <TodaySales setSelectedExport={setSelectedExport} />
+        </Box>
     )
 }
 
-export default CreateExport
+export default SalesExport
