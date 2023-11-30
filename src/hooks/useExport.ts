@@ -173,8 +173,9 @@ const useGetExportToday = () => {
                 export: handleExport,
                 exportDetail: handleExportDetail
               }
-            }
-          }
+            },
+            replace: true
+          },
         )
 
         if (response.data.message) {

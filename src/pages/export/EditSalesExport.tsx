@@ -141,7 +141,7 @@ const EditSalesExport: React.FC = () => {
         defaultValues: defaultValuesExport,
         resolver: yupResolver(exportValidate)
     });
-    const [address, setAddress] = useState<string>(state.exportTodayIndex.export.customer.address);
+    const [address, setAddress] = useState<string>('');
     const [search, setSearch] = useState<string>('')
     const [exportData, setExportData] = useState<ExportData | null>(null)    
     const [exportDetailData, setExportDetailData] = useState<ExportDetailPdf[] | null>(null)
@@ -151,37 +151,14 @@ const EditSalesExport: React.FC = () => {
     const handlePrint = useReactToPrint({
         content: () => componentRef.current,
     });
-
-    const handleSearchData = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const searchTerm = event.target.value as string
-        if (searchTerm.trim().length > 0) {
-            setDrugs(cloneDrugs.filter(
-                drug => (drug.name).toLowerCase().includes(searchTerm.toLowerCase()) && !drug.checked
-            ))
-        }
-        else {
-            setDrugs(cloneDrugs)
-        }
-        setSearch(event.target.value as string);
-    }
-
+    const [change, setChange] = useState<number>(Math.random())
     useEffect(() => {
-        if (drugCategories && drugCategories.length > 0) {
-            const selectDrugIds = state.exportTodayIndex.exportDetail.map((detail: any) => detail.drug.id)
-            const data = drugCategories.map((drug: any) => {
-                return { ...drug, checked: false }
-            });
-            // setDrugs(data)
-            const handleDrugs = data.map((drug: any) => {
-                return selectDrugIds.includes(drug.id) ? {...drug, checked: true} : drug
-            })
-            setCloneDrugs(handleDrugs)
-            setDrugs(handleDrugs)
-        }
-    }, [drugCategories])
-
-    useEffect(() => {
-        globalEvent.emit('close-sidebar')
+        setAddress(state.exportTodayIndex.export.customer.address)
+        setChange(Math.random())
+        setValueCustomer('phoneNumber', state.exportTodayIndex.export.customer.phoneNumber)
+        setValueCustomer('name', state.exportTodayIndex.export.customer.name)
+        setValueCustomer('gender', state.exportTodayIndex.export.customer.gender)
+        const selectDrugIds = state.exportTodayIndex.exportDetail.map((detail: any) => detail.drug.id)
         setSelectedDrugs(state.exportTodayIndex.exportDetail.map((detail: any) => {
             return {
                 id: detail.drug.id,
@@ -196,7 +173,48 @@ const EditSalesExport: React.FC = () => {
                 checked: true,
             }
         }))
-        
+        console.log(selectDrugIds);
+        const data = drugCategories.map((drug: any) => {
+            return { ...drug, checked: false }
+        });
+        // setDrugs(data)
+        const handleDrugs = data.map((drug: any) => {
+            return selectDrugIds.includes(drug.id) ? {...drug, checked: true} : drug
+        })
+        setCloneDrugs(handleDrugs)
+        setDrugs(handleDrugs)
+    }, [state])
+
+    const handleSearchData = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const searchTerm = event.target.value as string
+        if (searchTerm.trim().length > 0) {
+            setDrugs(cloneDrugs.filter(
+                drug => (drug.name).toLowerCase().includes(searchTerm.toLowerCase()) && !drug.checked
+            ))
+        }
+        else {
+            setDrugs(cloneDrugs)
+        }
+        setSearch(event.target.value as string);
+    }
+
+    // useEffect(() => {
+    //     if (drugCategories && drugCategories.length > 0) {
+    //         const selectDrugIds = state.exportTodayIndex.exportDetail.map((detail: any) => detail.drug.id)
+    //         const data = drugCategories.map((drug: any) => {
+    //             return { ...drug, checked: false }
+    //         });
+    //         // setDrugs(data)
+    //         const handleDrugs = data.map((drug: any) => {
+    //             return selectDrugIds.includes(drug.id) ? {...drug, checked: true} : drug
+    //         })
+    //         setCloneDrugs(handleDrugs)
+    //         setDrugs(handleDrugs)
+    //     }
+    // }, [drugCategories])
+
+    useEffect(() => {
+        globalEvent.emit('close-sidebar')
     }, [])
 
     useEffect(() => {
@@ -260,12 +278,12 @@ const EditSalesExport: React.FC = () => {
                     return { drugId: drug.id, quantity: drug.exportQuantity}
                 })
             })
-            setSelectedDrugs([]),
-            setDrugs(cloneDrugs)
-            setSearch(''),
-            reset()
-            resetCustomer()
-            setAddress('')
+            // setSelectedDrugs([]),
+            // setDrugs(cloneDrugs)
+            // setSearch(''),
+            // reset()
+            // resetCustomer()
+            // setAddress('')
         }
     };
 
@@ -324,10 +342,6 @@ const EditSalesExport: React.FC = () => {
         }))
     }
 
-    const backToTable = () => {
-        navigate('/admin/exports')
-    }
-
     return (
         <Box sx={{ display: 'flex', gap: 2 }}>
             <Paper sx={{ px: 6, py: 4, flex: 3 }}>
@@ -381,7 +395,7 @@ const EditSalesExport: React.FC = () => {
                                 list={genders}
                             />
                         </Grid>
-                        <Address gridSize={6} setAddress={setAddress} size='small' initAddress={address} />
+                        <Address key={change} gridSize={6} setAddress={setAddress} size='small' initAddress={address} />
                         
                     </Grid>
 
@@ -485,22 +499,7 @@ const EditSalesExport: React.FC = () => {
                                 }}
                                 onClick={handleSubmit(onSubmit)}
                             >
-                                Tạo phiếu & Xuất hóa đơn
-                            </Button>
-
-                            <Button
-                                variant='contained'
-                                color="success"
-                                aria-label="Delete"
-                                sx={{
-                                    height: '70%',
-                                    m: 'auto',
-                                    textTransform: 'none',
-                                }}
-                                onClick={ () => refetch()}
-                            >
-                                <ReplayIcon  />
-                                Làm mới
+                                Hoàn và tạo phiếu mới
                             </Button>
 
                             <Button
@@ -511,9 +510,9 @@ const EditSalesExport: React.FC = () => {
                                     m: 'auto',
                                     textTransform: 'none',
                                 }}
-                                onClick={backToTable}
+                                onClick={() => {}}
                             >
-                                Quay về
+                                Hoàn toàn bộ
                             </Button>
                             
                         </Box>

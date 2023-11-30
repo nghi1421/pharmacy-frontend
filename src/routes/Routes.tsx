@@ -70,7 +70,7 @@ const AppRoutes: React.FC = () => {
             </Route>
 
             <Route path='sales' element={<ModifiedSalesLayout />}>
-                 <Route
+                <Route
                     key='sales-create-form'
                     path='create'
                     element={<CreateExport />}
@@ -79,7 +79,7 @@ const AppRoutes: React.FC = () => {
             </Route>
 
             <Route path='sales' element={<ModifiedSalesLayout />}>
-                 <Route
+                <Route
                     key='sales-edit-form'
                     path=':exportId/edit'
                     element={<EditSalesExport />}
