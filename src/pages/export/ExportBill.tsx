@@ -2,7 +2,6 @@ import { Grid, Paper, Typography } from "@mui/material";
 import { forwardRef } from "react";
 import TableData from "../../components/table/TableData";
 import { ExportData, ExportDetailPdf } from "../../types/ExportType";
-import dayjs from "dayjs";
 
 const columns = [
   { key: 'drugName', value: 'Tên thuốc' },
@@ -19,6 +18,7 @@ interface ExportPDFProps {
 const ExportBill: React.FC<ExportPDFProps> = forwardRef((props, ref) => {
 
     return (
+        //@ts-ignore
       <div ref={ref} style={{ padding: 4, margin: 4 }}>
         {
           props.exportData && props.exportDetail 

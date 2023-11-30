@@ -42,7 +42,7 @@ const AppBar = styled(MuiAppBar, {
 
 const Header: React.FC<HeaderProps> = ({ open, setOpen, preventOpen }) => {
   const [avatarEl, setAvatarEl] = useState<HTMLButtonElement | null>(null);
-  const { setRoleId } =  useContext(AuthContext)
+  const { roleId, setRoleId } =  useContext(AuthContext)
   const freshToken = useRefreshToken()
   const staff = getStaff();
   const navigate = useNavigate()
@@ -112,7 +112,7 @@ const Header: React.FC<HeaderProps> = ({ open, setOpen, preventOpen }) => {
               noWrap
               sx={{ flexGrow: 1 }}
             >
-              Trang quản lí
+              { roleId === 1 ? 'Trang quản lí' : 'Trang bán hàng'}
           </Typography>
 
           <Typography

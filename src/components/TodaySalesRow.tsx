@@ -4,11 +4,10 @@ import React from "react"
 import { useGetExportToday } from "../hooks/useExport"
 
 interface TodaySalesRowProps {
-    updateSalesToday: (t: SalesTodayType) => void
     saleToday: SalesTodayType
 }
 
-export const TodaySalesRow: React.FC<TodaySalesRowProps> = ({ updateSalesToday, saleToday }) => {
+export const TodaySalesRow: React.FC<TodaySalesRowProps> = ({ saleToday }) => {
     const getExportToday = useGetExportToday()
     const bgColor = (type: number): string => {
         switch (type) {

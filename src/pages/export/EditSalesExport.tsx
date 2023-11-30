@@ -11,7 +11,6 @@ import { useGetDataDrugCategories } from "../../hooks/useDrugCategory";
 import SearchIcon from '@mui/icons-material/Search';
 import { makeStyles } from "@mui/styles";
 import globalEvent from "../../utils/emitter";
-import ReplayIcon from '@mui/icons-material/Replay';
 import { FormInputDropdown } from "../../components/form/FormInputDropdown";
 import { genders } from "../../utils/constants";
 import Address from "../../components/Address";
@@ -40,11 +39,10 @@ export interface ColumnDrugCategory {
     value: string;
 }
 
-export interface ExportForm {
+export interface EditExportForm {
     customer?: CustomerForm,
     note: string;
     exportDate: Date
-    prescriptionId: string
     exportDetails: any[]
     staffId: number;
     type: number
@@ -104,18 +102,16 @@ const columns: ColumnDrugCategory[] = [
 ]
 
 const EditSalesExport: React.FC = () => {
-    const navigate = useNavigate()
     const classes = useStyles();
     const { state } = useLocation()
     const staff = getStaff();
-    const { isLoading: drugCategoryLoading, data: drugCategories, refetch } = useGetDataDrugCategories()
+    const { isLoading: drugCategoryLoading, data: drugCategories } = useGetDataDrugCategories()
     const {
         handleSubmit: handleSubmitCustomer,
         control: customerControl,
         watch,
         setValue: setValueCustomer,
         clearErrors,
-        reset: resetCustomer
     } = useForm<CustomerForm>({
         defaultValues: {...state.exportTodayIndex.export.customer},
         resolver: yupResolver(customerFormValidate)
@@ -137,7 +133,7 @@ const EditSalesExport: React.FC = () => {
         state.exportTodayIndex.export.totalPriceWithVat - state.exportTodayIndex.export.totalPrice,
         state.exportTodayIndex.export.totalPriceWithVat
     ])
-    const { handleSubmit, control, reset } = useForm<ExportForm>({
+    const { handleSubmit, control, reset } = useForm<EditExportForm>({
         defaultValues: defaultValuesExport,
         resolver: yupResolver(exportValidate)
     });
@@ -145,8 +141,8 @@ const EditSalesExport: React.FC = () => {
     const [search, setSearch] = useState<string>('')
     const [exportData, setExportData] = useState<ExportData | null>(null)    
     const [exportDetailData, setExportDetailData] = useState<ExportDetailPdf[] | null>(null)
-    const [selectedExport, setSelectedExport] = useState<number|null>(null)
     const createExport = useCreateExport(setExportData, setExportDetailData);
+    const [selectedExport, setSelectedExport] = useState<number>(state.exportTodayIndex.export.id)
     let componentRef = useRef<HTMLDivElement>(null);
     const handlePrint = useReactToPrint({
         content: () => componentRef.current,
@@ -155,6 +151,7 @@ const EditSalesExport: React.FC = () => {
     useEffect(() => {
         setAddress(state.exportTodayIndex.export.customer.address)
         setChange(Math.random())
+        setSelectedExport(state.exportTodayIndex.export.id)
         setValueCustomer('phoneNumber', state.exportTodayIndex.export.customer.phoneNumber)
         setValueCustomer('name', state.exportTodayIndex.export.customer.name)
         setValueCustomer('gender', state.exportTodayIndex.export.customer.gender)
@@ -177,7 +174,6 @@ const EditSalesExport: React.FC = () => {
         const data = drugCategories.map((drug: any) => {
             return { ...drug, checked: false }
         });
-        // setDrugs(data)
         const handleDrugs = data.map((drug: any) => {
             return selectDrugIds.includes(drug.id) ? {...drug, checked: true} : drug
         })
@@ -197,21 +193,6 @@ const EditSalesExport: React.FC = () => {
         }
         setSearch(event.target.value as string);
     }
-
-    // useEffect(() => {
-    //     if (drugCategories && drugCategories.length > 0) {
-    //         const selectDrugIds = state.exportTodayIndex.exportDetail.map((detail: any) => detail.drug.id)
-    //         const data = drugCategories.map((drug: any) => {
-    //             return { ...drug, checked: false }
-    //         });
-    //         // setDrugs(data)
-    //         const handleDrugs = data.map((drug: any) => {
-    //             return selectDrugIds.includes(drug.id) ? {...drug, checked: true} : drug
-    //         })
-    //         setCloneDrugs(handleDrugs)
-    //         setDrugs(handleDrugs)
-    //     }
-    // }, [drugCategories])
 
     useEffect(() => {
         globalEvent.emit('close-sidebar')
@@ -242,7 +223,7 @@ const EditSalesExport: React.FC = () => {
         }
     }, [exportData, exportDetailData])
 
-    const onSubmit = (data: ExportForm) => {
+    const onSubmit = (data: EditExportForm) => {
         const isInvalid = selectedDrugs.length === 0
             || selectedDrugs.some(drug => drug.error.length > 0);
         
@@ -270,7 +251,6 @@ const EditSalesExport: React.FC = () => {
                     gender: watch('gender') 
                 },
                 type: 1,
-                prescriptionId: data.prescriptionId,
                 staffId: staff.id,
                 exportDate: data.exportDate,
                 note: data.note,
@@ -349,6 +329,52 @@ const EditSalesExport: React.FC = () => {
                     Thông tin bán hàng
                 </Typography>
                 <Box sx={{ display: 'flex', gap: 2 }}>
+                    <Grid container spacing={1.5} width='30%' sx={{ flex: 2 }}>
+                        <Grid item xs={8} sm={12} sx={{ mt: -2 }}>
+                            <Typography
+                                variant="subtitle2"
+                            >
+                                <Typography display="inline" sx={{ fontWeight: 'bold' }}>
+                                    Mã phiếu:
+                                </Typography>
+                                <Typography display="inline" sx={{ textDecoration: 'none'}}>
+                                    { ` ${state.exportTodayIndex.export.id}`}
+                                </Typography>
+                            </Typography>
+                            <Typography
+                                variant="subtitle2"
+                                marginBottom={1}
+                            >
+                                <Typography display="inline" sx={{ fontWeight: 'bold' }}>
+                                    Mã đơn thuốc:
+                                </Typography>
+                                <Typography display="inline" sx={{ textDecoration: 'none'}}>
+                                    { ` ${state.exportTodayIndex.export.prescriptionId}`}
+                                </Typography>
+                            </Typography>
+                        </Grid>
+
+                        <Grid item xs={8} sm={12}>
+                            <FormInputDate
+                                name="exportDate"
+                                control={control}
+                                label="Ngày xuất hàng"
+                                placeholder='x'
+                                withTime={true}
+                            />
+                        </Grid>
+
+                        <Grid item xs={8} sm={12}>
+                            <FormInputText
+                                name="note"
+                                control={control}
+                                label="Ghi chú"
+                                placeholder='Nhập ghi chú'
+                            />
+                        </Grid>
+                      
+                    </Grid>
+
                     <Grid container spacing={1.5} sx={{ flex: 4 }}>
                         <Grid item xs={8} sm={4}>
                             <Controller
@@ -399,35 +425,7 @@ const EditSalesExport: React.FC = () => {
                         
                     </Grid>
 
-                    <Grid container spacing={1.5} width='30%' sx={{ flex: 2 }}>
-                        <Grid item xs={8} sm={12}>
-                            <FormInputDate
-                                name="exportDate"
-                                control={control}
-                                label="Ngày xuất hàng"
-                                placeholder='x'
-                                withTime={true}
-                            />
-                        </Grid>
-
-                        <Grid item xs={8} sm={12}>
-                            <FormInputText
-                                name="prescriptionId"
-                                control={control}
-                                label="Mã đơn thuốc"
-                                placeholder='Nhập mã đơn thuốc/toa thuốc'
-                            />
-                        </Grid>
-
-                        <Grid item xs={8} sm={12}>
-                            <FormInputText
-                                name="note"
-                                control={control}
-                                label="Ghi chú"
-                                placeholder='Nhập ghi chú'
-                            />
-                        </Grid>
-                    </Grid>
+                    
                 </Box>
                     
                     
@@ -535,6 +533,7 @@ const EditSalesExport: React.FC = () => {
                 </Grid>
                 <div style={{ display: 'none' }}>
                     <ExportBill
+                        //@ts-ignore
                         ref={componentRef}
                         exportData={exportData}
                         exportDetail={exportDetailData}
@@ -543,7 +542,7 @@ const EditSalesExport: React.FC = () => {
                 
             </Paper>
             <Box sx={{ flex: 1, px: 2, py: 1}}></Box>
-            <TodaySales setSelectedExport={setSelectedExport} />
+            <TodaySales exportIdSelected={selectedExport} />
         </Box>
     )
 }

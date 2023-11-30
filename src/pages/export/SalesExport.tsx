@@ -1,16 +1,14 @@
 import { Box, Button, CircularProgress, Grid, InputAdornment, Paper, TextField, Typography } from "@mui/material"
 import { useNavigate } from "react-router-dom"
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { getStaff } from "../../store/auth";
 import { FormInputText } from "../../components/form/FormInputText";
 import { FormInputDate } from "../../components/form/FormInputDate";
 import TableExportSelectDrug from "../../components/table/TableExportSelectDrug";
 import TableDrugCategories from "../../components/table/TableDrugCategories";
-import { useGetDataDrugCategories } from "../../hooks/useDrugCategory";
 import SearchIcon from '@mui/icons-material/Search';
 import { makeStyles } from "@mui/styles";
-import globalEvent from "../../utils/emitter";
 import ReplayIcon from '@mui/icons-material/Replay';
 import { FormInputDropdown } from "../../components/form/FormInputDropdown";
 import { genders } from "../../utils/constants";
@@ -19,12 +17,12 @@ import { useSearchCustomer } from '../../hooks/useCustomer'
 import yup from "../../utils/yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useCreateExport } from "../../hooks/useExport";
-import { useReactToPrint } from "react-to-print";
 import ExportBill from "./ExportBill";
 import { enqueueSnackbar } from "notistack";
-import { ExportData, ExportDetailPdf } from "../../types/ExportType";
 import dayjs from "dayjs";
 import { TodaySales } from "../../components/TodaySales";
+import { useSalesExport } from "../../hooks/useSalesExport";
+import { useExportPdf } from "../../hooks/useExportPdf";
 
 const useStyles = makeStyles({
   customTextField: {
@@ -43,7 +41,6 @@ export interface ExportForm {
     customer?: CustomerForm,
     note: string;
     exportDate: Date
-    prescriptionId: string
     exportDetails: any[]
     staffId: number;
     type: number
@@ -93,10 +90,6 @@ const exportValidate: Yup.ObjectSchema<ExportForm> = yup.object({
     exportDate: yup
         .date()
         .max(new Date(dayjs().add(1, 'day').format('YYYY-MM-DD')), 'Thời gian xuất hàng không hợp lệ.'),
-    prescriptionId: yup
-        .string()
-        .required('Mã toa thuốc bắt buộc')
-        .max(20),
 });
 
 const columns: ColumnDrugCategory[] = [
@@ -113,7 +106,6 @@ const SalesExport: React.FC = () => {
     const navigate = useNavigate()
     const classes = useStyles();
     const staff = getStaff();
-    const { isLoading: drugCategoryLoading, data: drugCategories, refetch } = useGetDataDrugCategories()
     const {
         handleSubmit: handleSubmitCustomer,
         control: customerControl,
@@ -134,76 +126,29 @@ const SalesExport: React.FC = () => {
         clearErrors('name')
     }
     const searchCustomer = useSearchCustomer(setCustomer)
-    const [drugs, setDrugs] = useState<any[]>([])
-    const [cloneDrugs, setCloneDrugs] = useState<any[]>([])
-    const [selectedDrugs, setSelectedDrugs] = useState<any[]>([])
-    const [pay, setPay] = useState<number[]>([0 , 0, 0])
     const { handleSubmit, control, reset, setValue } = useForm<ExportForm>({
         defaultValues: defaultValuesExport,
         resolver: yupResolver(exportValidate)
     });
     const [address, setAddress] = useState<string>('');
-    const [search, setSearch] = useState<string>('')
-    const [exportData, setExportData] = useState<ExportData | null>(null)    
-    const [exportDetailData, setExportDetailData] = useState<ExportDetailPdf[] | null>(null)
-    const [selectedExport, setSelectedExport] = useState<number|null>(null)
+
+    const {exportData, exportDetailData, componentRef, setExportData, setExportDetailData} = useExportPdf()
     const createExport = useCreateExport(setExportData, setExportDetailData);
-    let componentRef = useRef<HTMLDivElement>(null);
-    const handlePrint = useReactToPrint({
-        content: () => componentRef.current,
-    });
-
-    const handleSearchData = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const searchTerm = event.target.value as string
-        if (searchTerm.trim().length > 0) {
-            setDrugs(cloneDrugs.filter(
-                drug => (drug.name).toLowerCase().includes(searchTerm.toLowerCase()) && !drug.checked
-            ))
-        }
-        else {
-            setDrugs(cloneDrugs)
-        }
-        setSearch(event.target.value as string);
-    }
-
-    useEffect(() => {
-        if (drugCategories && drugCategories.length > 0) {
-            const data = drugCategories.map((drug: any) => {
-                return { ...drug, checked: false }
-            });
-            setDrugs(data)
-            setCloneDrugs(data)
-        }
-    }, [drugCategories])
-
-    useEffect(() => {
-        globalEvent.emit('close-sidebar')
-    }, [])
-
-    useEffect(() => {
-        if (selectedDrugs.length > 0) {
-            const withoutVat = selectedDrugs.reduce((value, drug) => {
-                return value + drug.exportQuantity * drug.price
-            }, 0)
-
-            const vat = selectedDrugs.reduce((value, drug) => {
-                return value + drug.rawVat * drug.exportQuantity * drug.price
-            }, 0)
-
-            const total = vat + withoutVat;
-
-            setPay([withoutVat, vat, total])
-        }
-        else {
-            setPay([0, 0, 0])
-        }
-    }, [selectedDrugs])
-
-    useEffect(() => {
-        if (exportData && exportDetailData) {
-            handlePrint();
-        }
-    }, [exportData, exportDetailData])
+    const {
+        handleSearchData,
+        checkDrugCategory,
+        unCheckDrugCategory,
+        updateQuantity,
+        setSelectedDrugs,
+        setDrugs,
+        setSearch,
+        drugCategoryLoading,
+        drugs,
+        selectedDrugs,
+        pay,
+        search,
+        cloneDrugs
+    } = useSalesExport()
 
     const onSubmit = (data: ExportForm) => {
         const isInvalid = selectedDrugs.length === 0
@@ -233,7 +178,6 @@ const SalesExport: React.FC = () => {
                     gender: watch('gender') 
                 },
                 type: 1,
-                prescriptionId: data.prescriptionId,
                 staffId: staff.id,
                 exportDate: data.exportDate,
                 note: data.note,
@@ -250,61 +194,6 @@ const SalesExport: React.FC = () => {
             setAddress('')
         }
     };
-
-    const checkDrugCategory = (drugCategory: any) => {
-        const data = cloneDrugs.map(drug => {
-            return drug.id === drugCategory.id ? {...drug, checked: true} : drug
-        })
-        setCloneDrugs(data)
-        if (search.trim().length > 0) {
-            setDrugs(data.filter(
-                drug => (drug.name).toLowerCase().includes(search.toLowerCase()) && !drug.checked
-            ))
-        }
-        else {
-            setDrugs(data)
-        }
-        selectedDrugs.push({...drugCategory, checked: false, exportQuantity: 1, error: ''})
-    }
-
-    const unCheckDrugCategory = (drugCategory: any) => {
-        const data = cloneDrugs.map(drug => {
-            return drug.id === drugCategory.id ? {...drug, checked: false} : drug
-        })
-        setCloneDrugs(data);
-        if (search.trim().length > 0) {
-            setDrugs(data.filter(
-                drug => (drug.name).toLowerCase().includes(search.toLowerCase()) && !drug.checked
-            ))
-        }
-        else {
-            setDrugs(data)
-        }
-
-        const newSelectedDrugs = selectedDrugs.filter((drug) => drug.id !== drugCategory.id);
-        setSelectedDrugs(newSelectedDrugs);
-    }
-
-    const updateQuantity = (drugCategory: any) => {
-        let validateError = ''
-        if (drugCategory.exportQuantity > drugCategory.quantity) {
-            validateError = 'Số lượng tồn không đủ để xuất bán.'
-        }
-        else {
-            if (isNaN(drugCategory.exportQuantity)) {
-                validateError = 'Số lượng bán bắt buộc'
-            }
-            else if (drugCategory.exportQuantity === 0) {
-                validateError = 'Số lượng bán lớn hơn 0'
-            }
-            else {
-                validateError = ''
-            }
-        }
-        setSelectedDrugs(selectedDrugs.map(drug => {
-            return drug.id === drugCategory.id ?  {...drugCategory, error: validateError} : drug
-        }))
-    }
 
     const backToTable = () => {
         navigate('/admin/exports')
@@ -380,20 +269,15 @@ const SalesExport: React.FC = () => {
 
                         <Grid item xs={8} sm={12}>
                             <FormInputText
-                                name="prescriptionId"
-                                control={control}
-                                label="Mã đơn thuốc"
-                                placeholder='Nhập mã đơn thuốc/toa thuốc'
-                            />
-                        </Grid>
-
-                        <Grid item xs={8} sm={12}>
-                            <FormInputText
                                 name="note"
                                 control={control}
                                 label="Ghi chú"
                                 placeholder='Nhập ghi chú'
                             />
+                        </Grid>
+
+                        <Grid item xs={8} sm={12}>
+                            
                         </Grid>
                     </Grid>
                 </Box>
@@ -479,7 +363,7 @@ const SalesExport: React.FC = () => {
                                     m: 'auto',
                                     textTransform: 'none',
                                 }}
-                                onClick={ () => refetch()}
+                                onClick={ () => {}}
                             >
                                 <ReplayIcon  />
                                 Làm mới
@@ -518,6 +402,7 @@ const SalesExport: React.FC = () => {
                 </Grid>
                 <div style={{ display: 'none' }}>
                     <ExportBill
+                        //@ts-ignore
                         ref={componentRef}
                         exportData={exportData}
                         exportDetail={exportDetailData}
@@ -526,7 +411,7 @@ const SalesExport: React.FC = () => {
                 
             </Paper>
             <Box sx={{ flex: 1, px: 2, py: 1}}></Box>
-            <TodaySales setSelectedExport={setSelectedExport} />
+            <TodaySales />
         </Box>
     )
 }

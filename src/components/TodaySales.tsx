@@ -3,7 +3,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import { TodaySalesRow } from "./TodaySalesRow";
 import { makeStyles } from "@mui/styles";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useGetExportsToday } from "../hooks/useExport";
 
 const useStyles = makeStyles({
@@ -23,11 +23,11 @@ export interface SalesTodayType {
 }
 
 interface TodaySalesProps {
-    setSelectedExport: (n: number|null) => void
+    exportIdSelected?: number
 }
 
-export const TodaySales: React.FC<TodaySalesProps> = ({setSelectedExport}) => {
-    const classes = useStyles();
+export const TodaySales: React.FC<TodaySalesProps> = ({ exportIdSelected }) => {
+    const classes = useStyles()
     const navigate = useNavigate()
     const { data } = useGetExportsToday()
     const [cloneSalesToday, setCloneSalesToday] = useState<SalesTodayType[]>([])
@@ -47,15 +47,25 @@ export const TodaySales: React.FC<TodaySalesProps> = ({setSelectedExport}) => {
         setSearch(event.target.value as string);
     }
 
-    const updateSalesToday = (saleToday: SalesTodayType) => {
-        setSelectedExport(saleToday.id)
-        setSalesToday(salesToday.map((sale: SalesTodayType) => sale.id === saleToday.id
-            ? { ...sale, checked: true }
-            : {...sale, checked: false}))
-        setCloneSalesToday(cloneSalesToday.map((sale: SalesTodayType) => sale.id === saleToday.id
-            ? { ...sale, checked: true }
-            : {...sale, checked: false}))
-    }
+    // useEffect(() => {
+    //     console.log(state)
+    //     if (state) {
+    //         setSalesToday(salesToday.map((sale: SalesTodayType) => sale.id === state.exportTodayIndex.export.id
+    //             ? { ...sale, checked: true }
+    //             : {...sale, checked: false}))
+    //         setCloneSalesToday(cloneSalesToday.map((sale: SalesTodayType) => sale.id === state.exportTodayIndex.export.id
+    //             ? { ...sale, checked: true }
+    //             : {...sale, checked: false}))
+    //     }
+    // }, [state])
+    // const updateSalesToday = (saleToday: SalesTodayType) => {
+        // setSalesToday(salesToday.map((sale: SalesTodayType) => sale.id === saleToday.id
+        //     ? { ...sale, checked: true }
+        //     : {...sale, checked: false}))
+        // setCloneSalesToday(cloneSalesToday.map((sale: SalesTodayType) => sale.id === saleToday.id
+        //     ? { ...sale, checked: true }
+        //     : {...sale, checked: false}))
+    // }
 
     const reset = () => {
         setSalesToday(salesToday.map((sale: SalesTodayType) => { return {  ...sale, checked: false }}))
@@ -64,9 +74,41 @@ export const TodaySales: React.FC<TodaySalesProps> = ({setSelectedExport}) => {
 
     useEffect(() => {
         if (data && data.data.length > 0) {
-            const sales = data.data.map((sale: SalesTodayType) => { return {...sale, checked: false}})
-            setCloneSalesToday(sales)
-            setSalesToday(sales)
+            if (exportIdSelected) {
+                const sales = data.data.map((sale: SalesTodayType) => {
+                    return sale.id === exportIdSelected
+                        ? { ...sale, checked: true }
+                        : { ...sale, checked: false }
+                    }
+                )
+                setCloneSalesToday(sales)
+                setSalesToday(sales)
+            }
+            else {
+                const sales = data.data.map((sale: SalesTodayType) => { return {...sale, checked: false}})
+                setCloneSalesToday(sales)
+                setSalesToday(sales)
+            }
+        }
+    }, [exportIdSelected])
+
+    useEffect(() => {
+        if (data && data.data.length > 0) {
+            if (exportIdSelected) {
+                const sales = data.data.map((sale: SalesTodayType) => {
+                    return sale.id === exportIdSelected
+                        ? { ...sale, checked: true }
+                        : { ...sale, checked: false }
+                    }
+                )
+                setCloneSalesToday(sales)
+                setSalesToday(sales)
+            }
+            else {
+                const sales = data.data.map((sale: SalesTodayType) => { return {...sale, checked: false}})
+                setCloneSalesToday(sales)
+                setSalesToday(sales)
+            }
         }
     }, [data])
     return (
@@ -105,7 +147,6 @@ export const TodaySales: React.FC<TodaySalesProps> = ({setSelectedExport}) => {
                     sx={{  height: 40, textTransform: 'none' }}
                     color='success'
                     onClick={() => {
-                            setSelectedExport(null)
                             reset()
                             navigate('/sales/create')
                         }
@@ -126,7 +167,7 @@ export const TodaySales: React.FC<TodaySalesProps> = ({setSelectedExport}) => {
             <Box sx={{ overflowY: 'auto', height: '55vh', boxShadow: 1 }}>
                 {
                     salesToday.map(sale => 
-                        <TodaySalesRow updateSalesToday={updateSalesToday} saleToday={sale} />
+                        <TodaySalesRow saleToday={sale} />
                     )
                 }
             </Box>
