@@ -6,11 +6,22 @@ export type ExportType = {
     id: number
     exportDate: string
     note: string
+    type: number
     prescriptionId: string
     staff: Staff
     customer: Customer
     createdAt: string
     updatedAt: string
+}
+
+export type ExportTodayType = {
+    id: number
+    exportDate: string
+    note: string
+    type: number
+    staff: Staff
+    customer: Customer
+    total: number
 }
 
 export type ExportRawData = {
@@ -44,6 +55,17 @@ export type ExportData = {
     totalPrice: string
     totalPriceWithVat: string
     vat: string
+}
+
+export type ExportTodayData = {
+    id: number
+    note: string
+    prescriptionId: string
+    customer: CustomerData
+    exportDate: string
+    total: number
+    totalWithVat: number
+    vat: number
 }
 
 export type ExportDetailData = {

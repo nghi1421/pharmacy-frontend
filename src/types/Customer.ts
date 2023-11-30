@@ -12,4 +12,5 @@ export type CustomerData = {
     phoneNumber: string
     address: string
     gender: any
+    rawAddress?: string
 }

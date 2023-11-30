@@ -106,13 +106,15 @@ const Address: React.FC<AddressProp> = ({ setAddress, initAddress, size, gridSiz
             }
         }
         else {
-            setDistrict(null)
-            setWard(null)
+             if (!initAddress) {
+                setDistrict(null)
+                setWard(null)
+            }
         }
     }, [province])
 
     useEffect(() => {
-        if (district !== null) {
+        if (district) {
             if (!initAddress || (initAddress && district.label !== initAddress.split('/')[2])) {
                 async function selectDistrict() {
                     const data = await getWardsByDistrictCode(district.value)
@@ -123,7 +125,10 @@ const Address: React.FC<AddressProp> = ({ setAddress, initAddress, size, gridSiz
             }
         }
         else {
-            setWard(null)
+            if (!initAddress) {
+                 setWards([])
+                setWard(null)
+            }
         }
     }, [district])
 
@@ -160,7 +165,7 @@ const Address: React.FC<AddressProp> = ({ setAddress, initAddress, size, gridSiz
                 
             <Grid item xs={gridSize ? gridSize : 4}>
                 <Autocomplete
-                    key={province === null ? Math.random() : 'district-value'}
+                    // key={province === null ? Math.random() : 'district-value'}
                     disabled={province === null ? true : false}
                     options={districts.map((province) => {return {label: province.name, value: province.code}})}
                     id='autocomplete'
@@ -183,7 +188,7 @@ const Address: React.FC<AddressProp> = ({ setAddress, initAddress, size, gridSiz
 
             <Grid item xs={gridSize ? gridSize : 4}>
                 <Autocomplete
-                    key={province === null ? Math.random() : 'ward-value'}
+                    // key={province === null ? Math.random() : 'ward-value'}
                     disabled={district === null ? true : false}
                     options={wards.map((ward) => {return {label: ward.name, value: ward.code}})}
                     id='autocomplete'

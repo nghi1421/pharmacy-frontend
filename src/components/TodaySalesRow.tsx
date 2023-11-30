@@ -1,6 +1,7 @@
 import { Box, Tooltip, Typography } from "@mui/material"
 import { SalesTodayType } from "./TodaySales"
 import React from "react"
+import { useGetExportToday } from "../hooks/useExport"
 
 interface TodaySalesRowProps {
     updateSalesToday: (t: SalesTodayType) => void
@@ -8,6 +9,7 @@ interface TodaySalesRowProps {
 }
 
 export const TodaySalesRow: React.FC<TodaySalesRowProps> = ({ updateSalesToday, saleToday }) => {
+    const getExportToday = useGetExportToday()
     const bgColor = (type: number): string => {
         switch (type) {
             case 0: return '#ffedd5'
@@ -38,7 +40,10 @@ export const TodaySalesRow: React.FC<TodaySalesRowProps> = ({ updateSalesToday, 
                 ml: saleToday.checked ? 1 : 0,
                 padding: saleToday.checked ? 2 : 1,
             }}      
-                onClick={() => updateSalesToday(saleToday)}
+                onClick={() => {
+                    getExportToday.mutate(saleToday.id.toString())
+                    // updateSalesToday(saleToday)
+                }}
             >
                 <Typography variant='body2' sx={{ fontWeight: saleToday.checked ? 'bold' : 'normal', flex: 1, pl:1 }}>{saleToday.id}</Typography>
                 <Typography variant='body2' sx={{ fontWeight: saleToday.checked ? 'bold' : 'normal', flex: 1, textAlign: 'center' }}>{saleToday.exportDate}</Typography>

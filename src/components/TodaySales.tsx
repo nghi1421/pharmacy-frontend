@@ -2,8 +2,9 @@ import { Box, Button, InputAdornment, Paper, TextField, Typography } from "@mui/
 import SearchIcon from '@mui/icons-material/Search';
 import { TodaySalesRow } from "./TodaySalesRow";
 import { makeStyles } from "@mui/styles";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useGetExportsToday } from "../hooks/useExport";
 
 const useStyles = makeStyles({
   customTextField: {
@@ -28,60 +29,9 @@ interface TodaySalesProps {
 export const TodaySales: React.FC<TodaySalesProps> = ({setSelectedExport}) => {
     const classes = useStyles();
     const navigate = useNavigate()
-    const [cloneSalesToday, setCloneSalesToday] = useState<SalesTodayType[]>([{
-        id: 1,
-        type: 1,
-        exportDate: '11:22:02',
-        total: '10,000đ',
-        checked: false,
-    },
-    {
-        id: 2,
-        type: 2,
-        exportDate: '11:22:02',
-        total: '10,000đ',
-        checked: false,
-        },
-    {
-        id: 3,
-        type: 1,
-        exportDate: '11:22:02',
-        total: '10,000đ',
-        checked: false,
-    },{
-        id: 4,
-        type: 1,
-        exportDate: '11:22:02',
-        total: '10,000đ',
-        checked: false,
-    }])
-    const [salesToday, setSalesToday] = useState<SalesTodayType[]>([{
-        id: 1,
-        type: 1,
-        exportDate: '11:22:02',
-        total: '10,000đ',
-        checked: false,
-    },
-    {
-        id: 2,
-        type: 2,
-        exportDate: '11:22:02',
-        total: '10,000đ',
-        checked: false,
-        },
-    {
-        id: 3,
-        type: 1,
-        exportDate: '11:22:02',
-        total: '10,000đ',
-        checked: false,
-    },{
-        id: 4,
-        type: 1,
-        exportDate: '11:22:02',
-        total: '10,000đ',
-        checked: false,
-    }])
+    const { data } = useGetExportsToday()
+    const [cloneSalesToday, setCloneSalesToday] = useState<SalesTodayType[]>([])
+    const [salesToday, setSalesToday] = useState<SalesTodayType[]>([])
     const [search, setSearch] = useState<string>('');
 
     const handleSearchData = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -111,6 +61,14 @@ export const TodaySales: React.FC<TodaySalesProps> = ({setSelectedExport}) => {
         setSalesToday(salesToday.map((sale: SalesTodayType) => { return {  ...sale, checked: false }}))
         setCloneSalesToday(cloneSalesToday.map((sale: SalesTodayType) => { return {  ...sale, checked: false }}))
     }
+
+    useEffect(() => {
+        if (data && data.data.length > 0) {
+            const sales = data.data.map((sale: SalesTodayType) => { return {...sale, checked: false}})
+            setCloneSalesToday(sales)
+            setSalesToday(sales)
+        }
+    }, [data])
     return (
         <Paper sx={{
             position: 'fixed',
@@ -118,7 +76,6 @@ export const TodaySales: React.FC<TodaySalesProps> = ({setSelectedExport}) => {
             px: 2,
             py: 1,
             width: '25%',
-            zIndex: 10000, 
         }}
         >
             <Typography variant="h5" mt='10px' mb='10px' fontWeight='bold'>

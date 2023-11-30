@@ -1,9 +1,9 @@
 import { enqueueSnackbar } from 'notistack';
 import axiosClient from '../services/axios';
-import { API_CANCEL_EXPORT, API_EXPORT, API_EXPORT_WITH_ID} from '../utils/constants';
+import { API_CANCEL_EXPORT, API_EXPORT, API_EXPORT_TODAY, API_EXPORT_WITH_ID} from '../utils/constants';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { formatCurrency, formatDate, formatNumber } from '../utils/format';
-import { ExportRawData, ExportDetailRawData, ExportType, ExportData, ExportDetailData, ExportDetailPdf } from '../types/ExportType';
+import { ExportRawData, ExportDetailRawData, ExportType, ExportData, ExportDetailData, ExportDetailPdf, ExportTodayType, ExportTodayData } from '../types/ExportType';
 import { useNavigate } from 'react-router-dom';
 import { pathToUrl } from '../utils/path';
 import { ExportForm } from '../pages/export/SalesExport';
@@ -15,6 +15,7 @@ import { GenderEnum } from '../types/GenderEnum';
 import globalEvent from '../utils/emitter';
 import { AxiosResponse } from 'axios';
 import { CancelExportForm } from '../pages/export/CancelExport';
+import dayjs from 'dayjs';
 
 function createData({id, exportDate, staff, customer, note, prescriptionId}: ExportType) {
     return {
@@ -22,6 +23,15 @@ function createData({id, exportDate, staff, customer, note, prescriptionId}: Exp
         customerName: customer.name,
         staffName: staff.name,
         exportDate: formatDate(exportDate),
+    };
+}
+
+function createDataExportToday({id, exportDate, type, total}: ExportTodayType) {
+    return {
+      id, 
+      type,
+      exportDate: dayjs(exportDate).format('HH:mm:ss'),
+      total: formatCurrency(total)
     };
 }
 
@@ -38,14 +48,18 @@ function createDataExport({
     return {
         id, note, prescriptionId,
         staff: {...staff, address: handleAddress(staff.address)},
-        customer: {...customer, address: handleAddress(customer.address), gender: GenderEnum[customer.gender]},
+        customer: {
+          ...customer,
+          address: handleAddress(customer.address),
+          gender: GenderEnum[customer.gender],
+          rawAddress: customer.address
+        },
         exportDate: formatDate(exportDate),
         totalPrice: formatCurrency(totalPrice),
         totalPriceWithVat: formatCurrency(totalPriceWithVat),
         vat: formatCurrency(totalPriceWithVat - totalPrice)
     };
 }
-
 
 function createDataExportDetail({ drug, expiryDate, price, quantity, unitPrice, vat }: ExportDetailRawData): ExportDetailData {
   return {
@@ -93,6 +107,22 @@ const useGetExports = (query: Query) => {
   })
 };
 
+const useGetExportsToday = () => {
+  return useQuery({
+    queryKey: ['exports-today'],
+    queryFn: () => axiosClient
+      .get(API_EXPORT_TODAY)
+      .then((response) => {
+        if (response.data.message) {
+          return {
+            data: response.data.data.map((myExport: ExportTodayType) => createDataExportToday(myExport)),
+          }
+        }
+        return undefined
+      }),
+  })
+};
+
 const useGetExport = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
@@ -109,6 +139,37 @@ const useGetExport = () => {
           {
             state: {
               exportData: {
+                export: handleExport,
+                exportDetail: handleExportDetail
+              }
+            }
+          }
+        )
+
+        if (response.data.message) {
+          return response.data.data
+        }
+        else {
+          queryClient.invalidateQueries('exports', { refetchInactive: true })
+        }
+      }),
+  })
+}
+
+const useGetExportToday = () => {
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+
+  return useMutation({
+    mutationFn: (exportId: string) => axiosClient
+      .get(pathToUrl(API_EXPORT_WITH_ID, { exportId }))
+      .then((response) => {
+        const handleExport = response.data.data.export
+        const handleExportDetail = response.data.data.exportDetail
+        navigate( `/sales/${exportId}/edit`,
+          {
+            state: {
+              exportTodayIndex: {
                 export: handleExport,
                 exportDetail: handleExportDetail
               }
@@ -160,6 +221,7 @@ const useCreateExport = (
       console.log(response)
       if (response.data.message) {
         queryClient.invalidateQueries('drug-categories', { refetchInactive: true })
+        queryClient.invalidateQueries('exports-today', { refetchInactive: true })
         const handleExport = createDataExport(response.data.data.export)
         const handleExportDetail = response.data.data.exportDetail.map(
               (exportDetail: ExportDetailRawData) => createExportDetailPdf(exportDetail))
@@ -308,5 +370,7 @@ export {
   useGetExports,
   useGetExport,
   useCreateExport,
-  useCreateCancelExport 
+  useGetExportsToday,
+  useCreateCancelExport,
+  useGetExportToday
 }

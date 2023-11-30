@@ -1,5 +1,5 @@
 import { Box, Button, CircularProgress, Grid, InputAdornment, Paper, TextField, Typography } from "@mui/material"
-import { useNavigate } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 import React, { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { getStaff } from "../../store/auth";
@@ -25,6 +25,7 @@ import { enqueueSnackbar } from "notistack";
 import { ExportData, ExportDetailPdf } from "../../types/ExportType";
 import dayjs from "dayjs";
 import { TodaySales } from "../../components/TodaySales";
+import { formatCurrency } from "../../utils/format";
 
 const useStyles = makeStyles({
   customTextField: {
@@ -55,13 +56,6 @@ export interface CustomerForm {
     gender: string;
     address: string;
 }
-
-const defaultValuesCustomer = {
-    name: "",
-    phoneNumber: "",
-    gender: '1',
-    address: ''
-};
 
 const defaultValuesExport = {
     note: '',
@@ -109,9 +103,10 @@ const columns: ColumnDrugCategory[] = [
     { key: 'use', value: 'Công dụng'},
 ]
 
-const SalesExport: React.FC = () => {
+const EditSalesExport: React.FC = () => {
     const navigate = useNavigate()
     const classes = useStyles();
+    const { state } = useLocation()
     const staff = getStaff();
     const { isLoading: drugCategoryLoading, data: drugCategories, refetch } = useGetDataDrugCategories()
     const {
@@ -122,7 +117,7 @@ const SalesExport: React.FC = () => {
         clearErrors,
         reset: resetCustomer
     } = useForm<CustomerForm>({
-        defaultValues: defaultValuesCustomer,
+        defaultValues: {...state.exportTodayIndex.export.customer},
         resolver: yupResolver(customerFormValidate)
     });
     const setCustomer = (customer: CustomerForm) => {
@@ -137,12 +132,16 @@ const SalesExport: React.FC = () => {
     const [drugs, setDrugs] = useState<any[]>([])
     const [cloneDrugs, setCloneDrugs] = useState<any[]>([])
     const [selectedDrugs, setSelectedDrugs] = useState<any[]>([])
-    const [pay, setPay] = useState<number[]>([0 , 0, 0])
-    const { handleSubmit, control, reset, setValue } = useForm<ExportForm>({
+    const [pay, setPay] = useState<number[]>([
+        state.exportTodayIndex.export.totalPrice,
+        state.exportTodayIndex.export.totalPriceWithVat - state.exportTodayIndex.export.totalPrice,
+        state.exportTodayIndex.export.totalPriceWithVat
+    ])
+    const { handleSubmit, control, reset } = useForm<ExportForm>({
         defaultValues: defaultValuesExport,
         resolver: yupResolver(exportValidate)
     });
-    const [address, setAddress] = useState<string>('');
+    const [address, setAddress] = useState<string>(state.exportTodayIndex.export.customer.address);
     const [search, setSearch] = useState<string>('')
     const [exportData, setExportData] = useState<ExportData | null>(null)    
     const [exportDetailData, setExportDetailData] = useState<ExportDetailPdf[] | null>(null)
@@ -168,16 +167,36 @@ const SalesExport: React.FC = () => {
 
     useEffect(() => {
         if (drugCategories && drugCategories.length > 0) {
+            const selectDrugIds = state.exportTodayIndex.exportDetail.map((detail: any) => detail.drug.id)
             const data = drugCategories.map((drug: any) => {
                 return { ...drug, checked: false }
             });
-            setDrugs(data)
-            setCloneDrugs(data)
+            // setDrugs(data)
+            const handleDrugs = data.map((drug: any) => {
+                return selectDrugIds.includes(drug.id) ? {...drug, checked: true} : drug
+            })
+            setCloneDrugs(handleDrugs)
+            setDrugs(handleDrugs)
         }
     }, [drugCategories])
 
     useEffect(() => {
         globalEvent.emit('close-sidebar')
+        setSelectedDrugs(state.exportTodayIndex.exportDetail.map((detail: any) => {
+            return {
+                id: detail.drug.id,
+                name: detail.drug.name,
+                exportQuantity: detail.quantity,
+                rawVat: detail.vat,
+                vat: `${detail.vat * 100}%`,
+                formatedPrice: formatCurrency(detail.unitPrice),
+                price: detail.unitPrice,
+                minimalUnit: detail.drug.minimalUnit,
+                use: detail.drug.type.name,
+                checked: true,
+            }
+        }))
+        
     }, [])
 
     useEffect(() => {
@@ -245,7 +264,6 @@ const SalesExport: React.FC = () => {
             setDrugs(cloneDrugs)
             setSearch(''),
             reset()
-            setValue('exportDate',new Date())
             resetCustomer()
             setAddress('')
         }
@@ -421,15 +439,15 @@ const SalesExport: React.FC = () => {
                         }}
                     >
                         <Typography variant="subtitle2" sx={{  }}>
-                            Tổng tiền (chưa tính VAT): { pay[0] ? pay[0].toLocaleString() : '_'} VND
+                            Tổng tiền (chưa tính VAT): { pay[0] ? pay[0].toLocaleString() : '_'}đ
                         </Typography>
 
                         <Typography variant="subtitle2" sx={{  }}>
-                            Tiền thuế VAT: { pay[1] ? pay[1].toLocaleString() : '_'} VND
+                            Tiền thuế VAT: { pay[1] ? pay[1].toLocaleString() : '_'}đ
                         </Typography>
 
                         <Typography variant="subtitle2" sx={{ color: "#148c07"  }}>
-                            Tổng tiền: { pay[2] ? pay[2].toLocaleString() : '_'} VND
+                            Tổng tiền: { pay[2] ? pay[2].toLocaleString() : '_'}đ
                         </Typography>
                     </Grid>
 
@@ -531,4 +549,4 @@ const SalesExport: React.FC = () => {
     )
 }
 
-export default SalesExport
+export default EditSalesExport
