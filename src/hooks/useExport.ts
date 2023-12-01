@@ -117,8 +117,13 @@ const useGetExportsToday = () => {
       .get(API_EXPORT_TODAY)
       .then((response) => {
         if (response.data.message) {
+          const total = response.data.data.reduce((sum: number, item: any) => {
+            return item.type === 1 ? sum + item.total : sum;
+          }, 0)
+          
           return {
             data: response.data.data.map((myExport: ExportTodayType) => createDataExportToday(myExport)),
+            total: formatCurrency(total)
           }
         }
         return undefined
@@ -169,12 +174,14 @@ const useGetExportToday = () => {
       .then((response) => {
         const handleExport = response.data.data.export
         const handleExportDetail = response.data.data.exportDetail
+        
         navigate( `/sales/${exportId}/edit`,
           {
             state: {
               exportTodayIndex: {
                 export: handleExport,
-                exportDetail: handleExportDetail
+                exportDetail: handleExportDetail,
+                
               }
             },
             replace: true
@@ -202,19 +209,6 @@ const useCreateExport = (
       return await axiosClient.post(API_EXPORT, data)
         .then((response): AxiosResponse<any, any> => {
           return response
-          // if (response.data.message) {
-            // const handleExport = createDataExport(response.data.data.export)
-            // const handleExportDetail = response.data.data.exportDetail.map(
-            //   (exportDetail: any) => createExportDetailPdf(exportDetail))
-            
-          //   return {
-          //     exportData: handleExport,
-          //     exportDetail: handleExportDetail,
-          //   } as ExportPdfData
-          // }
-          // else {
-          //   return response
-          // }
         })
         .catch(error => {
           console.log(error);

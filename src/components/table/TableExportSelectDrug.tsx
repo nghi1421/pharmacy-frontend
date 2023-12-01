@@ -201,7 +201,7 @@ const TableExportSelectDrug: React.FC<TableProps<any>> = ({ rows, keyTable, acti
                                     placeholder='Nhập số lượng'
                                     thousandSeparator=","
                                     customInput={TextField}
-                                    onValueChange={({ value }) => (update({...row, exportQuantity: parseInt(value)}))}
+                                    onValueChange={({ value }) => update({...row, exportQuantity: parseInt(value)})}
                                 />
                                 <Typography color='#d32f2f' sx={{ fontSize: 13, mt:0.5 }}>{row.error}</Typography>
                           </CustomTableCell>

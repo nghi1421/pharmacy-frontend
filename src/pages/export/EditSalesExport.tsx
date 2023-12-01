@@ -181,6 +181,7 @@ const EditSalesExport: React.FC = () => {
     const refundExport = useRefundExport()
     const [change, setChange] = useState<number>(Math.random())
     const [openConfirmDialog, props] = useConfirmDialog(refundExport.mutate)
+    
     useEffect(() => {
         setAddress(state.exportTodayIndex.export.customer.address)
         setChange(Math.random())
@@ -214,6 +215,40 @@ const EditSalesExport: React.FC = () => {
         setCloneDrugs(handleDrugs)
         setDrugs(handleDrugs)
     }, [state])
+
+    useEffect(() => {
+        setAddress(state.exportTodayIndex.export.customer.address)
+        setChange(Math.random())
+        setSelectedExport(state.exportTodayIndex.export.id)
+        setValueCustomer('phoneNumber', state.exportTodayIndex.export.customer.phoneNumber)
+        setValueCustomer('name', state.exportTodayIndex.export.customer.name)
+        setValueCustomer('gender', state.exportTodayIndex.export.customer.gender)
+
+        const selectDrugIds = state.exportTodayIndex.exportDetail.map((detail: any) => detail.drug.id)
+        setSelectedDrugs(state.exportTodayIndex.exportDetail.map((detail: any) => {
+            return {
+                id: detail.drug.id,
+                name: detail.drug.name,
+                exportQuantity: detail.quantity,
+                rawVat: detail.vat,
+                vat: `${detail.vat * 100}%`,
+                formatedPrice: formatCurrency(detail.unitPrice),
+                price: detail.unitPrice,
+                minimalUnit: detail.drug.minimalUnit,
+                use: detail.drug.type.name,
+                checked: true,
+            }
+        }))
+        console.log(selectDrugIds);
+        const data = drugCategories.map((drug: any) => {
+            return { ...drug, checked: false }
+        });
+        const handleDrugs = data.map((drug: any) => {
+            return selectDrugIds.includes(drug.id) ? {...drug, checked: true} : drug
+        })
+        setCloneDrugs(handleDrugs)
+        setDrugs(handleDrugs)
+    }, [])
 
     const handleSearchData = (event: React.ChangeEvent<HTMLInputElement>) => {
         const searchTerm = event.target.value as string
@@ -337,6 +372,7 @@ const EditSalesExport: React.FC = () => {
 
     const updateQuantity = (drugCategory: any) => {
         let validateError = ''
+        console.log(drugCategory)
         if (drugCategory.exportQuantity > drugCategory.quantity) {
             validateError = 'Số lượng tồn không đủ để xuất bán.'
         }

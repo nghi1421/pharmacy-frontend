@@ -172,7 +172,7 @@ export const TodaySales: React.FC<TodaySalesProps> = ({ exportIdSelected }) => {
                 }
             </Box>
             <Typography variant="body2" sx={{ fontWeight: 'bold', pt: 3, px: 2, pb: 1 }}>
-                Tổng tiền: 120,000đ
+                Tổng tiền: {data?.total}
             </Typography>
         </Paper>
     )

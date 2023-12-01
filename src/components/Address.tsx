@@ -37,7 +37,7 @@ const Address: React.FC<AddressProp> = ({ setAddress, initAddress, size, gridSiz
     const [wards, setWards] = useState<Ward[]>([])
     const [detailAddress, setDetailAddress] = useState<string>('')
     const [oldAdress, setOldAddress] = useState<string>('')
-    function getFullAddress(): string {
+    const getFullAddress = (): string => {
         return `${detailAddress}/${ward ? ward.label : ''}/${district ? district.label : ''}/${province ? province.label : ''}`
     }
 
@@ -57,7 +57,7 @@ const Address: React.FC<AddressProp> = ({ setAddress, initAddress, size, gridSiz
                         const provinceObj: Province | undefined = provinces
                             .find((province) => province.name === splitAddress[3])
                         if (provinceObj) {
-                            localDistricts = await getDistrictsByProvinceCode(provinceObj.code)
+                            localDistricts = getDistrictsByProvinceCode(provinceObj.code)
                             setDistricts(localDistricts)
                             setProvince({ label: provinceObj.name, value: provinceObj.code })
                         }
@@ -66,7 +66,7 @@ const Address: React.FC<AddressProp> = ({ setAddress, initAddress, size, gridSiz
                     if (splitAddress[2].length > 0) {
                         const districtObj: District | undefined = localDistricts.find((district) => district.name === splitAddress[2])
                         if (districtObj) {
-                            localWards = await getWardsByDistrictCode(districtObj.code)
+                            localWards = getWardsByDistrictCode(districtObj.code)
                             setWards(localWards)
                             setDistrict({label: districtObj.name, value: districtObj.code})
                         }
@@ -87,7 +87,7 @@ const Address: React.FC<AddressProp> = ({ setAddress, initAddress, size, gridSiz
             setOldAddress(initAddress)
         }
         
-        if (initAddress.length === 0) {
+        if (initAddress?.length === 0) {
             setProvince(null)
             setDetailAddress('')
         }
@@ -96,19 +96,14 @@ const Address: React.FC<AddressProp> = ({ setAddress, initAddress, size, gridSiz
     useEffect(() => {
         if (province) {
             if (!initAddress || (initAddress && province.label !== initAddress.split('/')[3])) {
-                async function selectProvince() {
-                    const data = await getDistrictsByProvinceCode(province.value)
-                    setDistricts(data)
-                    setDistrict(null)
-                    setWard(null)
-                }
-                selectProvince()
+                const data = getDistrictsByProvinceCode(province.value)
+                setDistricts(data)
+                setDistrict(null)
             }
         }
         else {
-             if (!initAddress) {
+            if (district) {
                 setDistrict(null)
-                setWard(null)
             }
         }
     }, [province])
@@ -116,17 +111,13 @@ const Address: React.FC<AddressProp> = ({ setAddress, initAddress, size, gridSiz
     useEffect(() => {
         if (district) {
             if (!initAddress || (initAddress && district.label !== initAddress.split('/')[2])) {
-                async function selectDistrict() {
-                    const data = await getWardsByDistrictCode(district.value)
-                    setWards(data)
-                    setWard(null)
-                }
-                selectDistrict()
+                const data = getWardsByDistrictCode(district.value)
+                setWards(data)
+                setWard(null)
             }
         }
         else {
-            if (!initAddress) {
-                 setWards([])
+            if (ward) {
                 setWard(null)
             }
         }
@@ -165,7 +156,6 @@ const Address: React.FC<AddressProp> = ({ setAddress, initAddress, size, gridSiz
                 
             <Grid item xs={gridSize ? gridSize : 4}>
                 <Autocomplete
-                    // key={province === null ? Math.random() : 'district-value'}
                     disabled={province === null ? true : false}
                     options={districts.map((province) => {return {label: province.name, value: province.code}})}
                     id='autocomplete'
@@ -188,7 +178,6 @@ const Address: React.FC<AddressProp> = ({ setAddress, initAddress, size, gridSiz
 
             <Grid item xs={gridSize ? gridSize : 4}>
                 <Autocomplete
-                    // key={province === null ? Math.random() : 'ward-value'}
                     disabled={district === null ? true : false}
                     options={wards.map((ward) => {return {label: ward.name, value: ward.code}})}
                     id='autocomplete'
