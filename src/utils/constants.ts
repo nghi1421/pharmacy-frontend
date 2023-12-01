@@ -15,6 +15,7 @@ export const API_DRUG_CATEGORY = 'drug-categories';
 export const API_IMPORT = 'imports';
 export const API_EXPORT = 'exports';
 export const API_EXPORT_TODAY = 'exports-today';
+export const API_REFUND_EXPORT_TODAY = 'refund-exports/:exportId';
 export const API_CANCEL_EXPORT = 'exports/cancel';
 export const API_TYPE_BY_USE = 'type-by-uses';
 

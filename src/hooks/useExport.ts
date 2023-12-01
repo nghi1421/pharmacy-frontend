@@ -1,6 +1,6 @@
 import { enqueueSnackbar } from 'notistack';
 import axiosClient from '../services/axios';
-import { API_CANCEL_EXPORT, API_EXPORT, API_EXPORT_TODAY, API_EXPORT_WITH_ID} from '../utils/constants';
+import { API_CANCEL_EXPORT, API_EXPORT, API_EXPORT_TODAY, API_EXPORT_WITH_ID, API_REFUND_EXPORT_TODAY} from '../utils/constants';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { formatCurrency, formatDate, formatNumber } from '../utils/format';
 import { ExportRawData, ExportDetailRawData, ExportType, ExportData, ExportDetailData, ExportDetailPdf, ExportTodayType, ExportTodayData } from '../types/ExportType';
@@ -16,6 +16,9 @@ import globalEvent from '../utils/emitter';
 import { AxiosResponse } from 'axios';
 import { CancelExportForm } from '../pages/export/CancelExport';
 import dayjs from 'dayjs';
+import { useContext } from 'react';
+import { AuthContext } from '../App';
+import { EditExportForm } from '../pages/export/EditSalesExport';
 
 function createData({id, exportDate, staff, customer, note, prescriptionId}: ExportType) {
     return {
@@ -275,7 +278,6 @@ const useCreateCancelExport = (
         })
     },
     onSuccess: (response: any) => {
-      console.log(response)
       if (response.data.message) {
         queryClient.invalidateQueries('drug-categories', { refetchInactive: true })
         const handleExport = createDataExport(response.data.data.export)
@@ -299,79 +301,93 @@ const useCreateCancelExport = (
   })
 }
 
-// const useUpdateExport = () => {
-//   const queryClient = useQueryClient();
-//   const navigate = useNavigate();
+const useRefundExport = () => {
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+  const { roleId } = useContext(AuthContext)
+  return useMutation({
+    mutationFn: async (exportId: string) => {
+      return await axiosClient.post(pathToUrl(API_REFUND_EXPORT_TODAY, { exportId:  exportId}))
+    },
+    onSuccess: (response: any) => {
+      if (response.data.message) {
+        queryClient.invalidateQueries('exports', { refetchInactive: true })
+        queryClient.invalidateQueries('exports-today', { refetchInactive: true })
+        queryClient.invalidateQueries('drug-categories', { refetchInactive: true })
+        navigate(roleId === 1 ? '/exports' : '/sales/create')
+        enqueueSnackbar(response.data.message, {
+          autoHideDuration: 3000,
+          variant: 'success'
+        })  
+      }
+      else {
+          enqueueSnackbar(response.data.errorMessage, {
+            autoHideDuration: 3000,
+            variant: 'error'
+          }) 
+      }
+    },
+    onError: () => {
+      enqueueSnackbar('Lỗi server.',
+        {
+          autoHideDuration: 3000,
+          variant: 'error'
+        })
+    }
+  }
+  ) 
+}
 
-//   return useMutation({
-//     mutationFn: async (data: ExportEditForm) => {
-//       return await axiosClient.put(pathToUrl(API_EXPORT_WITH_ID, { exportId: data.id }), data)
-//     },
-//     onSuccess: (response: any) => {
-//       if (response.data.message) {
-//         queryClient.invalidateQueries('Exports', { refetchInactive: true })
-//         navigate('/Exports')
-//         enqueueSnackbar(response.data.message, {
-//           autoHideDuration: 3000,
-//           variant: 'success'
-//         })  
-//       }
-//       else {
-//           enqueueSnackbar(response.data.errorMessage, {
-//             autoHideDuration: 3000,
-//             variant: 'error'
-//           }) 
-//       }
-//     },
-//     onError: (error: any) => {
-//       enqueueSnackbar('Lỗi server.',
-//         {
-//           autoHideDuration: 3000,
-//           variant: 'error'
-//         })
-//     }
-//   }
-//   ) 
-// }
-
-// const useDeleteExport = () => {
-//   const queryClient = useQueryClient();
-
-//   return useMutation({
-//     mutationFn: async (exportId: string) => {
-//       return await axiosClient.delete(pathToUrl(API_EXPORT_WITH_ID, { exportId }))
-//     },
-//     onSuccess: (response: any) => {
-//       if (response.data.message) {
-//         queryClient.invalidateQueries('Exports', { refetchInactive: true })
-//         enqueueSnackbar(response.data.message, {
-//           autoHideDuration: 3000,
-//           variant: 'success'
-//         })  
-//       }
-//       else {
-//           enqueueSnackbar(response.data.errorMessage, {
-//             autoHideDuration: 3000,
-//             variant: 'error'
-//           }) 
-//       }
-//     },
-//     onError: (error: any) => {
-//       enqueueSnackbar('Lỗi server.',
-//         {
-//           autoHideDuration: 3000,
-//           variant: 'error'
-//         })
-//     }
-//   }
-//   ) 
-// }
+const useRefundAndCreateNewExport = (
+  setExportData: (e: ExportData) => void,
+  setExportDetailData: (e: ExportDetailPdf[]) => void
+) => {
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+  const { roleId } = useContext(AuthContext)
+  return useMutation({
+    mutationFn: async (data: EditExportForm) => {
+      return await axiosClient.put(pathToUrl(API_EXPORT_WITH_ID, { exportId:  data.id}), data)
+    },
+    onSuccess: (response: any) => {
+      if (response.data.message) {
+        queryClient.invalidateQueries('drug-categories', { refetchInactive: true })
+        navigate(roleId === 1 ? '/exports' : '/sales/create')
+        const handleExport = createDataExport(response.data.data.export)
+        const handleExportDetail = response.data.data.exportDetail.map(
+              (exportDetail: ExportDetailRawData) => createExportDetailPdf(exportDetail))
+        setExportData(handleExport)
+        setExportDetailData(handleExportDetail)
+        enqueueSnackbar(response.data.message, {
+          autoHideDuration: 3000,
+          variant: 'success'
+        })
+      }
+      else {
+        enqueueSnackbar(response.data.errorMessage, {
+          autoHideDuration: 3000,
+          variant: 'error'
+        })
+      }
+    },
+    onError: () => {
+      enqueueSnackbar('Lỗi server.',
+        {
+          autoHideDuration: 3000,
+          variant: 'error'
+        })
+    }
+  }
+  ) 
+}
 
 export {
   useGetExports,
   useGetExport,
   useCreateExport,
+  useRefundAndCreateNewExport,
   useGetExportsToday,
   useCreateCancelExport,
+  useRefundExport,
   useGetExportToday
 }

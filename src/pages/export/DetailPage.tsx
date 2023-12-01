@@ -144,17 +144,17 @@ const DetailPage = () => {
                             gap: 2
                         }}
                     >
-                    <Button
-                        variant="contained"
-                        color="error"
-                        sx={{
-                            textTransform: 'none',
-                        }}
-                        onClick={backToTable}
-                    >
-                        Quay về
-                    </Button>
-                </Grid>
+                        <Button
+                            variant="contained"
+                            color="error"
+                            sx={{
+                                textTransform: 'none',
+                            }}
+                            onClick={backToTable}
+                        >
+                            Quay về
+                        </Button>
+                    </Grid>
                 </Grid>
             </Grid>
         </Paper>
