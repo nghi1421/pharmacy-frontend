@@ -1,6 +1,6 @@
 import { enqueueSnackbar } from 'notistack';
 import axiosClient from '../services/axios';
-import { DrugCategory } from '../types/DrugCategory';
+import { DrugCategory, DrugCategoryHandled } from '../types/DrugCategory';
 import { API_DRUG_CATEGORY, API_DRUG_CATEGORY_WITH_ID } from '../utils/constants';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { formatCurrency, formatNumber } from '../utils/format';
@@ -13,10 +13,11 @@ import { UseFormSetError } from 'react-hook-form';
 import { Query } from '../types/Query';
 import { DataMetaResponse } from '../types/response/DataResponse';
 
-function createData({id, name, price, form, unit, vat, type, minimalUnit, quantity}: DrugCategory) {
+function createData({id, name, price, form, unit, vat, type, minimalUnit, quantity}: DrugCategory): DrugCategoryHandled {
     return {
       id, name, price, form, unit, minimalUnit,
         quantity: formatNumber(quantity),
+        rawQuantity: quantity,
         rawVat: vat,
         vat: `${vat*100}%`,
         use: type.name,

@@ -1,6 +1,6 @@
 import { Box, Button, CircularProgress, Grid, InputAdornment, Paper, TextField, Typography } from "@mui/material"
 import { useNavigate } from "react-router-dom"
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { getStaff } from "../../store/auth";
 import { FormInputText } from "../../components/form/FormInputText";
@@ -23,6 +23,7 @@ import dayjs from "dayjs";
 import { TodaySales } from "../../components/TodaySales";
 import { useSalesExport } from "../../hooks/useSalesExport";
 import { useExportPdf } from "../../hooks/useExportPdf";
+import { AuthContext } from "../../App";
 
 const useStyles = makeStyles({
   customTextField: {
@@ -104,6 +105,7 @@ const columns: ColumnDrugCategory[] = [
 
 const SalesExport: React.FC = () => {
     const navigate = useNavigate()
+    const { roleId } = useContext(AuthContext)
     const classes = useStyles();
     const staff = getStaff();
     const {
@@ -354,33 +356,40 @@ const SalesExport: React.FC = () => {
                                 Tạo phiếu & Xuất hóa đơn
                             </Button>
 
-                            <Button
-                                variant='contained'
-                                color="success"
-                                aria-label="Delete"
-                                sx={{
-                                    height: '70%',
-                                    m: 'auto',
-                                    textTransform: 'none',
-                                }}
-                                onClick={ () => {}}
-                            >
-                                <ReplayIcon  />
-                                Làm mới
-                            </Button>
+                            {
+                                roleId === 1
+                                ?
+                                <>
+                                    <Button
+                                        variant='contained'
+                                        color="success"
+                                        aria-label="Delete"
+                                        sx={{
+                                            height: '70%',
+                                            m: 'auto',
+                                            textTransform: 'none',
+                                        }}
+                                            onClick={ () => {}}
+                                        >
+                                            <ReplayIcon  />
+                                            Làm mới
+                                        </Button>
 
-                            <Button
-                                variant="contained"
-                                color="error"
-                                sx={{
-                                    height: '70%',
-                                    m: 'auto',
-                                    textTransform: 'none',
-                                }}
-                                onClick={backToTable}
-                            >
-                                Quay về
-                            </Button>
+                                        <Button
+                                            variant="contained"
+                                            color="error"
+                                            sx={{
+                                                height: '70%',
+                                                m: 'auto',
+                                                textTransform: 'none',
+                                            }}
+                                            onClick={backToTable}
+                                        >
+                                            Quay về
+                                    </Button>
+                                    </>
+                                : <></>
+                            }
                             
                         </Box>
                         {

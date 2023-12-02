@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { useGetDataDrugCategories } from "./useDrugCategory"
 import globalEvent from "../utils/emitter"
+import { DrugCategoryHandled } from "../types/DrugCategory"
 
 export const useSalesExport = () => {
     const { isLoading: drugCategoryLoading, data: drugCategories } = useGetDataDrugCategories()
@@ -59,7 +60,7 @@ export const useSalesExport = () => {
 
     const updateQuantity = (drugCategory: any) => {
         let validateError = ''
-        if (drugCategory.exportQuantity > drugCategory.quantity) {
+        if (drugCategory.exportQuantity > drugCategory.rawQuantity) {
             validateError = 'Số lượng tồn không đủ để xuất bán.'
         }
         else {
@@ -99,8 +100,8 @@ export const useSalesExport = () => {
 
     useEffect(() => {
         if (drugCategories && drugCategories.length > 0) {
-            const data = drugCategories.map((drug: any) => {
-                return { ...drug, checked: false }
+            const data = drugCategories.map((drug: DrugCategoryHandled) => {
+                return { ...drug, checked: false, rawQuantity: drug.rawQuantity }
             });
             setDrugs(data)
             setCloneDrugs(data)
@@ -110,6 +111,8 @@ export const useSalesExport = () => {
     useEffect(() => {
         globalEvent.emit('close-sidebar')
     }, [])
+
+  
 
     return {
         drugCategoryLoading,

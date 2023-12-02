@@ -3,7 +3,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import { TodaySalesRow } from "./TodaySalesRow";
 import { makeStyles } from "@mui/styles";
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useGetExportsToday } from "../hooks/useExport";
 
 const useStyles = makeStyles({

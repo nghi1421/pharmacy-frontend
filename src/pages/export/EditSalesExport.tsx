@@ -17,7 +17,7 @@ import Address from "../../components/Address";
 import { useSearchCustomer } from '../../hooks/useCustomer'
 import yup from "../../utils/yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useCreateExport, useRefundExport } from "../../hooks/useExport";
+import { useCreateExport, useRefundAndCreateNewExport, useRefundExport } from "../../hooks/useExport";
 import { useReactToPrint } from "react-to-print";
 import ExportBill from "./ExportBill";
 import { enqueueSnackbar } from "notistack";
@@ -30,6 +30,7 @@ import ConfirmDialog from "../../components/ConfirmDialog";
 import { handleAddress } from "../../utils/address";
 import { TextShow } from "../../components/TextShow";
 import TableData from "../../components/table/TableData";
+import { DrugCategory, DrugCategoryHandled } from "../../types/DrugCategory";
 
 const useStyles = makeStyles({
   customTextField: {
@@ -107,10 +108,6 @@ const exportValidate: Yup.ObjectSchema<ExportForm> = yup.object({
     exportDate: yup
         .date()
         .max(new Date(dayjs().add(1, 'day').format('YYYY-MM-DD')), 'Thời gian xuất hàng không hợp lệ.'),
-    prescriptionId: yup
-        .string()
-        .required('Mã toa thuốc bắt buộc')
-        .max(20),
 });
 
 const columns: ColumnDrugCategory[] = [
@@ -172,7 +169,7 @@ const EditSalesExport: React.FC = () => {
     const [search, setSearch] = useState<string>('')
     const [exportData, setExportData] = useState<ExportData | null>(null)    
     const [exportDetailData, setExportDetailData] = useState<ExportDetailPdf[] | null>(null)
-    const createExport = useCreateExport(setExportData, setExportDetailData);
+    const refundAndCreate = useRefundAndCreateNewExport(setExportData, setExportDetailData);
     const [selectedExport, setSelectedExport] = useState<number>(state.exportTodayIndex.export.id)
     let componentRef = useRef<HTMLDivElement>(null);
     const handlePrint = useReactToPrint({
@@ -181,74 +178,45 @@ const EditSalesExport: React.FC = () => {
     const refundExport = useRefundExport()
     const [change, setChange] = useState<number>(Math.random())
     const [openConfirmDialog, props] = useConfirmDialog(refundExport.mutate)
-    
-    useEffect(() => {
-        setAddress(state.exportTodayIndex.export.customer.address)
-        setChange(Math.random())
-        setSelectedExport(state.exportTodayIndex.export.id)
-        setValueCustomer('phoneNumber', state.exportTodayIndex.export.customer.phoneNumber)
-        setValueCustomer('name', state.exportTodayIndex.export.customer.name)
-        setValueCustomer('gender', state.exportTodayIndex.export.customer.gender)
-
-        const selectDrugIds = state.exportTodayIndex.exportDetail.map((detail: any) => detail.drug.id)
-        setSelectedDrugs(state.exportTodayIndex.exportDetail.map((detail: any) => {
-            return {
-                id: detail.drug.id,
-                name: detail.drug.name,
-                exportQuantity: detail.quantity,
-                rawVat: detail.vat,
-                vat: `${detail.vat * 100}%`,
-                formatedPrice: formatCurrency(detail.unitPrice),
-                price: detail.unitPrice,
-                minimalUnit: detail.drug.minimalUnit,
-                use: detail.drug.type.name,
-                checked: true,
-            }
-        }))
-        console.log(selectDrugIds);
-        const data = drugCategories.map((drug: any) => {
-            return { ...drug, checked: false }
-        });
-        const handleDrugs = data.map((drug: any) => {
-            return selectDrugIds.includes(drug.id) ? {...drug, checked: true} : drug
-        })
-        setCloneDrugs(handleDrugs)
-        setDrugs(handleDrugs)
-    }, [state])
 
     useEffect(() => {
-        setAddress(state.exportTodayIndex.export.customer.address)
-        setChange(Math.random())
-        setSelectedExport(state.exportTodayIndex.export.id)
-        setValueCustomer('phoneNumber', state.exportTodayIndex.export.customer.phoneNumber)
-        setValueCustomer('name', state.exportTodayIndex.export.customer.name)
-        setValueCustomer('gender', state.exportTodayIndex.export.customer.gender)
+        if (drugCategories && drugCategories.length > 0) {
+            console.log(3)
+            setAddress(state.exportTodayIndex.export.customer.address)
+            setChange(Math.random())
+            setSelectedExport(state.exportTodayIndex.export.id)
+            setValueCustomer('phoneNumber', state.exportTodayIndex.export.customer.phoneNumber)
+            setValueCustomer('name', state.exportTodayIndex.export.customer.name)
+            setValueCustomer('gender', state.exportTodayIndex.export.customer.gender)
 
-        const selectDrugIds = state.exportTodayIndex.exportDetail.map((detail: any) => detail.drug.id)
-        setSelectedDrugs(state.exportTodayIndex.exportDetail.map((detail: any) => {
-            return {
-                id: detail.drug.id,
-                name: detail.drug.name,
-                exportQuantity: detail.quantity,
-                rawVat: detail.vat,
-                vat: `${detail.vat * 100}%`,
-                formatedPrice: formatCurrency(detail.unitPrice),
-                price: detail.unitPrice,
-                minimalUnit: detail.drug.minimalUnit,
-                use: detail.drug.type.name,
-                checked: true,
-            }
-        }))
-        console.log(selectDrugIds);
-        const data = drugCategories.map((drug: any) => {
-            return { ...drug, checked: false }
-        });
-        const handleDrugs = data.map((drug: any) => {
-            return selectDrugIds.includes(drug.id) ? {...drug, checked: true} : drug
-        })
-        setCloneDrugs(handleDrugs)
-        setDrugs(handleDrugs)
-    }, [])
+            const selectDrugIds = state.exportTodayIndex.exportDetail.map((detail: any) => detail.drug.id)
+            setSelectedDrugs(state.exportTodayIndex.exportDetail.map((detail: any) => {
+                const drug: DrugCategoryHandled|null = drugCategories.find((drug: DrugCategory) => drug.id === detail.drug.id)
+                return {
+                    id: detail.drug.id,
+                    name: detail.drug.name,
+                    exportQuantity: detail.quantity,
+                    rawVat: detail.vat,
+                    vat: `${detail.vat * 100}%`,
+                    formatedPrice: formatCurrency(detail.unitPrice),
+                    price: detail.unitPrice,
+                    minimalUnit: detail.drug.minimalUnit,
+                    use: detail.drug.type.name,
+                    checked: true,
+                    rawQuantity: drug ? drug.rawQuantity : 0,
+                    error: ''
+                }
+            }))
+            const data = drugCategories.map((drug: any) => {
+                return { ...drug, checked: false }
+            });
+            const handleDrugs = data.map((drug: any) => {
+                return selectDrugIds.includes(drug.id) ? {...drug, checked: true} : drug
+            })
+            setCloneDrugs(handleDrugs)
+            setDrugs(handleDrugs)
+        }
+    }, [drugCategories, state])
 
     const handleSearchData = (event: React.ChangeEvent<HTMLInputElement>) => {
         const searchTerm = event.target.value as string
@@ -293,6 +261,7 @@ const EditSalesExport: React.FC = () => {
     }, [exportData, exportDetailData])
 
     const onSubmit = (data: EditExportForm) => {
+        console.log(selectedDrugs);
         const isInvalid = selectedDrugs.length === 0
             || selectedDrugs.some(drug => drug.error.length > 0);
         
@@ -312,14 +281,15 @@ const EditSalesExport: React.FC = () => {
             }
         }
         else {
-            createExport.mutate({
+            refundAndCreate.mutate({
+                id: selectedExport,
                 customer: {
                     name: watch('name'),
                     phoneNumber: watch('phoneNumber'),
                     address: address,
                     gender: watch('gender') 
                 },
-                type: 1,
+                type: 2,
                 staffId: staff.id,
                 exportDate: data.exportDate,
                 note: data.note,
@@ -372,8 +342,8 @@ const EditSalesExport: React.FC = () => {
 
     const updateQuantity = (drugCategory: any) => {
         let validateError = ''
-        console.log(drugCategory)
-        if (drugCategory.exportQuantity > drugCategory.quantity) {
+        console.log('quantity', drugCategory.rawQuantity, '---- export quantity', drugCategory.exportQuantity)
+        if (drugCategory.exportQuantity > drugCategory.rawQuantity) {
             validateError = 'Số lượng tồn không đủ để xuất bán.'
         }
         else {
@@ -532,7 +502,7 @@ const EditSalesExport: React.FC = () => {
                             </Typography>
                             <Typography display="inline" sx={{ textDecoration: 'none'}}>
                                 <Chip
-                                    sx={{ marginLeft: 1 }}
+                                    sx={{ paddingLeft: 1}}
                                     //@ts-ignore
                                     label={getVairantLabelType(state.exportTodayIndex.export.type)}
                                     //@ts-ignore
@@ -569,90 +539,90 @@ const EditSalesExport: React.FC = () => {
                     state.exportTodayIndex.export.type === 1
                         ?
                          <Grid container spacing={3} marginTop={2}>
-                    <Grid item xs={12} sm={12} container>
-                        <Typography mb='20px' variant="subtitle2" sx={{ fontWeight: 'fontWeightBold', mt: 2, fontSize: 16 }}>
-                            Thuốc đã chọn
-                        </Typography>
-                        <TableExportSelectDrug
-                            rows={selectedDrugs}
-                            tooltip='Nhấn để bỏ chọn thuốc'
-                            keyTable='selected-drug-export-category-table-key'
-                            action={unCheckDrugCategory}
-                            update={updateQuantity}
-                        /> 
-                    </Grid>
+                            <Grid item xs={12} sm={12} container>
+                                <Typography mb='20px' variant="subtitle2" sx={{ fontWeight: 'fontWeightBold', mt: 2, fontSize: 16 }}>
+                                    Thuốc đã chọn
+                                </Typography>
+                                <TableExportSelectDrug
+                                    rows={selectedDrugs}
+                                    tooltip='Nhấn để bỏ chọn thuốc'
+                                    keyTable='selected-drug-export-category-table-key'
+                                    action={unCheckDrugCategory}
+                                    update={updateQuantity}
+                                /> 
+                            </Grid>
 
-                    <Grid item xs={12} sm={12} container 
-                        sx={{
-                            display: 'flex',
-                            justifyContent: "end",
-                            gap: 4
-                        }}
-                    >
-                        <Typography variant="subtitle2" sx={{  }}>
-                            Tổng tiền (chưa tính VAT): { pay[0] ? pay[0].toLocaleString() : '_'}đ
-                        </Typography>
-
-                        <Typography variant="subtitle2" sx={{  }}>
-                            Tiền thuế VAT: { pay[1] ? pay[1].toLocaleString() : '_'}đ
-                        </Typography>
-
-                        <Typography variant="subtitle2" sx={{ color: "#148c07"  }}>
-                            Tổng tiền: { pay[2] ? pay[2].toLocaleString() : '_'}đ
-                        </Typography>
-                    </Grid>
-
-                    <Grid item xs={12} sm={12} container 
-                    >
-                        <Box sx={{ display: 'flex', width: '100%', gap: 1 }}>
-                            <Typography mb='20px' variant="subtitle2" sx={{ fontWeight: 'fontWeightBold', mt: 2, fontSize: 16 }}>
-                                Danh mục thuốc
-                            </Typography>
-                            <TextField
-                                onChange={handleSearchData}
-                                classes={{ root: classes.customTextField }}
-                                size='small'
-                                sx={{ flexGrow: 1, my :'auto', mr: '20%', ml: 2}}
-                                label="Tìm kiếm"
-                                value={search}
-                                placeholder="Nhập thông tin danh mục thuốc theo tên"
-                                InputProps={{
-                                    endAdornment: (
-                                        <InputAdornment
-                                            position='end'
-                                        >
-                                            <SearchIcon />
-                                        </InputAdornment>
-                                    )
-                                }}
-                            />
-                            <Button
-                                variant="contained"
-                                color="primary"
+                            <Grid item xs={12} sm={12} container 
                                 sx={{
-                                    height: '70%',
-                                    m: 'auto',
-                                    textTransform: 'none',
+                                    display: 'flex',
+                                    justifyContent: "end",
+                                    gap: 4
                                 }}
-                                onClick={handleSubmit(onSubmit)}
                             >
-                                Hoàn và tạo phiếu mới
-                            </Button>
+                                <Typography variant="subtitle2" sx={{  }}>
+                                    Tổng tiền (chưa tính VAT): { pay[0] ? pay[0].toLocaleString() : '_'}đ
+                                </Typography>
 
-                            <Button
-                                variant="contained"
-                                color="error"
-                                sx={{
-                                    height: '70%',
-                                    m: 'auto',
-                                    textTransform: 'none',
-                                }}
-                                onClick={() => {openConfirmDialog(selectedExport.toString())}}
+                                <Typography variant="subtitle2" sx={{  }}>
+                                    Tiền thuế VAT: { pay[1] ? pay[1].toLocaleString() : '_'}đ
+                                </Typography>
+
+                                <Typography variant="subtitle2" sx={{ color: "#148c07"  }}>
+                                    Tổng tiền: { pay[2] ? pay[2].toLocaleString() : '_'}đ
+                                </Typography>
+                            </Grid>
+
+                            <Grid item xs={12} sm={12} container 
                             >
-                                Hoàn toàn bộ
-                            </Button>
-                            
-                        </Box>
+                                <Box sx={{ display: 'flex', width: '100%', gap: 1 }}>
+                                    <Typography mb='20px' variant="subtitle2" sx={{ fontWeight: 'fontWeightBold', mt: 2, fontSize: 16 }}>
+                                        Danh mục thuốc
+                                    </Typography>
+                                    <TextField
+                                        onChange={handleSearchData}
+                                        classes={{ root: classes.customTextField }}
+                                        size='small'
+                                        sx={{ flexGrow: 1, my :'auto', mr: '20%', ml: 2}}
+                                        label="Tìm kiếm"
+                                        value={search}
+                                        placeholder="Nhập thông tin danh mục thuốc theo tên"
+                                        InputProps={{
+                                            endAdornment: (
+                                                <InputAdornment
+                                                    position='end'
+                                                >
+                                                    <SearchIcon />
+                                                </InputAdornment>
+                                            )
+                                        }}
+                                    />
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        sx={{
+                                            height: '70%',
+                                            m: 'auto',
+                                            textTransform: 'none',
+                                        }}
+                                        onClick={handleSubmit(onSubmit)}
+                                    >
+                                        Hoàn và tạo phiếu mới
+                                    </Button>
+
+                                    <Button
+                                        variant="contained"
+                                        color="error"
+                                        sx={{
+                                            height: '70%',
+                                            m: 'auto',
+                                            textTransform: 'none',
+                                        }}
+                                        onClick={() => {openConfirmDialog(selectedExport.toString())}}
+                                    >
+                                        Hoàn toàn bộ
+                                    </Button>
+                                    
+                                </Box>
                         {
                             drugCategoryLoading
                             ?

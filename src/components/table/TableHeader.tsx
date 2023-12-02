@@ -47,7 +47,7 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
             <TableRow key={keyTable}>
                 {columns.map((column, index) => (
                     <StyledTableCell
-                    align="left"
+                        align="left"
                     key={`header-cell-${keyTable}-${index}`}
                     >
                     {

@@ -55,44 +55,45 @@ const TableData: React.FC<TableProps> = ({
                 columns={columns}
                 keyTable= {keyTable}
               />
-        {
-          isLoading ?
-              <Box sx={{
-                  display: 'flex',
-                  backgroundColor: 'white',
-                  p: 4,
-                  justifyContent: 'center'
-              }}>
-                  <CircularProgress />
-              </Box> 
-            :
-              rows && rows.length === 0
-              ?
-                <TableBodyEmpty
-                  columns={columns} />
-              : 
-                <TableBody>
-                  {
-                    rows ?
-                    rows.map((row, rowIndex) => (
-                      <StyledTableRow
-                          key={`row-${keyTable}-${rowIndex}`}
-                          sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                        >
-                          {columns.map((column, index) => (
-                            <TableCell
-                              align="left"
-                              key={`row-${rowIndex}-${keyTable}-${index}`}>
-                              {row[column.key]}
-                            </TableCell>
-                          ))}
-                      </StyledTableRow>
-                    ))
-                    :
-                    <></>
+              {
+                isLoading ?
+                    <Box sx={{
+                        display: 'flex',
+                        backgroundColor: 'white',
+                        p: 4,
+                        justifyContent: 'center'
+                    }}>
+                        <CircularProgress />
+                    </Box> 
+                  :
+                    rows && rows.length === 0
+                    ?
+                      <TableBodyEmpty
+                        columns={columns} />
+                    : 
+                      <TableBody>
+                        {
+                          rows ?
+                          rows.map((row, rowIndex) => (
+                            <StyledTableRow
+                                key={`row-${keyTable}-${rowIndex}`}
+                                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                              >
+                                {columns.map((column, index) => (
+                                  <TableCell
+                                    align="left"
+                                    sx={{ overflowX: 'auto' }}
+                                    key={`row-${rowIndex}-${keyTable}-${index}`}>
+                                    {row[column.key]}
+                                  </TableCell>
+                                ))}
+                            </StyledTableRow>
+                          ))
+                          :
+                          <></>
+                          }
+                      </TableBody>
                     }
-                </TableBody>
-              }
                 
         </Table>
       </TableContainer>

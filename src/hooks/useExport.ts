@@ -341,7 +341,7 @@ const useRefundAndCreateNewExport = (
   const { roleId } = useContext(AuthContext)
   return useMutation({
     mutationFn: async (data: EditExportForm) => {
-      return await axiosClient.put(pathToUrl(API_EXPORT_WITH_ID, { exportId:  data.id}), data)
+      return await axiosClient.post(pathToUrl(API_EXPORT_WITH_ID, { exportId:  data.id}), data)
     },
     onSuccess: (response: any) => {
       if (response.data.message) {
