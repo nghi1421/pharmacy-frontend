@@ -8,6 +8,7 @@ import { ModalComponent } from "../../components/Modal";
 import { useEffect, useState } from "react";
 import { useSeachTrouble } from "../../hooks/useTrouble";
 import { InventoryImport } from "../../components/InventoryImportRow";
+import { TextShow } from "../../components/TextShow";
 
 export interface TroubleForm {
     batchId: string
@@ -28,6 +29,7 @@ const TroublePage: React.FC<{}> = () => {
     const [openModal, setOpenModal] = useState<boolean>(false)
     const [change, setChange] = useState<number>(Math.random())
     const [inventoryImports, setInventoryImports] = useState<any[]>([])
+    const [provider, setProvider] = useState<any>(null)
     const searchTrouble = useSeachTrouble()
     const {
         handleSubmit,
@@ -46,6 +48,7 @@ const TroublePage: React.FC<{}> = () => {
 
             setRowsData(searchTrouble.data.historySales)
             setInventoryImports(searchTrouble.data.inventoryImports)
+            setProvider(searchTrouble.data.provider)
             setChange(Math.random())
         }
     }, [searchTrouble.data])
@@ -102,35 +105,49 @@ const TroublePage: React.FC<{}> = () => {
                 </Grid>
            </Paper>
             <Paper sx={{ px:3, py: 2, }}>
-                <Grid container spacing={3} >
-                <Grid item xs={8} sm={6}>
-                     <Typography
-                        variant="h5"
-                        marginBottom={2}
-                        fontWeight='500'
-                    >
-                        Tồn kho
-                    </Typography>
+                <Grid container spacing={2} >
+                    <Grid item xs={8} sm={6}>
+                        <Typography
+                            variant="h5"
+                            marginBottom={2}
+                            fontWeight='500'
+                        >
+                            Thông tin công ty dược
+                        </Typography>
+                        <TextShow title="Mã công ty dược" data={provider?.id} />
+                        <TextShow title="Tên" data={provider?.name} />
+                        <TextShow title="Số điện thoại" data={provider?.phoneNumber} />
+                        <TextShow title="Email" data={provider?.email} />
+                        <TextShow title="Địa chỉ" data={provider?.address} />
+                    </Grid>  
+                    <Grid item xs={8} sm={6}>
+                        <Typography
+                            variant="h5"
+                            marginBottom={2}
+                            fontWeight='500'
+                        >
+                            Tồn kho
+                        </Typography>
 
-                    <Box sx={{
-                        display: 'flex',
-                        flexDirection: 'row',
-                        backgroundColor: 'lightBlue',
-                        p: 1,
-                        borderRadius: 1,
-                    }}>
-                        <Typography sx={{ flex: 1, fontWeight: 600 }}>Mã phiếu nhập</Typography>
-                        <Typography sx={{ flex: 1, textAlign: 'center', fontWeight: 600 }}>Thời gian nhập</Typography>
-                        <Typography sx={{ flex: 2, textAlign: 'right', pr: 1, fontWeight: 600 }}>Tồn</Typography>
-                    </Box>
-                    <Box>
-                        {
-                            inventoryImports.map(inventoryImport => 
-                                <InventoryImport inventoryImport={inventoryImport} />
-                            )
-                        }
-                    </Box>
-                </Grid>  
+                        <Box sx={{
+                            display: 'flex',
+                            flexDirection: 'row',
+                            backgroundColor: 'lightBlue',
+                            p: 1,
+                            borderRadius: 1,
+                        }}>
+                            <Typography sx={{ flex: 1, textAlign: 'left', fontWeight: 600 }}>Mã phiếu nhập</Typography>
+                            <Typography sx={{ flex: 1, textAlign: 'left', fontWeight: 600 }}>Thời gian nhập</Typography>
+                            <Typography sx={{ flex: 1, textAlign: 'left', pr: 1, fontWeight: 600 }}>Tồn</Typography>
+                        </Box>
+                        <Box>
+                            {
+                                inventoryImports.map(inventoryImport => 
+                                    <InventoryImport inventoryImport={inventoryImport} />
+                                )
+                            }
+                        </Box>
+                    </Grid>  
                   
                 </Grid>
             </Paper>

@@ -15,11 +15,10 @@ import Checkbox from '@mui/material/Checkbox';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { visuallyHidden } from '@mui/utils';
-import { Button, InputAdornment, TextField } from '@mui/material';
+import { Button } from '@mui/material';
 import { HandledData } from '../hooks/useTrouble';
 import { StyledTableCell } from './table/TableHeader';
 import { makeStyles } from '@mui/styles';
-import SearchIcon from '@mui/icons-material/Search';
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
@@ -347,10 +346,10 @@ export const SelectableTable: React.FC<SelectablTableProps> = ({ rows, setItem, 
                         <TableCell align="left">{row.email}</TableCell>
                         <TableCell align="left">{row.address}</TableCell>
                         <TableCell align="left">{row.formatedQuantity}</TableCell>
-                        <TableCell>
+                        <TableCell sx={{ pr:0.5 }}>
                           <Button 
                             color='success'
-                            sx={{ textTransform: 'none', border: 2 }}
+                            sx={{ textTransform: 'none', border: 2}}
                                 onClick={(e) => {
                                     {
                                         e.stopPropagation();
@@ -358,8 +357,10 @@ export const SelectableTable: React.FC<SelectablTableProps> = ({ rows, setItem, 
                                         openModal()
                                     }
                                 }}
-                            >
-                                Trả thuốc
+                          >
+                            <Typography variant="subheading" color="inherit" noWrap>
+                              Trả thuốc
+                          </Typography>
                             </Button>
                         </TableCell>
                     </TableRow>

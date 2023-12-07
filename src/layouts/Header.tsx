@@ -114,8 +114,8 @@ const Header: React.FC<HeaderProps> = ({ open, setOpen, preventOpen }) => {
               color="inherit"
               noWrap
               sx={{ flexGrow: 1 }}
-            >
-              { roleId === 1 ? 'Trang quản lí' : 'Trang bán hàng'}
+          >
+              { roleId == 1 ? 'Trang quản lí' : 'Trang bán hàng'}
           </Typography>
 
           <Typography
