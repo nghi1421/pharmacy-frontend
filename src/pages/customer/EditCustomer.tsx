@@ -30,6 +30,10 @@ const customerFormValidate: Yup.ObjectSchema<CustomerEditForm> = yup.object({
         .required('Số điện thoại bắt buộc.')
         //@ts-ignore
         .phoneNumber('Số điện thoại không hợp lệ.'),
+    email: yup
+        .string()
+        .required('Email bắt buộc.')
+        .email('Email không hợp lệ.'),
 })
 const EditCustomer: React.FC = () => {
     const { state } = useLocation()
@@ -66,7 +70,7 @@ const EditCustomer: React.FC = () => {
                                 placeholder='Nhập tên khách hàng'
                             />
                         </Grid>
-                        <Grid item xs={8} sm={4}>
+                        <Grid item xs={8} sm={3}>
                             <FormInputText
                                 size='small'
                                 name="phoneNumber"
@@ -74,7 +78,16 @@ const EditCustomer: React.FC = () => {
                                 label="Số điện thoại"
                                 placeholder='Nhập họ số điện thoại'
                             />
-                            </Grid>
+                        </Grid>
+
+                        <Grid item xs={8} sm={3}>
+                            <FormInputText
+                                name="email"
+                                control={control}
+                                label="Email"
+                                placeholder='Nhập thông tin email'
+                            />
+                        </Grid>
                         <Grid item xs={8} sm={2}>
                         <FormInputDropdown
                             size='small'

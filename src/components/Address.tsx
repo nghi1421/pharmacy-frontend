@@ -133,7 +133,7 @@ const Address: React.FC<AddressProp> = ({ setAddress, initAddress, size, gridSiz
 
     return (
         <>
-            <Grid item xs={gridSize ? gridSize : 3}>
+            <Grid item xs={gridSize ? gridSize : 4}>
                 <Autocomplete
                     options={provinces.map((province) => {return {label: province.name, value: province.code}})}
                     id='autocomplete'
