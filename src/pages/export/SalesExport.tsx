@@ -1,7 +1,7 @@
 import { Box, Button, CircularProgress, Grid, InputAdornment, Paper, TextField, Typography } from "@mui/material"
 import { useNavigate } from "react-router-dom"
 import React, { useContext, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, PathString, useForm } from "react-hook-form";
 import { getStaff } from "../../store/auth";
 import { FormInputText } from "../../components/form/FormInputText";
 import { FormInputDate } from "../../components/form/FormInputDate";
@@ -51,12 +51,14 @@ export interface CustomerForm {
     name: string;
     phoneNumber: string;
     gender: string;
+    email: PathString
     address: string;
 }
 
 const defaultValuesCustomer = {
     name: "",
     phoneNumber: "",
+    email: '',
     gender: '1',
     address: ''
 };
@@ -81,6 +83,10 @@ const customerFormValidate: Yup.ObjectSchema<CustomerEditForm> = yup.object({
         .required('Số điện thoại bắt buộc.')
         //@ts-ignore
         .phoneNumber('Số điện thoại không hợp lệ.'),
+    email: yup
+        .string()
+        .required('Email bắt buộc.')
+        .email('Email không hợp lệ.'),
 })
 
  // @ts-ignore
@@ -122,6 +128,7 @@ const SalesExport: React.FC = () => {
     const setCustomer = (customer: CustomerForm) => {
         setValueCustomer('phoneNumber', customer.phoneNumber)
         setValueCustomer('name', customer.name)
+        setValueCustomer('email', customer.email)
         setValueCustomer('gender', customer.gender)
         setAddress(customer.address)
         clearErrors('phoneNumber'),
@@ -236,16 +243,31 @@ const SalesExport: React.FC = () => {
                                 )}
                             />
                         </Grid>
-                        <Grid item xs={8} sm={6}>
-                            <FormInputText
+                        <Grid item xs={8} sm={4}>
+                           <FormInputText
                                 size="small"
                                 name="name"     
                                 control={customerControl}
-                                label="Họ và tên khách hàng"
-                                placeholder='Nhập họ và tên khách hàng'
+                                label="Họ và tên"
+                                placeholder='Nhập họ và tên'
                             />
                         </Grid>
-                        <Grid item xs={8} sm={2}>
+                        <Grid item xs={8} sm={4}>
+                            <FormInputText
+                                size="small"
+                                name="email"     
+                                control={customerControl}
+                                label="Email"
+                                placeholder='Nhập Email'
+                            />
+                        </Grid>
+                      
+                        <Address gridSize={6} setAddress={setAddress} size='small' initAddress={address} />
+                        
+                    </Grid>
+
+                    <Grid container spacing={1.5} width='30%' sx={{ flex: 2 }}>
+                          <Grid item xs={8} sm={12}>
                             <FormInputDropdown
                                 name="gender"
                                 control={customerControl}
@@ -254,11 +276,6 @@ const SalesExport: React.FC = () => {
                                 list={genders}
                             />
                         </Grid>
-                        <Address gridSize={6} setAddress={setAddress} size='small' initAddress={address} />
-                        
-                    </Grid>
-
-                    <Grid container spacing={1.5} width='30%' sx={{ flex: 2 }}>
                         <Grid item xs={8} sm={12}>
                             <FormInputDate
                                 name="exportDate"
@@ -276,10 +293,6 @@ const SalesExport: React.FC = () => {
                                 label="Ghi chú"
                                 placeholder='Nhập ghi chú'
                             />
-                        </Grid>
-
-                        <Grid item xs={8} sm={12}>
-                            
                         </Grid>
                     </Grid>
                 </Box>
