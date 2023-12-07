@@ -7,8 +7,6 @@ export type ImportType = {
     note: string
     staff: Staff
     provider: Provider
-    maturityDate: string
-    paid: string
     createdAt: string
     updatedAt: string
 }

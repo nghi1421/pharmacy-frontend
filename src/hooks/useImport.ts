@@ -14,11 +14,9 @@ import { DataMetaResponse } from '../types/response/DataResponse';
 import { handleAddress } from '../utils/address';
 import globalEvent from '../utils/emitter';
 
-function createData({id, importDate, staff, provider, note, paid, maturityDate}: ImportType) {
+function createData({id, importDate, staff, provider, note}: ImportType) {
     return {
         id, note, 
-        maturityDate: formatDate(maturityDate),
-        paid: formatCurrency(parseFloat(paid)),
         providerName: provider.name,
         staffName: staff.name,
         importDate: formatDate(importDate),
@@ -26,16 +24,12 @@ function createData({id, importDate, staff, provider, note, paid, maturityDate}:
 }
 
 // @ts-ignore
-function createDataImport({id, importDate, staff, provider, note, paid, maturityDate, totalPriceWithVat, totalPrice, vatValue}) {
+function createDataImport({id, importDate, staff, provider, note, totalPriceWithVat, totalPrice, vatValue}) {
     return {
         id, note,
         staff: {...staff, address: handleAddress(staff.address)},
         provider: {...provider, address: handleAddress(provider.address)},
         importDate: formatDate(importDate),
-        maturityDate: formatDate(maturityDate),
-        rawPaid: paid,
-        rawMaturityDate: maturityDate,
-        paid: formatCurrency(paid),
         totalPrice: formatCurrency(totalPrice),
         totalPriceWithVat: formatCurrency(totalPriceWithVat),
         vat: formatCurrency(vatValue)

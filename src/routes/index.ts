@@ -8,7 +8,8 @@ import TypeByUsePage from "../pages/type-by-use/TypeByUsePage";
 import ImportPage from "../pages/import/ImportPage";
 import ExportPage from "../pages/export/ExportPage";
 import ProviderPage from "../pages/provider/ProviderPage";
-import { AttachMoney, ClearAll, Group, Handshake, ManageAccounts, Medication, VerticalAlignBottom, VolunteerActivism } from "@mui/icons-material";
+import { AttachMoney, ClearAll, Group, Handshake, Inventory, ManageAccounts, Medication, VerticalAlignBottom, VolunteerActivism } from "@mui/icons-material";
+import ErrorIcon from '@mui/icons-material/Error';
 import PeopleIcon from '@mui/icons-material/People';
 import CreateStaff from "../pages/staff/CreateStaff";
 import CreateCustomer from "../pages/customer/CreateCustomer";
@@ -29,6 +30,8 @@ import SalesExport from "../pages/export/SalesExport";
 import BarChartIcon from '@mui/icons-material/BarChart';
 import StatisticsPage from "../pages/statistics/StatisticsPage";
 import CancelExport from "../pages/export/CancelExport";
+import InventoryPage from "../pages/inventory/InventoryPage";
+import TroublePage from "../pages/trouble/TroublePage";
 
 export const dashboardRoutes: Array<Route> = [
     {      
@@ -95,11 +98,26 @@ export const dashboardRoutes: Array<Route> = [
         element: ExportPage
     },
     {      
+        key: 'inventory-route',
+        title: 'Tồn kho',
+        path: 'inventories',
+        icon: Inventory,
+        element: InventoryPage
+    },
+    {      
         key: 'statistics-route',
         title: 'Thống kê',
         path: 'statistics',
         icon: BarChartIcon,
         element: StatisticsPage
+    },
+
+    {      
+        key: 'troubles-route',
+        title: 'Sự cố',
+        path: 'troubles',
+        icon: ErrorIcon,
+        element: TroublePage
     },
 ]
 

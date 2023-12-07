@@ -17,6 +17,7 @@
     "@mui/icons-material": "^5.14.13",
     "@mui/material": "^5.14.13",
     "@mui/styles": "^5.14.14",
+    "@mui/x-data-grid": "^6.18.3",
     "@mui/x-date-pickers": "^6.16.2",
     "@types/hoist-non-react-statics": "^3.3.4",
     "@types/js-cookie": "^3.0.5",

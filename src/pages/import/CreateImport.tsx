@@ -47,8 +47,6 @@ export interface ImportForm {
     provider: Provider | null;
     note: string;
     importDate: Date;
-    paid: number;
-    maturityDate: Date;
     importDetails: ImportDetail[];
     providerId: number;
     staffId: number;
@@ -57,9 +55,7 @@ export interface ImportForm {
 const defaultValues = {
     note: '',
     importDate: new Date(dayjs().format('YYYY-MM-DD HH:mm:ss')),
-    paid: 0,
     provider: null,
-    maturityDate: new Date(dayjs().format('YYYY-MM-DD')),
     importDetails: [],
     providerId: 0,
     staffId: 0,
@@ -77,14 +73,6 @@ const importValidate: Yup.ObjectSchema<ImportForm> = yup.object({
         .object()
         .typeError('Vui lòng chọn công ty dược.')
         .required('Vui lòng chọn công ty dược'),
-    paid: yup
-        .number()
-        .typeError('Số tiền đã thanh toán bắt buộc.')
-        .required('Số tiền đã thanh toán bắt buộc.'),
-    maturityDate: yup
-        .date()
-        .typeError('Ngày đáo hạn bắt buộc.')
-        .min(new Date(dayjs().format('YYYY-MM-DD')), 'Ngày đáo hạn phải sau hôm nay.'),
 })
 
 const columns: ColumnDrugCategory[] = [
@@ -403,7 +391,7 @@ const CreateImport: React.FC = () => {
                     </Box>
                 </Grid>
 
-                <Grid item xs={8} sm={3}>
+                <Grid item xs={8} sm={4}>
                     <FormInputDate
                         size='small'
                         name="importDate"
@@ -414,7 +402,7 @@ const CreateImport: React.FC = () => {
                     />
                 </Grid>
 
-                <Grid item xs={8} sm={3}>
+                <Grid item xs={8} sm={4}>
                     <FormInputText
                         size='small'
                         name="note"
@@ -424,31 +412,6 @@ const CreateImport: React.FC = () => {
                     />
                 </Grid>
 
-                <Grid item xs={8} sm={3}>
-                    <FormInputCurrency
-                        size='small'
-                        control={control}
-                        name='paid'
-                        label='Đã thanh toán'
-                        placeholder='Nhập số tiền đã thanh toán'
-                    />
-                    <ErrorMessage
-                        errors={errors}
-                        name="paid"
-                        render={({ message }) =><Typography color='#d32f2f' sx={{ fontSize: 13, mt:0.5 }}>{message}</Typography>}
-                    />
-                </Grid>
-
-                <Grid item xs={8} sm={3}>
-                    <FormInputDate
-                        size='small'
-                        name="maturityDate"
-                        control={control}
-                        label="Ngày đáo hạn"
-                        placeholder='x'
-                    />
-                </Grid>
-                
                 <Grid item xs={12} sm={12} container>
                     <Typography mb='20px' variant="subtitle2" sx={{ fontWeight: 600, fontSize: 16, mt: 2 }}>
                         Thuốc đã chọn

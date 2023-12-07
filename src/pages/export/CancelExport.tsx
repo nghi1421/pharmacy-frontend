@@ -5,7 +5,6 @@ import { useForm } from "react-hook-form";
 import { getStaff } from "../../store/auth";
 import { FormInputText } from "../../components/form/FormInputText";
 import { FormInputDate } from "../../components/form/FormInputDate";
-import TableExportSelectDrug from "../../components/table/TableExportSelectDrug";
 import TableDrugCategories from "../../components/table/TableDrugCategories";
 import { useGetDataDrugCategories } from "../../hooks/useDrugCategory";
 import SearchIcon from '@mui/icons-material/Search';
@@ -19,6 +18,7 @@ import { useReactToPrint } from "react-to-print";
 import { enqueueSnackbar } from "notistack";
 import { ExportData, ExportDetailPdf } from "../../types/ExportType";
 import dayjs from "dayjs";
+import TableCancelExportDrug from "../../components/table/TableCancelExportDrug";
 
 const useStyles = makeStyles({
   customTextField: {
@@ -58,15 +58,13 @@ const exportValidate: Yup.ObjectSchema<CancelExportForm> = yup.object({
     exportDate: yup
         .date()
         .max(new Date(dayjs().add(1, 'day').format('YYYY-MM-DD')), 'Thời gian xuất hàng không hợp lệ.'),
-    prescriptionId: yup
-        .string()
-        .required('Mã toa thuốc bắt buộc')
-        .max(20),
+    
 });
 
 const columns: ColumnDrugCategory[] = [
     { key: 'id', value: 'Mã thuốc'},
     { key: 'name', value: 'Tên thuốc' },
+    { key: 'importId', value: 'Mã phiếu nhập'},
     { key: 'quantity', value: 'Số lượng tồn'},
     { key: 'formatedPrice', value: 'Đơn giá bán' },
     { key: 'minimalUnit', value: 'Đơn vị bán' },
@@ -79,11 +77,10 @@ const CancelExport: React.FC = () => {
     const classes = useStyles();
     const staff = getStaff();
     const { isLoading: drugCategoryLoading, data: drugCategories, refetch } = useGetDataDrugCategories()
-    
+    const [isFirstSubmit, setIsFirstSubmit] = useState<boolean>(false)
     const [drugs, setDrugs] = useState<any[]>([])
     const [cloneDrugs, setCloneDrugs] = useState<any[]>([])
     const [selectedDrugs, setSelectedDrugs] = useState<any[]>([])
-    const [pay, setPay] = useState<number[]>([0 , 0, 0])
     const { handleSubmit, control, reset } = useForm<CancelExportForm>({
         defaultValues: defaultValuesExport,
         resolver: yupResolver(exportValidate)
@@ -125,47 +122,23 @@ const CancelExport: React.FC = () => {
     }, [])
 
     useEffect(() => {
-        if (selectedDrugs.length > 0) {
-            const withoutVat = selectedDrugs.reduce((value, drug) => {
-                return value + drug.exportQuantity * drug.price
-            }, 0)
-
-            const vat = selectedDrugs.reduce((value, drug) => {
-                return value + drug.rawVat * drug.exportQuantity * drug.price
-            }, 0)
-
-            const total = vat + withoutVat;
-
-            setPay([withoutVat, vat, total])
-        }
-        else {
-            setPay([0, 0, 0])
-        }
-    }, [selectedDrugs])
-
-    useEffect(() => {
         if (exportData && exportDetailData) {
             handlePrint();
         }
     }, [exportData, exportDetailData])
 
     const onSubmit = (data: CancelExportForm) => {
-        const isInvalid = selectedDrugs.length === 0
-            || selectedDrugs.some(drug => drug.error.length > 0);
-        
+        let isInvalid = false;
+        const validatedDrugs = selectedDrugs.map(drugCategory => {
+            const validateErrros = validate(drugCategory);
+            if (!isInvalid && validateErrros.some(error => error.length > 0)) {
+                isInvalid = true;
+            }
+            return {...drugCategory, errors: validate(drugCategory)}
+        })
+        setIsFirstSubmit(true);
         if (isInvalid) {
-            if (selectedDrugs.length === 0) {
-                enqueueSnackbar('Vui lòng chọn ít nhất một danh mục thuốc.', {
-                    variant: 'warning',
-                    autoHideDuration: 3000
-                })
-            }
-            else {
-                enqueueSnackbar('Vui lòng kiểm tra dữ liệu.', {
-                    variant: 'warning',
-                    autoHideDuration: 3000
-                })
-            }
+            setSelectedDrugs(validatedDrugs)
         }
         else {
             createExport.mutate({
@@ -197,7 +170,7 @@ const CancelExport: React.FC = () => {
         else {
             setDrugs(data)
         }
-        selectedDrugs.push({...drugCategory, checked: false, exportQuantity: 1, error: ''})
+        selectedDrugs.push({ ...drugCategory, checked: false, exportQuantity: 1, errors: ['', ''], importId: ''})
     }
 
     const unCheckDrugCategory = (drugCategory: any) => {
@@ -218,24 +191,38 @@ const CancelExport: React.FC = () => {
         setSelectedDrugs(newSelectedDrugs);
     }
 
-    const updateQuantity = (drugCategory: any) => {
-        let validateError = ''
+    const validate = (drugCategory: any) => {
+        const validateErrors = ['', '']
         if (drugCategory.exportQuantity > drugCategory.quantity) {
-            validateError = 'Số lượng tồn không đủ để xuất bán.'
+            validateErrors[1] = 'Số lượng tồn không đủ để xuất bán.'
         }
         else {
             if (isNaN(drugCategory.exportQuantity)) {
-                validateError = 'Số lượng bán bắt buộc'
+                validateErrors[1] = 'Số lượng bán bắt buộc'
             }
             else if (drugCategory.exportQuantity === 0) {
-                validateError = 'Số lượng bán lớn hơn 0'
+                validateErrors[1] = 'Số lượng bán lớn hơn 0'
             }
             else {
-                validateError = ''
+                validateErrors[1] = ''
             }
         }
+
+        if (drugCategory.importId.length === 0) {
+            validateErrors[0] = 'Vui lòng nhập mã phiếu nhập.'
+        }
+
+        return validateErrors;
+    }
+
+    const updateQuantity = (drugCategory: any) => {
+        const validateErrors = ['', '']
         setSelectedDrugs(selectedDrugs.map(drug => {
-            return drug.id === drugCategory.id ?  {...drugCategory, error: validateError} : drug
+            return drug.id === drugCategory.id
+                ? !isFirstSubmit
+                    ? { ...drugCategory, errors: validateErrors }
+                    : { ...drugCategory, errors: validate(drugCategory) }
+                : drug
         }))
     }
 
@@ -250,7 +237,7 @@ const CancelExport: React.FC = () => {
             </Typography>
             <Box sx={{ display: 'flex', gap: 2 }}>
                 <Grid container spacing={1.5} width='30%' sx={{ flex: 2 }}>
-                    <Grid item xs={8} sm={12}>
+                    <Grid item xs={8} sm={3}>
                         <FormInputDate
                             name="exportDate"
                             control={control}
@@ -260,7 +247,7 @@ const CancelExport: React.FC = () => {
                         />
                     </Grid>
 
-                    <Grid item xs={8} sm={12}>
+                    <Grid item xs={8} sm={3}>
                         <FormInputText
                             name="note"
                             control={control}
@@ -277,7 +264,7 @@ const CancelExport: React.FC = () => {
                     <Typography mb='20px' variant="subtitle2" sx={{ fontWeight: 'fontWeightBold', mt: 2, fontSize: 16 }}>
                         Thuốc đã chọn
                     </Typography>
-                    <TableExportSelectDrug
+                    <TableCancelExportDrug
                         rows={selectedDrugs}
                         tooltip='Nhấn để bỏ chọn thuốc'
                         keyTable='selected-drug-export-category-table-key'
@@ -293,17 +280,6 @@ const CancelExport: React.FC = () => {
                         gap: 4
                     }}
                 >
-                    <Typography variant="subtitle2" sx={{  }}>
-                        Tổng tiền (chưa tính VAT): { pay[0] ? pay[0].toLocaleString() : '_'} VND
-                    </Typography>
-
-                    <Typography variant="subtitle2" sx={{  }}>
-                        Tiền thuế VAT: { pay[1] ? pay[1].toLocaleString() : '_'} VND
-                    </Typography>
-
-                    <Typography variant="subtitle2" sx={{ color: "#148c07"  }}>
-                        Tổng tiền: { pay[2] ? pay[2].toLocaleString() : '_'} VND
-                    </Typography>
                 </Grid>
 
                 <Grid item xs={12} sm={12} container 

@@ -10,6 +10,7 @@ import { Navigate } from 'react-router-dom';
 import { getAccessToken, setAccessToken, setStaff } from '../store/auth.ts';
 import { AuthContext } from '../App.tsx';
 import { useLogin } from '../hooks/useAuth.ts';
+import { useQueryClient } from 'react-query';
 
 export interface LoginForm {
     username: string
@@ -48,11 +49,14 @@ const Login: React.FC = () => {
     };
         
     if (accessToken && roleId) {
+        const queryClient = useQueryClient();
         switch (roleId) {
             case 1: {
+                queryClient.invalidateQueries('exports-today', { refetchInactive: true })
                 return <Navigate replace to='/admin/users'/>
             }
             case 2: {
+                queryClient.invalidateQueries('exports-today', { refetchInactive: true })
                 return <Navigate replace to='/sales/create'/>
             }
             default: {

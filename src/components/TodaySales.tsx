@@ -33,7 +33,6 @@ export const TodaySales: React.FC<TodaySalesProps> = ({ exportIdSelected }) => {
     const [cloneSalesToday, setCloneSalesToday] = useState<SalesTodayType[]>([])
     const [salesToday, setSalesToday] = useState<SalesTodayType[]>([])
     const [search, setSearch] = useState<string>('');
-
     const handleSearchData = (event: React.ChangeEvent<HTMLInputElement>) => {
         const searchTerm = event.target.value as string
         if (searchTerm.trim().length > 0) {
@@ -46,26 +45,6 @@ export const TodaySales: React.FC<TodaySalesProps> = ({ exportIdSelected }) => {
         }
         setSearch(event.target.value as string);
     }
-
-    // useEffect(() => {
-    //     console.log(state)
-    //     if (state) {
-    //         setSalesToday(salesToday.map((sale: SalesTodayType) => sale.id === state.exportTodayIndex.export.id
-    //             ? { ...sale, checked: true }
-    //             : {...sale, checked: false}))
-    //         setCloneSalesToday(cloneSalesToday.map((sale: SalesTodayType) => sale.id === state.exportTodayIndex.export.id
-    //             ? { ...sale, checked: true }
-    //             : {...sale, checked: false}))
-    //     }
-    // }, [state])
-    // const updateSalesToday = (saleToday: SalesTodayType) => {
-        // setSalesToday(salesToday.map((sale: SalesTodayType) => sale.id === saleToday.id
-        //     ? { ...sale, checked: true }
-        //     : {...sale, checked: false}))
-        // setCloneSalesToday(cloneSalesToday.map((sale: SalesTodayType) => sale.id === saleToday.id
-        //     ? { ...sale, checked: true }
-        //     : {...sale, checked: false}))
-    // }
 
     const reset = () => {
         setSalesToday(salesToday.map((sale: SalesTodayType) => { return {  ...sale, checked: false }}))
@@ -111,6 +90,7 @@ export const TodaySales: React.FC<TodaySalesProps> = ({ exportIdSelected }) => {
             }
         }
     }, [data])
+
     return (
         <Paper sx={{
             position: 'fixed',

@@ -1,9 +1,27 @@
 import { enqueueSnackbar } from 'notistack';
 import axiosClient from '../services/axios';
-import { API_CANCEL_EXPORT, API_EXPORT, API_EXPORT_TODAY, API_EXPORT_WITH_ID, API_REFUND_EXPORT_TODAY} from '../utils/constants';
-import { useMutation, useQuery, useQueryClient } from 'react-query';
+import {
+  API_CANCEL_EXPORT,
+  API_EXPORT,
+  API_EXPORT_TODAY,
+  API_EXPORT_WITH_ID,
+  API_REFUND_EXPORT_TODAY
+} from '../utils/constants';
+import {
+  useMutation,
+  useQuery,
+  useQueryClient
+} from 'react-query';
 import { formatCurrency, formatDate, formatNumber } from '../utils/format';
-import { ExportRawData, ExportDetailRawData, ExportType, ExportData, ExportDetailData, ExportDetailPdf, ExportTodayType, ExportTodayData } from '../types/ExportType';
+import {
+  ExportRawData,
+  ExportDetailRawData,
+  ExportType,
+  ExportData,
+  ExportDetailData,
+  ExportDetailPdf,
+  ExportTodayType
+} from '../types/ExportType';
 import { useNavigate } from 'react-router-dom';
 import { pathToUrl } from '../utils/path';
 import { ExportForm } from '../pages/export/SalesExport';
@@ -305,7 +323,6 @@ const useRefundExport = () => {
     },
     onSuccess: (response: any) => {
       if (response.data.message) {
-        queryClient.invalidateQueries('exports', { refetchInactive: true })
         queryClient.invalidateQueries('exports-today', { refetchInactive: true })
         queryClient.invalidateQueries('drug-categories', { refetchInactive: true })
         navigate(roleId === 1 ? '/exports' : '/sales/create')
@@ -346,6 +363,7 @@ const useRefundAndCreateNewExport = (
     onSuccess: (response: any) => {
       if (response.data.message) {
         queryClient.invalidateQueries('drug-categories', { refetchInactive: true })
+        queryClient.invalidateQueries('exports-today', { refetchInactive: true })
         navigate(roleId === 1 ? '/exports' : '/sales/create')
         const handleExport = createDataExport(response.data.data.export)
         const handleExportDetail = response.data.data.exportDetail.map(

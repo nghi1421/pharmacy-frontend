@@ -13,7 +13,7 @@ interface TableHeaderProps {
   actionSort?: (q: QuerySort) => void
 }
 
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
+export const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
     backgroundColor: 'lightBlue',
     color: theme.palette.common.black,

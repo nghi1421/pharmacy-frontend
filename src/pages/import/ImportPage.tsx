@@ -17,8 +17,6 @@ const columnsList: Column[] = [
     { key: 'staffName', value: 'Được tạo bởi' , sortable: false, searchable: false},
     { key: 'providerName', value: 'Đối tác', sortable: false, searchable: false},
     { key: 'note', value: 'Ghi chú', sortable: false, searchable: false},
-    { key: 'paid', value: 'Đã thanh toán', sortable: false, searchable: false},
-    { key: 'maturityDate', value: 'Ngày đáo hạn', sortable: false, searchable: false},
     { key: 'importDate', value: 'Ngày nhập hàng', sortable: false, searchable: false},
 ]
 

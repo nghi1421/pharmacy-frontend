@@ -1,5 +1,5 @@
 import { Box, Button, Chip, CircularProgress, Grid, InputAdornment, Paper, TextField, Typography } from "@mui/material"
-import { useLocation, useNavigate } from "react-router-dom"
+import { useLocation } from "react-router-dom"
 import React, { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { getStaff } from "../../store/auth";
@@ -17,14 +17,14 @@ import Address from "../../components/Address";
 import { useSearchCustomer } from '../../hooks/useCustomer'
 import yup from "../../utils/yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useCreateExport, useRefundAndCreateNewExport, useRefundExport } from "../../hooks/useExport";
+import { useRefundAndCreateNewExport, useRefundExport } from "../../hooks/useExport";
 import { useReactToPrint } from "react-to-print";
 import ExportBill from "./ExportBill";
 import { enqueueSnackbar } from "notistack";
 import { ExportData, ExportDetailPdf, ExportDetailRawData } from "../../types/ExportType";
 import dayjs from "dayjs";
 import { TodaySales } from "../../components/TodaySales";
-import { formatCurrency, formatDate, formatDateTime, formatNumber } from "../../utils/format";
+import { formatCurrency, formatDate, formatNumber } from "../../utils/format";
 import { useConfirmDialog } from "../../hooks/useConfirmDialog";
 import ConfirmDialog from "../../components/ConfirmDialog";
 import { handleAddress } from "../../utils/address";
@@ -297,12 +297,6 @@ const EditSalesExport: React.FC = () => {
                     return { drugId: drug.id, quantity: drug.exportQuantity}
                 })
             })
-            // setSelectedDrugs([]),
-            // setDrugs(cloneDrugs)
-            // setSearch(''),
-            // reset()
-            // resetCustomer()
-            // setAddress('')
         }
     };
 

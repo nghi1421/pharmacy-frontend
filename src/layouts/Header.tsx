@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { enqueueSnackbar } from "notistack";
 import { AuthContext } from "../App";
 import { useRefreshToken } from "../hooks/useAuth";
+import { useQueryClient } from "react-query";
 
 
 interface HeaderProps {
@@ -71,6 +72,8 @@ const Header: React.FC<HeaderProps> = ({ open, setOpen, preventOpen }) => {
     setAccessToken(null);
     setRoleId(null)
     navigate('/login')
+    const queryClient = useQueryClient();
+    queryClient.removeQueries();
     enqueueSnackbar('Đăng xuất thành công.', {
       variant: 'success',
       autoHideDuration: 3000
