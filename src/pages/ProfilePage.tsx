@@ -72,6 +72,11 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ closeModal }) => {
         setAddress(staff.rawAddress);
         setCounter(Math.random())
     }
+    
+    const onSubmit = (data: ProfileForm) => {
+        //submit form here
+    }
+
     return (
         <Box sx={{ px: 3, pt: 4, pb: 2 }}>
             <Grid container spacing={3}>
@@ -125,6 +130,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ closeModal }) => {
                         color='success'
                         variant="contained"
                         sx={{ textTransform: 'none' }}
+                        onClick={handleSubmit(onSubmit)}
                     >
                         Cập nhật
                     </Button>

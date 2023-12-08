@@ -5,6 +5,9 @@ export const APP_DESCRIPTION = 'Web được phát triển phục vụ việc qu
 
 export const API_LOGIN = 'login';
 export const API_FRESH_TOKEN = 'refresh-token';
+export const API_CHANGE_PASSWORD = 'change-password';
+export const API_UPDATE_PROFILE = 'update-profile';
+export const API_FORGOT_PASSWORD = 'forgot-password';
 
 export const API_USER = 'users';
 export const API_STAFF = 'staffs';

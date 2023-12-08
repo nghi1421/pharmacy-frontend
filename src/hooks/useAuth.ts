@@ -1,4 +1,4 @@
-import { API_FRESH_TOKEN, API_LOGIN } from '../utils/constants';
+import { API_CHANGE_PASSWORD, API_FRESH_TOKEN, API_LOGIN } from '../utils/constants';
 import { useMutation } from 'react-query';
 import axiosClient from '../services/axios';
 import { AuthContext } from '../App';
@@ -8,6 +8,7 @@ import { enqueueSnackbar } from 'notistack';
 import { handleAddress } from '../utils/address';
 import { useNavigate } from 'react-router-dom';
 import { LoginForm } from '../pages/Login';
+import { ChangePasswordForm } from '../pages/ChangePassword';
 
 export const useLogin = () => {
   const navigate = useNavigate()
@@ -78,7 +79,7 @@ export const useLogin = () => {
 }
 
 export const useRefreshToken = () => {
-  const { setRoleId } = useContext(AuthContext)
+  const { setRoleId, setUsername } = useContext(AuthContext)
   return useMutation({
   mutationFn: async () => {
     return await axiosClient.post(API_FRESH_TOKEN)
@@ -89,6 +90,7 @@ export const useRefreshToken = () => {
         setAccessToken(null)
         setStaff(null)
         setRoleId(null)
+        setUsername(null)
         enqueueSnackbar('Phiên đăng nhập đã hết hạn.', {
           variant: 'error',
           autoHideDuration: 3000
@@ -98,20 +100,62 @@ export const useRefreshToken = () => {
 }) 
 }
 
-// const useCreatePosition = (setError: UseFormSetError<any>) => {
-//   const queryClient = useQueryClient();
-//   const navigate = useNavigate();
+export const useUpdateProfile = () => {
+  return useMutation({
+    mutationFn: async () => {
+      return await axiosClient.post(API_FRESH_TOKEN)
+        .then(response => {
+          if (response.data.message) {
+            enqueueSnackbar('Phiên đăng nhập đã hết hạn.', {
+              variant: 'error',
+              autoHideDuration: 3000
+            })
+          }
+        })
+        .catch(_ => {
+          enqueueSnackbar('Phiên đăng nhập đã hết hạn.', {
+            variant: 'error',
+            autoHideDuration: 3000
+          })
+        })
+    },
+  })
+}
 
-//   return useMutation({
-//     mutationFn: async (data: PositionForm) => {
-//       return await axiosClient.post(API_POSITION, data)
-//         .then(response => response)
-//         .catch(error => {
-//           defaultCatchErrorHandle(error, setError)
-//         }) 
-//     },
-//     onSuccess: (response: any) => {
-//       defaultOnSuccessHandle(queryClient, navigate, response, 'positions', '/admin/positions')
-//     }
-//   })
-// }
+export const useChangePassword = () => {
+  const { username, setRoleId, setUsername } = useContext(AuthContext)
+  
+  return useMutation({
+    mutationFn: async (data: ChangePasswordForm) => {
+      return await axiosClient.post(API_CHANGE_PASSWORD, { ...data, username: username})
+        .then(response => {
+          if (response.data.message) {
+            enqueueSnackbar(response.data.message, {
+              variant: 'success',
+              autoHideDuration: 3000
+            })
+            setAccessToken(null)
+            setStaff(null)
+            setRoleId(null)
+            setUsername(null)
+          }
+          return response
+        })
+        .catch(error => {
+          console.log(error)
+          if (error.response.data.errorMessage) {
+            enqueueSnackbar(error.response.data.errorMessage, {
+              variant: 'error',
+              autoHideDuration: 3000
+            })
+          }
+          else {
+            enqueueSnackbar('Lỗi server!', {
+              variant: 'error',
+              autoHideDuration: 3000
+            })
+          }
+        })
+    },
+  })
+}

@@ -4,6 +4,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
 import yup from "../utils/yup";
 import * as Yup from 'yup';
+import { useChangePassword } from "../hooks/useAuth";
 
 export interface ChangePasswordForm {
     oldPassword: string
@@ -35,6 +36,7 @@ interface ChangePasswordProps {
 }
 
 export const ChangePassword: React.FC<ChangePasswordProps> = ({ closeModal }) => {
+    const changePassword = useChangePassword()
     const { handleSubmit, reset, control } = useForm<ChangePasswordForm>({
         defaultValues: {
             oldPassword: '',
@@ -45,7 +47,7 @@ export const ChangePassword: React.FC<ChangePasswordProps> = ({ closeModal }) =>
     });
 
     const onSubmit = (data: ChangePasswordForm) => {
-        //submit here
+        changePassword.mutate(data);
     }
 
     const refreshForm = () => {
