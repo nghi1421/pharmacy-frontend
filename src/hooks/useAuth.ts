@@ -19,7 +19,7 @@ export const useLogin = () => {
           if (response.data.message) {
             switch (response.data.data.role.id) {
                 case 1: {
-                    setStaff({...response.data.data.staff, address: handleAddress(response.data.data.staff.address)})
+                    setStaff({...response.data.data.staff, address: handleAddress(response.data.data.staff.address), rawAddress: response.data.data.staff.address})
                     setAccessToken(response.data.accessToken);
                     setRoleId(response.data.data.role.id)
                     enqueueSnackbar(
@@ -31,7 +31,7 @@ export const useLogin = () => {
                     break;
                 }
                 case 2: {
-                    setStaff({...response.data.data.staff, address: handleAddress(response.data.data.staff.address)})
+                    setStaff({...response.data.data.staff, address: handleAddress(response.data.data.staff.address), rawAddress: response.data.data.staff.address})
                     setAccessToken(response.data.accessToken);
                     setRoleId(response.data.data.role.id)
                     enqueueSnackbar(

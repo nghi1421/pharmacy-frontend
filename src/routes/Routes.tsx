@@ -11,6 +11,7 @@ import CreateExport from "../pages/export/SalesExport";
 import { NotFound404 } from "../pages/NotFound404";
 import { Forbidden403 } from "../pages/Forbidden403";
 import EditSalesExport from "../pages/export/EditSalesExport";
+import { ProfilePage } from "../pages/ProfilePage";
 
 const ModifiedMainLayout = () => {
     return (
@@ -68,6 +69,8 @@ const AppRoutes: React.FC = () => {
                     />
                 ))}
             </Route>
+
+            
 
             <Route path='sales' element={<ModifiedSalesLayout />}>
                 <Route

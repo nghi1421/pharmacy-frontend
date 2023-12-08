@@ -9,6 +9,8 @@ import { enqueueSnackbar } from "notistack";
 import { AuthContext } from "../App";
 import { useRefreshToken } from "../hooks/useAuth";
 import { useQueryClient } from "react-query";
+import { ModalComponent } from "../components/Modal";
+import { ProfilePage } from "../pages/ProfilePage";
 
 
 interface HeaderProps {
@@ -43,6 +45,7 @@ const AppBar = styled(MuiAppBar, {
 
 const Header: React.FC<HeaderProps> = ({ open, setOpen, preventOpen }) => {
   const [avatarEl, setAvatarEl] = useState<HTMLButtonElement | null>(null);
+  const [openModal, setOpenModal] = useState<boolean>(false)
   const { roleId, setRoleId } =  useContext(AuthContext)
   const freshToken = useRefreshToken()
   const staff = getStaff();
@@ -85,6 +88,13 @@ const Header: React.FC<HeaderProps> = ({ open, setOpen, preventOpen }) => {
   };
     return (
         <AppBar position="absolute" open={open}>
+             <ModalComponent
+                title='Cập nhật thông tin'
+                initOpen={openModal}
+                
+                handleClose={() => setOpenModal(false)}
+                children={<ProfilePage />}
+            ></ModalComponent>
           <Toolbar
             sx={{
               pr: '24px',
@@ -141,7 +151,7 @@ const Header: React.FC<HeaderProps> = ({ open, setOpen, preventOpen }) => {
               'aria-labelledby': 'basic-button',
             }}
           >
-            <MenuItem onClick={handleAvatarClose}>Cập nhật thông tin</MenuItem>
+            <MenuItem onClick={() => setOpenModal(true)}>Cập nhật thông tin</MenuItem>
             <MenuItem onClick={handleAvatarClose}>Đổi mật khẩu</MenuItem>
               <Divider />
             <MenuItem onClick={handleLogout}>Đăng xuất</MenuItem>

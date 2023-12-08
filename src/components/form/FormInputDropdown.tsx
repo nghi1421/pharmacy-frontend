@@ -21,7 +21,7 @@ export const FormInputDropdown: React.FC<FormInputListProps> = ({
   };
   return (
     <FormControl fullWidth>
-      <InputLabel >{label}</InputLabel>
+      <InputLabel size={size ? size : 'small'}>{label}</InputLabel>
       <Controller
         render={({ field: { onChange, value } }) => (
           <Select size={size ? size : 'small'} onChange={onChange} value={value} placeholder={placeholder}  label={label}>

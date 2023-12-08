@@ -32,6 +32,7 @@ import StatisticsPage from "../pages/statistics/StatisticsPage";
 import CancelExport from "../pages/export/CancelExport";
 import InventoryPage from "../pages/inventory/InventoryPage";
 import TroublePage from "../pages/trouble/TroublePage";
+import { ProfilePage } from "../pages/ProfilePage";
 
 export const dashboardRoutes: Array<Route> = [
     {      

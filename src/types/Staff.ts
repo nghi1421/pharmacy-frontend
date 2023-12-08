@@ -10,4 +10,5 @@ export type Staff = {
     isWorking: boolean
     position: Position
     address: string
+    rawAddress: string
 }

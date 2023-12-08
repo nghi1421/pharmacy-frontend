@@ -120,7 +120,8 @@ const SalesExport: React.FC = () => {
         watch,
         setValue: setValueCustomer,
         clearErrors,
-        reset: resetCustomer
+        reset: resetCustomer,
+        formState: { errors }
     } = useForm<CustomerForm>({
         defaultValues: defaultValuesCustomer,
         resolver: yupResolver(customerFormValidate)
@@ -133,6 +134,7 @@ const SalesExport: React.FC = () => {
         setAddress(customer.address)
         clearErrors('phoneNumber'),
         clearErrors('name')
+        clearErrors('email')
     }
     const searchCustomer = useSearchCustomer(setCustomer)
     const { handleSubmit, control, reset, setValue } = useForm<ExportForm>({
@@ -160,10 +162,13 @@ const SalesExport: React.FC = () => {
     } = useSalesExport()
 
     const onSubmit = (data: ExportForm) => {
+        handleSubmitCustomer((_) => {})()
+        if (Object.keys(errors).length > 0) {
+            return;
+        }
         const isInvalid = selectedDrugs.length === 0
             || selectedDrugs.some(drug => drug.error.length > 0);
         
-        handleSubmitCustomer((_) => {})()
         if (isInvalid) {
             if (selectedDrugs.length === 0) {
                 enqueueSnackbar('Vui lòng chọn ít nhất một danh mục thuốc.', {
@@ -183,6 +188,7 @@ const SalesExport: React.FC = () => {
                 customer: {
                     name: watch('name'),
                     phoneNumber: watch('phoneNumber'),
+                    email: watch('email'),
                     address: address,
                     gender: watch('gender') 
                 },
