@@ -35,9 +35,8 @@ function createData({
 
 const useInventories = (query: Query) => {
   const queryParams = updateSearchParams(query)
-
   return useQuery({
-    queryKey: ['positions', queryParams.toString()],
+    queryKey: ['inventories', queryParams.toString()],
     queryFn: () => axiosClient
       .get(`${API_INVENTORY}?${queryParams.toString()}`)
       .then((response): DataMetaResponse | undefined => {

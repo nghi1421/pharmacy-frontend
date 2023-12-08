@@ -71,13 +71,13 @@ const Header: React.FC<HeaderProps> = ({ open, setOpen, preventOpen }) => {
     setStaff(null);
     setAccessToken(null);
     setRoleId(null)
-    navigate('/login')
-    const queryClient = useQueryClient();
-    queryClient.removeQueries();
     enqueueSnackbar('Đăng xuất thành công.', {
       variant: 'success',
       autoHideDuration: 3000
     })
+    navigate('/login')
+    const queryClient = useQueryClient();
+    queryClient.removeQueries();
   }
 
   const toggleDrawer = () => {

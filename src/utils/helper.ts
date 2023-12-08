@@ -5,7 +5,6 @@ import { Query } from "../types/Query";
 import { Column } from "../types/Column";
 import { Item } from "../types/props/FormInputListProps";
 import { StatisticsQuery } from "../hooks/useStatistics";
-import dayjs from "dayjs";
 
 export enum SearchColumnsOption {
     GET_ARRAY_OF_KEY = 1,
@@ -73,6 +72,10 @@ export const updateSearchParams = (query: Query): URLSearchParams => {
     queryParams.set('perPage', query.perPage.toString())
     queryParams.set('orderBy', query.orderBy)
     queryParams.set('orderDirection', query.orderDirection)
+    if (query.filterValue.length > 0) {
+        queryParams.set('filterColumn', query.filterColumn)
+        queryParams.set('filterValue', query.filterValue)
+    }
     if (query.searchTerm.length > 0) {
         queryParams.set('searchTerm', query.searchTerm)
         queryParams.set('searchColumns', query.searchColumns.toString())

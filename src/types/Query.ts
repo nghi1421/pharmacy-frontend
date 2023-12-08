@@ -6,4 +6,6 @@ export interface Query{
     orderDirection: 'asc' | 'desc'
     searchColumns: string[]
     searchTerm: string
+    filterColumn: string
+    filterValue: string
 }

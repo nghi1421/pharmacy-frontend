@@ -1,7 +1,6 @@
-import { InputAdornment, Paper, TextField, Typography } from "@mui/material";
+import { FormControl, InputAdornment, InputLabel, MenuItem, Paper, Select, SelectChangeEvent, TextField, Typography } from "@mui/material";
 import TableComponent from "../../components/table/TableComponent";
 import { Column } from "../../types/Column";
-import { useNavigate } from "react-router-dom";
 import { useSearchQuery } from "../../hooks/useSearchQuery";
 import { getSearchColums } from "../../utils/helper";
 import { GET_ARRAY_OF_KEY } from "../../utils/constants";
@@ -10,6 +9,21 @@ import SearchIcon from '@mui/icons-material/Search';
 import { useInventories } from "../../hooks/useInventory";
 import dayjs from "dayjs";
 import { useState } from "react";
+
+const monthYears = [
+     {
+        value: '102023',
+        label: 'Tháng 10/2023'
+    },
+    {
+        value: '112023',
+        label: 'Tháng 11/2023'
+    },
+    {
+        value: '122023',
+        label: 'Tháng 12/2023'
+    }
+]
 
 const columnsList: Column[] = [
     { key: 'drugId', value: 'Mã thuốc', sortable: true, searchable: false, enableSearch: false},
@@ -24,21 +38,31 @@ const columnsList: Column[] = [
 ]
 
 const InventoryPage: React.FC<{}> = () => {
-    const { query, actionChangePage, actionSort, actionSearch, updateQueryParams } =
+    const { query, actionChangePage, actionSort, actionSearch, updateQueryParams, actionFilter } =
         useSearchQuery(getSearchColums(columnsList, GET_ARRAY_OF_KEY))
     const { data, isLoading } = useInventories(query)
-    const [columns, watchSearchList, control, setValue] = useSearchableList(columnsList, updateQueryParams)
+    const [columns, watchSearchList] = useSearchableList(columnsList, updateQueryParams)
     
     const [search, setSearch] = useState<string>('')
     const [time, setTime] = useState<number>(0)
+    const [monthYear, getMonthYear] = useState('122023');
+
+    const handleChange = (event: SelectChangeEvent) => {
+        getMonthYear(event.target.value as string);
+        actionFilter({
+            filterValue: event.target.value as string,
+            filterColumn: 'monthYear'
+        })
+    };
+    
     const handleSearchData = (event: React.ChangeEvent<HTMLInputElement>) => {
         clearTimeout(time);
         setSearch(event.target.value as string)
-            setTime(setTimeout(() => {
-                actionSearch({
-                    searchTerm: event.target.value as string,
-                    searchColumns: watchSearchList
-                })
+        setTime(setTimeout(() => {
+            actionSearch({
+                searchTerm: event.target.value as string,
+                searchColumns: watchSearchList
+            })
             }, 500)
         )
     }
@@ -54,14 +78,14 @@ const InventoryPage: React.FC<{}> = () => {
                 Thẻ kho {dayjs().format('MM/YYYY')}
             </Typography>
 
-            <Paper sx={{ px: 3, py: 1, display: 'flex', gap: 2 }}>
+            <Paper sx={{ px: 3, py: 1, display: 'flex', gap: 2, justifyItems: 'between' }}>
 
             <TextField
                 onChange={handleSearchData}
                 onClick={() =>
                     console.log(123)
                 }
-                sx={{ width: '40%' }}
+                sx={{ width: '80%' }}
                 size='small'
                 label="Tìm kiếm"
                 value={search}
@@ -77,6 +101,23 @@ const InventoryPage: React.FC<{}> = () => {
                     )
                 }}
             />
+            <FormControl fullWidth>
+                <InputLabel id="demo-simple-select-label" size='small'>Tháng năm</InputLabel>
+                <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    size='small'
+                    value={monthYear}
+                    label="Tháng năm"
+                    onChange={handleChange}
+                >
+                    {
+                        monthYears.map(monthYear => (
+                         <MenuItem value={monthYear.value}>{monthYear.label}</MenuItem>
+                        ))
+                    }
+                </Select>
+            </FormControl>
         </Paper>
 
             <TableComponent
