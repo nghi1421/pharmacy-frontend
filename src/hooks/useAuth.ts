@@ -1,14 +1,17 @@
-import { API_CHANGE_PASSWORD, API_FRESH_TOKEN, API_LOGIN } from '../utils/constants';
+import { API_CHANGE_PASSWORD, API_FRESH_TOKEN, API_LOGIN, API_UPDATE_PROFILE } from '../utils/constants';
 import { useMutation } from 'react-query';
 import axiosClient from '../services/axios';
 import { AuthContext } from '../App';
 import { useContext } from 'react';
-import { setAccessToken, setStaff } from '../store/auth';
+import { getStaff, setAccessToken, setStaff } from '../store/auth';
 import { enqueueSnackbar } from 'notistack';
 import { handleAddress } from '../utils/address';
 import { useNavigate } from 'react-router-dom';
 import { LoginForm } from '../pages/Login';
 import { ChangePasswordForm } from '../pages/ChangePassword';
+import { ProfileForm } from '../pages/ProfilePage';
+import { defaultCatchErrorHandle } from '../utils/helper';
+import { UseFormSetError } from 'react-hook-form';
 
 export const useLogin = () => {
   const navigate = useNavigate()
@@ -100,23 +103,24 @@ export const useRefreshToken = () => {
 }) 
 }
 
-export const useUpdateProfile = () => {
+export const useUpdateProfile = (setError: UseFormSetError<any>, closeModal: () => void) => {
+  const staff = getStaff()
   return useMutation({
-    mutationFn: async () => {
-      return await axiosClient.post(API_FRESH_TOKEN)
+    mutationFn: async (data: ProfileForm) => {
+      return await axiosClient.put(API_UPDATE_PROFILE, {...data, id: staff.id})
         .then(response => {
           if (response.data.message) {
-            enqueueSnackbar('Phiên đăng nhập đã hết hạn.', {
-              variant: 'error',
+            setStaff({...response.data.data, address: handleAddress(response.data.data.address), rawAddress: response.data.data.address})
+            closeModal()
+            enqueueSnackbar(response.data.message, {
+              variant: 'success',
               autoHideDuration: 3000
             })
           }
+          return response
         })
-        .catch(_ => {
-          enqueueSnackbar('Phiên đăng nhập đã hết hạn.', {
-            variant: 'error',
-            autoHideDuration: 3000
-          })
+        .catch(error => {
+          defaultCatchErrorHandle(error, setError)
         })
     },
   })
@@ -142,7 +146,6 @@ export const useChangePassword = () => {
           return response
         })
         .catch(error => {
-          console.log(error)
           if (error.response.data.errorMessage) {
             enqueueSnackbar(error.response.data.errorMessage, {
               variant: 'error',

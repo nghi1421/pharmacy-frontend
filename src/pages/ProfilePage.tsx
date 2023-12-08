@@ -10,12 +10,13 @@ import { useState } from "react";
 import { getStaff } from "../store/auth";
 import { FormInputDropdown } from "../components/form/FormInputDropdown";
 import { genders } from "../utils/constants";
+import { useUpdateProfile } from "../hooks/useAuth";
 
 export interface ProfileForm {
     name: string;
     phoneNumber: string;
     gender: string;
-    dob: Date | null;
+    dob: Date;
     address: string;
     email: string,
 }
@@ -55,10 +56,10 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ closeModal }) => {
     const staff = getStaff()
     const [address, setAddress] = useState<string>('')
     const [counter, setCounter] = useState(Math.random())
-    const { handleSubmit, reset, control } = useForm<ProfileForm>({
+    const { handleSubmit, reset, control, setError } = useForm<ProfileForm>({
         defaultValues: {
             name: staff.name,
-            address: staff.address,
+            address: '',
             email: staff.email,
             dob: staff.dob,
             phoneNumber: staff.phoneNumber,
@@ -66,15 +67,16 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ closeModal }) => {
         },
         resolver: yupResolver(staffFormValidate)
     });
+    const updateProfile = useUpdateProfile(setError, closeModal)
 
     const refreshForm = () => {
         reset();
         setAddress(staff.rawAddress);
         setCounter(Math.random())
     }
-    
+
     const onSubmit = (data: ProfileForm) => {
-        //submit form here
+        updateProfile.mutate({...data, address});
     }
 
     return (
