@@ -11,7 +11,7 @@ import { LoginForm } from '../pages/Login';
 
 export const useLogin = () => {
   const navigate = useNavigate()
-  const { setRoleId } = useContext(AuthContext)
+  const { setRoleId, setUsername } = useContext(AuthContext)
     return useMutation({
     mutationFn: async (data: LoginForm) => {
       return await axiosClient.post(API_LOGIN, data)
@@ -22,6 +22,7 @@ export const useLogin = () => {
                     setStaff({...response.data.data.staff, address: handleAddress(response.data.data.staff.address), rawAddress: response.data.data.staff.address})
                     setAccessToken(response.data.accessToken);
                     setRoleId(response.data.data.role.id)
+                    setUsername(data.username)
                     enqueueSnackbar(
                         response.data.message, {
                         autoHideDuration: 3000,
@@ -34,6 +35,7 @@ export const useLogin = () => {
                     setStaff({...response.data.data.staff, address: handleAddress(response.data.data.staff.address), rawAddress: response.data.data.staff.address})
                     setAccessToken(response.data.accessToken);
                     setRoleId(response.data.data.role.id)
+                    setUsername(data.username)
                     enqueueSnackbar(
                         response.data.message, {
                         autoHideDuration: 3000,

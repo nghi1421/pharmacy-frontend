@@ -11,16 +11,17 @@ import { useRefreshToken } from "../hooks/useAuth";
 import { useQueryClient } from "react-query";
 import { ModalComponent } from "../components/Modal";
 import { ProfilePage } from "../pages/ProfilePage";
+import { ChangePassword } from "../pages/ChangePassword";
 
 
 interface HeaderProps {
-  open: boolean;
-  setOpen: (newOpen: boolean) => void
-  preventOpen?: boolean
+    open: boolean;
+    setOpen: (newOpen: boolean) => void
+    preventOpen?: boolean
 }
 
 interface AppBarProps extends MuiAppBarProps {
-  open?: boolean;
+    open?: boolean;
 }
 
 const drawerWidth: number = 240;
@@ -28,73 +29,92 @@ const drawerWidth: number = 240;
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== 'open',
 })<AppBarProps>(({ theme, open }) => ({
-  zIndex: theme.zIndex.drawer + 1,
-  transition: theme.transitions.create(['width', 'margin'], {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen,
-  }),
-  ...(open && {
-    marginLeft: drawerWidth,
-    width: `calc(100% - ${drawerWidth}px)`,
+    zIndex: theme.zIndex.drawer + 1,
     transition: theme.transitions.create(['width', 'margin'], {
       easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
+      duration: theme.transitions.duration.leavingScreen,
     }),
-  }),
+    ...(open && {
+        marginLeft: drawerWidth,
+        width: `calc(100% - ${drawerWidth}px)`,
+        transition: theme.transitions.create(['width', 'margin'], {
+          easing: theme.transitions.easing.sharp,
+          duration: theme.transitions.duration.enteringScreen,
+        }),
+    }),
 }));
 
 const Header: React.FC<HeaderProps> = ({ open, setOpen, preventOpen }) => {
-  const [avatarEl, setAvatarEl] = useState<HTMLButtonElement | null>(null);
-  const [openModal, setOpenModal] = useState<boolean>(false)
-  const { roleId, setRoleId } =  useContext(AuthContext)
-  const freshToken = useRefreshToken()
-  const staff = getStaff();
-  const navigate = useNavigate()
-  const openSetting = Boolean(avatarEl);
-  const accessToken = getAccessToken()
+    const [avatarEl, setAvatarEl] = useState<HTMLButtonElement | null>(null);
+    const [openModalUpdateProfile, setOpenModalUpdateProfile] = useState<boolean>(false)
+    const [openModalChangePassword, setOpenModalChangePassword] = useState<boolean>(false)
+    const { roleId, setRoleId, setUsername } =  useContext(AuthContext)
+    const freshToken = useRefreshToken()
+    const staff = getStaff()
+    const navigate = useNavigate()
+    const openSetting = Boolean(avatarEl);
+    const accessToken = getAccessToken()
 
-  useEffect(() => {
-    if (!staff) {
-      navigate('/login')
-    }
-    if (!accessToken) {
-      freshToken.mutate()
-    }
-  })
-
-  const handleAvatarClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    setAvatarEl(e.currentTarget);
-  };
-
-  const handleAvatarClose = () => {
-    setAvatarEl(null);
-  };
-
-  const handleLogout = () => {
-    setStaff(null);
-    setAccessToken(null);
-    setRoleId(null)
-    enqueueSnackbar('Đăng xuất thành công.', {
-      variant: 'success',
-      autoHideDuration: 3000
+    useEffect(() => {
+      if (!staff) {
+        navigate('/login')
+      }
+      if (!accessToken) {
+        freshToken.mutate()
+      }
     })
-    navigate('/login')
-    const queryClient = useQueryClient();
-    queryClient.removeQueries();
-  }
 
-  const toggleDrawer = () => {
-      setOpen(!open);
-  };
+    const handleAvatarClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+      setAvatarEl(e.currentTarget);
+    };
+
+    const handleAvatarClose = () => {
+      setAvatarEl(null);
+    };
+
+    const handleLogout = () => {
+      setStaff(null);
+      setAccessToken(null);
+      setRoleId(null)
+      setUsername(null)
+      enqueueSnackbar('Đăng xuất thành công.', {
+        variant: 'success',
+        autoHideDuration: 3000
+      })
+      navigate('/login')
+      const queryClient = useQueryClient();
+      queryClient.removeQueries();
+    }
+
+    const toggleDrawer = () => {
+        setOpen(!open);
+    };
+
+    const handleUpdateProfile = () => {
+      setOpenModalUpdateProfile(true)
+      handleAvatarClose()
+    }
+  
+    const handleChangePassword = () => {
+      setOpenModalChangePassword(true)
+      handleAvatarClose()
+    }
     return (
         <AppBar position="absolute" open={open}>
-             <ModalComponent
-                title='Cập nhật thông tin'
-                initOpen={openModal}
-                
-                handleClose={() => setOpenModal(false)}
-                children={<ProfilePage />}
-            ></ModalComponent>
+            <ModalComponent
+              title='Cập nhật thông tin'
+              initOpen={openModalUpdateProfile}
+              handleClose={() => setOpenModalUpdateProfile(false)}
+              children={<ProfilePage closeModal={() => setOpenModalUpdateProfile(false)} />}
+            />
+
+            <ModalComponent
+              width={500}
+              title='Đổi mật khẩu'
+              initOpen={openModalChangePassword}
+              handleClose={() => setOpenModalChangePassword(false)}
+              children={<ChangePassword closeModal={() => setOpenModalChangePassword(false)} />}
+            />
           <Toolbar
             sx={{
               pr: '24px',
@@ -151,8 +171,8 @@ const Header: React.FC<HeaderProps> = ({ open, setOpen, preventOpen }) => {
               'aria-labelledby': 'basic-button',
             }}
           >
-            <MenuItem onClick={() => setOpenModal(true)}>Cập nhật thông tin</MenuItem>
-            <MenuItem onClick={handleAvatarClose}>Đổi mật khẩu</MenuItem>
+            <MenuItem onClick={handleUpdateProfile}>Cập nhật thông tin</MenuItem>
+            <MenuItem onClick={handleChangePassword}>Đổi mật khẩu</MenuItem>
               <Divider />
             <MenuItem onClick={handleLogout}>Đăng xuất</MenuItem>
           </Menu>

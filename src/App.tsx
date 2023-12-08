@@ -9,24 +9,29 @@ import { theme } from './themes'
 export interface AuthType {
   accessToken: string | null,
   roleId: number | null,
+  username: string | null,
   setRoleId: (n: number | null) => void,
   setAccessToken: (s: string | null) => void
+  setUsername: (s: string | null) => void
 }
 
 export const AuthContext = createContext<AuthType>({
   accessToken: '',
+  username: '',
   setAccessToken: () => {},
   roleId: null,
-  setRoleId: () => {}
+  setRoleId: () => {},
+  setUsername: () => {}
 })
 
 const App: React.FC = () => {
   const [accessToken, setAccessToken] = useState<string| null>(null)
+  const [username, setUsername] = useState<string| null>(null)
   const [roleId, setRoleId] = useState<number | null>(null)
   
   return (
     <React.Fragment>
-      <AuthContext.Provider value={{ accessToken, setAccessToken, roleId, setRoleId }}>
+      <AuthContext.Provider value={{ accessToken, setAccessToken, roleId, setRoleId, username, setUsername }}>
         <ThemeProvider theme={theme}>
         <SnackbarProvider autoHideDuration={3000}>
           <CssBaseline />

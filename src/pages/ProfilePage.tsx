@@ -1,4 +1,4 @@
-import { Box, Grid } from "@mui/material"
+import { Box, Button, Grid } from "@mui/material"
 import { FormInputText } from "../components/form/FormInputText"
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
@@ -19,15 +19,6 @@ export interface ProfileForm {
     address: string;
     email: string,
 }
-
-const defaultValues = {
-    name: "",
-    phoneNumber: "",
-    gender: '1',
-    dob: new Date(dayjs().format('YYYY-MM-DD')),
-    email: '',
-    address: '',
-};
 
 const maxDate = new Date(dayjs().format('YYYY-MM-DD'))
 maxDate.setFullYear(new Date(dayjs().format('YYYY-MM-DD')).getFullYear() - 18)
@@ -56,11 +47,15 @@ const staffFormValidate: Yup.ObjectSchema<ProfileForm> = yup.object({
         .max(maxDate, 'Nhân viên phải trên 18 tuổi.'),
 })
 
-export const ProfilePage = () => {
+interface ProfilePageProps {
+    closeModal: () => void;
+}
+
+export const ProfilePage: React.FC<ProfilePageProps> = ({ closeModal }) => {
     const staff = getStaff()
     const [address, setAddress] = useState<string>('')
     const [counter, setCounter] = useState(Math.random())
-    const { handleSubmit, reset, control, setError } = useForm<ProfileForm>({
+    const { handleSubmit, reset, control } = useForm<ProfileForm>({
         defaultValues: {
             name: staff.name,
             address: staff.address,
@@ -71,8 +66,14 @@ export const ProfilePage = () => {
         },
         resolver: yupResolver(staffFormValidate)
     });
+
+    const refreshForm = () => {
+        reset();
+        setAddress(staff.rawAddress);
+        setCounter(Math.random())
+    }
     return (
-        <Box sx={{ px: 3, py: 4 }}>
+        <Box sx={{ px: 3, pt: 4, pb: 2 }}>
             <Grid container spacing={3}>
                 <Grid item xs={8} sm={6}>
                     <FormInputText
@@ -92,7 +93,7 @@ export const ProfilePage = () => {
                     />
                 </Grid>
 
-                <Grid item xs={8} sm={4}>
+                <Grid item xs={8} sm={5}>
                     <FormInputText
                         name="phoneNumber"
                         control={control}
@@ -108,7 +109,7 @@ export const ProfilePage = () => {
                         placeholder='x'
                     />
                 </Grid>
-                <Grid item xs={8} sm={2}>
+                <Grid item xs={8} sm={3}>
                     <FormInputDropdown
                         name="gender"
                         control={control}
@@ -117,9 +118,37 @@ export const ProfilePage = () => {
                         list={genders}
                     />
                 </Grid>
-                <Address setAddress={setAddress} key={counter} initAddress={staff.rawAddress} />  
-                
+                <Address gridSize={6} setAddress={setAddress} key={counter} initAddress={staff.rawAddress} />  
+
+                <Grid item xs={8} sm={12} sx={{ display: 'flex', justifyContent: 'end', gap: 2 }}>
+                    <Button
+                        color='success'
+                        variant="contained"
+                        sx={{ textTransform: 'none' }}
+                    >
+                        Cập nhật
+                    </Button>
+
+                    <Button
+                        color='primary'
+                        variant="outlined"
+                        sx={{ textTransform: 'none' }}
+                        onClick={() => refreshForm()}
+                    >
+                        Làm mới
+                    </Button>
+
+                     <Button
+                        color='error'
+                        variant="outlined"
+                        sx={{ textTransform: 'none' }}
+                        onClick={() => closeModal()}
+                    >
+                        Quay về
+                    </Button>
+                </Grid>
             </Grid>
+
         </Box>
     )
 }

@@ -36,7 +36,7 @@ const authFormValidate: Yup.ObjectSchema<LoginForm> = yup.object({
 
 const Login: React.FC = () => {
     
-    const { roleId, setRoleId } = useContext(AuthContext)
+    const { roleId, setRoleId, setUsername } = useContext(AuthContext)
     const login = useLogin()
     const accessToken = getAccessToken()
     const { handleSubmit, control } = useForm<LoginForm>({
@@ -60,6 +60,7 @@ const Login: React.FC = () => {
                 return <Navigate replace to='/sales/create'/>
             }
             default: {
+                setUsername(null)
                 setStaff(null)
                 setAccessToken(null)
                 setRoleId(null)

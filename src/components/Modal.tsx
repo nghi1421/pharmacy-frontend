@@ -20,18 +20,19 @@ interface ModalProps {
     initOpen: boolean;
     handleClose: () => void;
     children: React.ReactNode
+    width?: number;
 }
 
-export const ModalComponent: React.FC<ModalProps> = ({ title, initOpen, handleClose, children}) => {
+export const ModalComponent: React.FC<ModalProps> = ({ title, initOpen, handleClose, children, width}) => {
     return (
-        <div>
+        <div >
             <Modal
                 open={initOpen}
                 onClose={handleClose}
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
             >
-                <Box sx={style}>
+                <Box sx={{ ...style, width: width ?? 800 }}>
                     <Typography id="modal-modal-title" variant="h6" component="h2">
                         { title }
                     </Typography>
