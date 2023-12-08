@@ -1,5 +1,7 @@
-import { Grid } from "@mui/material";
+import { CssBaseline, Grid, Paper, ThemeProvider, createTheme } from "@mui/material";
 import { FC, ReactNode } from "react";
+import background from '../assets/images/background.jpg'
+const defaultTheme = createTheme();
 
 type AuthLayoutProps = {
   children: ReactNode;
@@ -8,23 +10,28 @@ type AuthLayoutProps = {
 const AuthLayout: FC<AuthLayoutProps> = ({ children }) => {
   
   return (
-    <Grid 
-      container 
-      height='100vh'
-      width='100%'
-    >
-        <Grid item width='33%' />
-      <Grid
-        item width='34%'
-        display='flex'
-        justifyContent='center'
-        marginLeft='10px'
-        marginRight='10px'
-      >
-          { children }
+    <ThemeProvider theme={defaultTheme}>
+      <Grid container component="main" sx={{ height: '100vh' }}>
+        <CssBaseline />
+        <Grid
+          item
+          xs={false}
+          sm={4}
+          md={7}
+          sx={{
+            backgroundImage: `url(${background})`,
+            backgroundRepeat: 'no-repeat',
+            backgroundColor: (t) =>
+              t.palette.mode === 'light' ? t.palette.grey[50] : t.palette.grey[900],
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          }}
+        />
+        <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
+           {children}
         </Grid>
-        <Grid item width='33%' />
-    </Grid>
+      </Grid>
+    </ThemeProvider>
   )
 };
 

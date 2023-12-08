@@ -12,6 +12,7 @@ import { NotFound404 } from "../pages/NotFound404";
 import { Forbidden403 } from "../pages/Forbidden403";
 import EditSalesExport from "../pages/export/EditSalesExport";
 import { ProfilePage } from "../pages/ProfilePage";
+import { ForgotPassword } from "../pages/ForgotPassword";
 
 const ModifiedMainLayout = () => {
     return (
@@ -94,6 +95,12 @@ const AppRoutes: React.FC = () => {
                 <Route key='login-route'
                     path='/login'
                     element={<Login />}
+                    errorElement={ <NotFound404/>}
+                />
+                
+                <Route key='forgot-password-route'
+                    path='/forgot-password'
+                    element={<ForgotPassword />}
                     errorElement={ <NotFound404/>}
                 />
             </Route>
