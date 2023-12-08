@@ -1,36 +1,48 @@
-import { Paper, Typography } from "@mui/material";
+import { InputAdornment, Paper, TextField, Typography } from "@mui/material";
 import TableComponent from "../../components/table/TableComponent";
 import { Column } from "../../types/Column";
 import { useNavigate } from "react-router-dom";
 import { useSearchQuery } from "../../hooks/useSearchQuery";
 import { getSearchColums } from "../../utils/helper";
-import { GET_ARRAY_OF_KEY, GET_SEARCHABLE_KEY, GET_SEARCHABLE_LIST } from "../../utils/constants";
+import { GET_ARRAY_OF_KEY } from "../../utils/constants";
 import { useSearchableList } from "../../hooks/useSearchableList";
-import { TableExtension } from "../../components/table/TableExtension";
-import { PageHeader } from "../../components/PageHeader";
+import SearchIcon from '@mui/icons-material/Search';
 import { useInventories } from "../../hooks/useInventory";
 import dayjs from "dayjs";
+import { useState } from "react";
 
 const columnsList: Column[] = [
-    { key: 'drugId', value: 'Mã thuốc', sortable: true, searchable: true, enableSearch: true},
-    { key: 'name', value: 'Tên thuốc' , sortable: true, searchable: true, enableSearch: false},
-    { key: 'inventory', value: 'Tồn kho' , sortable: true, searchable: true, enableSearch: false},
+    { key: 'drugId', value: 'Mã thuốc', sortable: true, searchable: false, enableSearch: false},
+    { key: 'name', value: 'Tên thuốc' , sortable: false, searchable: true, enableSearch: true},
+    { key: 'inventory', value: 'Tồn kho' , sortable: true, searchable: false, enableSearch: false},
     { key: 'salesQuantity', value: 'Số lượng bán', sortable: true, searchable: false},
     { key: 'brokenQuantity', value: 'Số lượng hư hỏng', sortable: true, searchable: false},
     { key: 'importQuantity', value: 'Số lượng nhập', sortable: true, searchable: false},
-    { key: 'importId', value: 'Mã nhập', sortable: true, searchable: false},
+    { key: 'importId', value: 'Mã nhập', sortable: false, searchable: false},   
     { key: 'importDate', value: 'Ngày nhập', sortable: true, searchable: false},
-    { key: 'expiryDateSelling', value: 'HSD đang bán', sortable: true, searchable: false},
+    { key: 'expiryDateSelling', value: 'HSD đang bán', sortable: false, searchable: false},
 ]
 
 const InventoryPage: React.FC<{}> = () => {
-    const navigate = useNavigate()
-
     const { query, actionChangePage, actionSort, actionSearch, updateQueryParams } =
         useSearchQuery(getSearchColums(columnsList, GET_ARRAY_OF_KEY))
     const { data, isLoading } = useInventories(query)
     const [columns, watchSearchList, control, setValue] = useSearchableList(columnsList, updateQueryParams)
     
+    const [search, setSearch] = useState<string>('')
+    const [time, setTime] = useState<number>(0)
+    const handleSearchData = (event: React.ChangeEvent<HTMLInputElement>) => {
+        clearTimeout(time);
+        setSearch(event.target.value as string)
+            setTime(setTimeout(() => {
+                actionSearch({
+                    searchTerm: event.target.value as string,
+                    searchColumns: watchSearchList
+                })
+            }, 500)
+        )
+    }
+
     return (
         <Paper>
 
@@ -42,15 +54,30 @@ const InventoryPage: React.FC<{}> = () => {
                 Thẻ kho {dayjs().format('MM/YYYY')}
             </Typography>
 
-            <TableExtension
-                setValue={setValue}
-                initValueSearch={query.searchTerm}
-                initSearchColumns={getSearchColums(columns, GET_SEARCHABLE_KEY)}
-                searchColumns={getSearchColums(columnsList, GET_SEARCHABLE_LIST)}
-                control={control}
-                actionSearch={actionSearch}
-                watchSearchList={watchSearchList}
+            <Paper sx={{ px: 3, py: 1, display: 'flex', gap: 2 }}>
+
+            <TextField
+                onChange={handleSearchData}
+                onClick={() =>
+                    console.log(123)
+                }
+                sx={{ width: '40%' }}
+                size='small'
+                label="Tìm kiếm"
+                value={search}
+                disabled={watchSearchList.length === 0}
+                placeholder="Nhập tên thuốc cần tìm kiếm"
+                InputProps={{
+                    endAdornment: (
+                        <InputAdornment
+                            position='end'
+                        >
+                            <SearchIcon />
+                        </InputAdornment>
+                    )
+                }}
             />
+        </Paper>
 
             <TableComponent
                 isLoading={isLoading}
