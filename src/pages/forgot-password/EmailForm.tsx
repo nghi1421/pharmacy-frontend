@@ -46,10 +46,11 @@ export const EmailForm: React.FC<InitComponentProps> = ({ setOtpResponse, setEma
     }, [forgotPassword.data])
     return (
         <>
-            <Typography marginTop={15} component="h1" variant="h3" color='primary' flex={1}>
+            <Typography component="h1" variant="h3" color='primary'
+                sx={{ textShadow: '1px 1px 2px rgba(0, 0, 0, 0.2), -1px -1px 2px rgba(0, 0, 0, 0.2)' }}>
                 Quên mật khẩu
             </Typography>
-            <Box sx={{ mt: 2, width: '100%', px: 8, pt: 2, }} >
+            <Box sx={{ mt: 2, pt: 2}} >
                 <Grid container spacing={3}>
                     <Grid item xs={8} sm={12}>
                         <FormInputText

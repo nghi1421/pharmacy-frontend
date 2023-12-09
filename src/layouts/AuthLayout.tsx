@@ -27,8 +27,11 @@ const AuthLayout: FC<AuthLayoutProps> = ({ children }) => {
             backgroundPosition: 'center',
           }}
         />
-        <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
-           {children}
+        <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6}
+          square
+          sx={{ my: 'auto',boxShadow: 0, padding: 4 }}
+        >
+            {children}
         </Grid>
       </Grid>
     </ThemeProvider>
