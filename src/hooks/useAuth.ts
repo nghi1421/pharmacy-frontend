@@ -1,5 +1,5 @@
-import { API_CHANGE_PASSWORD, API_FORGOT_PASSWORD, API_FRESH_TOKEN, API_LOGIN, API_SET_PASSWORD, API_UPDATE_PROFILE } from '../utils/constants';
-import { useMutation } from 'react-query';
+import { API_CHANGE_PASSWORD, API_FORGOT_PASSWORD, API_FRESH_TOKEN, API_LOGIN, API_ROLE, API_SET_PASSWORD, API_UPDATE_PROFILE } from '../utils/constants';
+import { useMutation, useQuery } from 'react-query';
 import axiosClient from '../services/axios';
 import { AuthContext } from '../App';
 import { useContext } from 'react';
@@ -229,3 +229,21 @@ export const useSetNewPassword = () => {
     },
   })
 } 
+
+export const useGetRoles = () => {
+  return useQuery({
+    queryKey: ['roles'],
+    queryFn: () => axiosClient
+      .get(API_ROLE)
+      .then((response) => {
+        if (response.data.message) {
+          return response.data.data
+        }
+        enqueueSnackbar(response.data.errorMessage, {
+          autoHideDuration: 3000,
+          variant: 'error'
+        })
+        return []
+      }),
+  })
+}

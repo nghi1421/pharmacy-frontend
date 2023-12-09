@@ -1,3 +1,4 @@
+import { Auth } from "./Auth"
 import { Position } from "./Position"
 
 export type Staff = {
@@ -10,5 +11,6 @@ export type Staff = {
     isWorking: boolean
     position: Position
     address: string
+    user: Auth
     rawAddress: string
 }

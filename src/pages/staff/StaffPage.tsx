@@ -15,8 +15,12 @@ import { GET_ARRAY_OF_KEY, GET_SEARCHABLE_KEY, GET_SEARCHABLE_LIST } from "../..
 import { useSearchableList } from "../../hooks/useSearchableList";
 import { useSearchQuery } from "../../hooks/useSearchQuery";
 import { TableExtension } from "../../components/table/TableExtension";
-import React from "react";
+import React, { useState } from "react";
 import { green } from "@mui/material/colors";
+import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
+import { ModalComponent } from "../../components/Modal";
+import { GrantAccount } from "./GrantAccount";
+import PersonOffIcon from '@mui/icons-material/PersonOff';
 
 const columnsList: Column[] = [
     { key: 'id', value: 'Mã nhân viên', sortable: true, searchable: true, enableSearch: true},
@@ -33,7 +37,9 @@ const StaffPage: React.FC<{}> = () => {
     const getStaff = useGetStaff()
     const updateStaffStatus = useUpdateStaffStatus()
     const deleteStaff = useDeleteStaff()
+    const [openModal, setOpenModal] = useState<boolean>(false)
     const [openConfirmDialog, props] = useConfirmDialog(deleteStaff.mutate)
+    const [openConfirmDialogRevokeAccount, revokeProps] = useConfirmDialog(deleteStaff.mutate)
     const { query, actionChangePage, actionSort, actionSearch, updateQueryParams } =
         useSearchQuery(getSearchColums(columnsList, GET_ARRAY_OF_KEY))
     const { data, isLoading } = useGetStaffs(query)
@@ -48,6 +54,18 @@ const StaffPage: React.FC<{}> = () => {
                 content="Vui lòng cân nhắc trước khi xóa dữ liệu. Nếu bạn đồng ý xóa thông tin nhân viên bạn hãy nhấn Xác nhận."
                 title="Bạn có thật sự muốn xóa thông tin nhân viên này không?"
                 { ...props }
+            />
+            <ConfirmDialog
+                content="Bạn có thật sự muốn thu hồi và xóa tài khoản này không?"
+                title="Thu hồi và xóa tài khoản"
+                { ...revokeProps }
+            />
+            <ModalComponent
+                title='Cấp tài khoản'
+                initOpen={openModal}
+                width={450}
+                handleClose={() => setOpenModal(false)}
+                children={<GrantAccount closeModal={() => setOpenModal(false)} />}
             />
             <Box sx={{
                 display: 'flex',
@@ -124,6 +142,28 @@ const StaffPage: React.FC<{}> = () => {
                                         <CreateIcon></CreateIcon>
                                     </IconButton>
                                 </Tooltip>
+
+                            {
+                                rowValue.user
+                                    ?
+                                        <Tooltip title="Thu hồi và xóa tài khoản">
+                                        <IconButton
+                                            color='error'
+                                            onClick={() => { openConfirmDialogRevokeAccount(rowValue.id) }}
+                                        >
+                                            <PersonOffIcon></PersonOffIcon>
+                                        </IconButton>
+                                    </Tooltip>
+                                    :
+                                        <Tooltip title="Tạo và cấp tài khoản">
+                                        <IconButton
+                                            color='success'
+                                            onClick={() => { setOpenModal(true) }}
+                                        >
+                                            <PersonAddAltIcon></PersonAddAltIcon>
+                                        </IconButton>
+                                    </Tooltip>
+                            }
                             {
                                 rowValue.status ?
                                     <Tooltip title="Cho nghỉ việc">

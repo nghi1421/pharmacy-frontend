@@ -14,7 +14,7 @@ import { UseFormSetError } from 'react-hook-form';
 import { Query } from '../types/Query';
 import { DataMetaResponse } from '../types/response/DataResponse';
 
-function createData({id, name, gender, dob, phoneNumber, email, isWorking, position}: Staff) {
+function createData({id, name, gender, dob, phoneNumber, email, isWorking, position, user}: Staff) {
     return {
         id, name, phoneNumber, position,
         gender: GenderEnum[gender],
@@ -22,7 +22,8 @@ function createData({id, name, gender, dob, phoneNumber, email, isWorking, posit
         email,
         dob: formatDate(dob),
         status: isWorking,
-        isWorking: isWorking ? '✔️' : '❌'
+        isWorking: isWorking ? '✔️' : '❌',
+        user: user ? true : false
     };
 }
 
@@ -154,9 +155,23 @@ const useUpdateStaffStatus = () => {
     mutationFn: async (staffId: string) => {
       return await axiosClient
         .post(pathToUrl(API_STAFF_UPDATE_STATUS, { staffId }))
-    },
-    onSuccess: (response: any) => {
-      defaultOnSuccessHandle(queryClient, navigate, response, 'staffs', '/admin/staffs')
+        .then(response => {
+            defaultOnSuccessHandle(queryClient, navigate, response, 'staffs', '/admin/staffs')
+        })
+        .catch(error => {
+          if (error.response.data.errorMessage) {
+              enqueueSnackbar(error.response.data.errorMessage, {
+                  autoHideDuration: 3000,
+                  variant: 'error'
+              }) 
+          }
+          else {
+              enqueueSnackbar('Lỗi server.', {
+                  autoHideDuration: 3000,
+                  variant: 'error'
+              })   
+          }
+        })
     }
   }) 
 }

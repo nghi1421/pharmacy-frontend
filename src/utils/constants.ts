@@ -11,6 +11,7 @@ export const API_FORGOT_PASSWORD = 'forgot-password';
 export const API_SET_PASSWORD = 'set-new-password'
 
 export const API_USER = 'users';
+export const API_ROLE = 'roles';
 export const API_STAFF = 'staffs';
 export const API_CUSTOMER = 'customers';
 export const API_PROVIDER = 'providers';
