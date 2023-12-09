@@ -5,24 +5,27 @@ import * as Yup from 'yup'
 import { useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { FormInputText } from "../../components/form/FormInputText"
+import { useSetNewPassword } from "../../hooks/useAuth"
 
 export interface SetNewPasswordForm {
+    email: string
     password: string
     confirmationPassword: string
 }
 
+//@ts-ignore
 const setNewPasswordValidate: Yup.ObjectSchema<SetNewPasswordForm> = yup.object({
     password: yup
         .string()
         .required('Mật khẩu bắt buộc.')
-        .min(6)
-        .max(255),
+        .min(6, 'Mật khẩu tối thiểu 6 kí tự')
+        .max(255, 'Mật khẩu tối đa 255 kí tự'),
     confirmationPassword: yup
         .string()
         .required('Xác nhận mật khẩu bắt buộc.')
         .oneOf([Yup.ref('password'), ''], 'Xác nhận mật khẩu không khớp.')
-        .min(6)
-        .max(255),
+        .min(6, 'Mật khẩu tối thiểu 6 kí tự')
+        .max(255, 'Mật khẩu tối đa 255 kí tự'),
 })
 
 interface SetNewPasswordProps {
@@ -30,8 +33,10 @@ interface SetNewPasswordProps {
 }
 
 export const SetNewPassword: React.FC<SetNewPasswordProps> = ({ email }) => {
-    const { handleSubmit, reset, control } = useForm<SetNewPasswordForm>({
+    const setNewPassword = useSetNewPassword()
+    const { handleSubmit, control } = useForm<SetNewPasswordForm>({
         defaultValues: {
+            email: '',
             password: '',
             confirmationPassword: ''
         },
@@ -39,7 +44,7 @@ export const SetNewPassword: React.FC<SetNewPasswordProps> = ({ email }) => {
     });
     
     const onSubmit = (data: SetNewPasswordForm) => {
-        
+        setNewPassword.mutate({...data, email})
     }
     return (
         <>
@@ -52,6 +57,7 @@ export const SetNewPassword: React.FC<SetNewPasswordProps> = ({ email }) => {
                         <FormInputText
                             name="password"
                             type='password'
+                            size='medium'
                             control={control}
                             label="Mật khẩu mới"
                             placeholder='Nhập mật khẩu mới'
@@ -62,6 +68,7 @@ export const SetNewPassword: React.FC<SetNewPasswordProps> = ({ email }) => {
                         <FormInputText
                             name="confirmationPassword"
                             type='password'
+                            size='medium'
                             control={control}
                             label="Xác nhận mật khẩu"
                             placeholder='Nhập xác nhận mật khẩu mới'

@@ -39,7 +39,6 @@ export const ForgotPassword = () => {
                     <VerifyOtp resendOtp={resendOtp} setVerified={setVerified} otpResponse={otpResponse} />
                     :
                     <EmailForm setOtpResponse={setOtpResponse} setEmail={setEmail} />
-                
             }
         </Box>
     );

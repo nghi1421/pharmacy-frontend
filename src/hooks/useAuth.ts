@@ -1,4 +1,4 @@
-import { API_CHANGE_PASSWORD, API_FORGOT_PASSWORD, API_FRESH_TOKEN, API_LOGIN, API_UPDATE_PROFILE } from '../utils/constants';
+import { API_CHANGE_PASSWORD, API_FORGOT_PASSWORD, API_FRESH_TOKEN, API_LOGIN, API_SET_PASSWORD, API_UPDATE_PROFILE } from '../utils/constants';
 import { useMutation } from 'react-query';
 import axiosClient from '../services/axios';
 import { AuthContext } from '../App';
@@ -13,6 +13,7 @@ import { ProfileForm } from '../pages/ProfilePage';
 import { defaultCatchErrorHandle } from '../utils/helper';
 import { UseFormSetError } from 'react-hook-form';
 import { EmailData } from '../pages/forgot-password/EmailForm';
+import { SetNewPasswordForm } from '../pages/forgot-password/SetNewPassword';
 
 export const useLogin = () => {
   const navigate = useNavigate()
@@ -175,6 +176,39 @@ export const useForgotPassword = () => {
               autoHideDuration: 3000
             })
             return response.data.otpCode
+          }
+          return response
+        })
+        .catch(error => {
+          if (error.response.data.errorMessage) {
+            enqueueSnackbar(error.response.data.errorMessage, {
+              variant: 'error',
+              autoHideDuration: 3000
+            })
+          }
+          else {
+            enqueueSnackbar('Lỗi server!', {
+              variant: 'error',
+              autoHideDuration: 3000
+            })
+          }
+        })
+    },
+  })
+} 
+
+export const useSetNewPassword = () => {
+  const navigate = useNavigate()
+  return useMutation({
+    mutationFn: async (data: SetNewPasswordForm) => {
+      return await axiosClient.post(API_SET_PASSWORD, data)
+        .then(response => {
+          if (response.data.message) {
+            enqueueSnackbar(response.data.message, {
+              variant: 'success',
+              autoHideDuration: 3000
+            })
+            navigate('/login')
           }
           return response
         })
