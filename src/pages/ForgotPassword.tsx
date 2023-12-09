@@ -1,45 +1,46 @@
-import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
-import Typography from '@mui/material/Typography';
-import { CustomLink } from '../components/CustomLink';
+import { useForgotPassword } from '../hooks/useAuth';
+import { useEffect, useState } from 'react';
+import { EmailForm } from './forgot-password/EmailForm';
+import { VerifyOtp } from './forgot-password/VerifyOtp';
+import { SetNewPassword } from './forgot-password/SetNewPassword';
 
 export const ForgotPassword = () => {
-
-  return (
-    <Box
-        sx={{
-            my: 8,
-            mx: 4,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-        }}
-    >
-        <Typography marginTop={15} component="h1" variant="h3" color='primary'>
-            Quên mật khẩu
-        </Typography>
-        
-        <Box component="form" noValidate sx={{ mt: 2 }}>
-            
-              
-            <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                sx={{ mt: 4, mb: 2 }}
-            >
-                Xác thực
-            </Button>
-            <Grid container>
-                <Grid item xs>
-                    <CustomLink title='Quay về' link='/login'/>
-                </Grid>
-            <Grid item>
-            </Grid>
-            </Grid>
-        </Box>
-    </Box>
+    const [otpResponse, setOtpResponse] = useState<string>('')
+    const [email, setEmail] = useState<string>('')
+    const [verified, setVerified] = useState<boolean>(false)
+    const forgotPassword = useForgotPassword()
     
-  );
+    const resendOtp = () => {
+        forgotPassword.mutate({email})
+    }
+    useEffect(() => {
+        if (forgotPassword.data) {
+            setOtpResponse(forgotPassword.data)
+        }
+    }, [forgotPassword.data])
+    return (
+        <Box
+            sx={{
+                my: 8,
+                mx: 4,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+            }}
+        >
+            {
+                verified
+                ?
+                    <SetNewPassword email={email} />
+                :
+                    otpResponse 
+                    ?
+                    <VerifyOtp resendOtp={resendOtp} setVerified={setVerified} otpResponse={otpResponse} />
+                    :
+                    <EmailForm setOtpResponse={setOtpResponse} setEmail={setEmail} />
+                
+            }
+        </Box>
+    );
 }

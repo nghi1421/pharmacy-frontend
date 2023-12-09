@@ -1,4 +1,4 @@
-import { API_CHANGE_PASSWORD, API_FRESH_TOKEN, API_LOGIN, API_UPDATE_PROFILE } from '../utils/constants';
+import { API_CHANGE_PASSWORD, API_FORGOT_PASSWORD, API_FRESH_TOKEN, API_LOGIN, API_UPDATE_PROFILE } from '../utils/constants';
 import { useMutation } from 'react-query';
 import axiosClient from '../services/axios';
 import { AuthContext } from '../App';
@@ -12,6 +12,7 @@ import { ChangePasswordForm } from '../pages/ChangePassword';
 import { ProfileForm } from '../pages/ProfilePage';
 import { defaultCatchErrorHandle } from '../utils/helper';
 import { UseFormSetError } from 'react-hook-form';
+import { EmailData } from '../pages/forgot-password/EmailForm';
 
 export const useLogin = () => {
   const navigate = useNavigate()
@@ -162,3 +163,35 @@ export const useChangePassword = () => {
     },
   })
 }
+
+export const useForgotPassword = () => {
+  return useMutation({
+    mutationFn: async (data: EmailData) => {
+      return await axiosClient.post(API_FORGOT_PASSWORD, data)
+        .then(response => {
+          if (response.data.message) {
+            enqueueSnackbar(response.data.message, {
+              variant: 'success',
+              autoHideDuration: 3000
+            })
+            return response.data.otpCode
+          }
+          return response
+        })
+        .catch(error => {
+          if (error.response.data.errorMessage) {
+            enqueueSnackbar(error.response.data.errorMessage, {
+              variant: 'error',
+              autoHideDuration: 3000
+            })
+          }
+          else {
+            enqueueSnackbar('Lỗi server!', {
+              variant: 'error',
+              autoHideDuration: 3000
+            })
+          }
+        })
+    },
+  })
+} 

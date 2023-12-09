@@ -44,10 +44,10 @@
 //         resolver: yupResolver(authFormValidate)
 //     });
 
-//     const [otp, setOtp] = useState('')
-//     const handleChange = (newValue: string) => {
-//         setOtp(newValue)
-//     }
+    // const [otp, setOtp] = useState('')
+    // const handleChange = (newValue: string) => {
+    //     setOtp(newValue)
+    // }
     
 //     const onSubmit = async (data: LoginForm) => {
 //         login.mutate(data);
@@ -186,7 +186,7 @@ const Login = () => {
         resolver: yupResolver(authFormValidate)
     });
     
-    const onSubmit = async (data: LoginForm) => {
+    const onSubmit = (data: LoginForm) => {
         login.mutate(data);
     };
         
