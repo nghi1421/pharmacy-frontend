@@ -94,9 +94,11 @@ const TroublePage: React.FC<{}> = () => {
     const [rowsData, setRowsData] = useState<any[]>([])
     useEffect(() => {
         if (searchTrouble.data) {
-
+            //@ts-ignore
             setRowsData(searchTrouble.data.historySales)
+            //@ts-ignore
             setInventoryImports(searchTrouble.data.inventoryImports)
+            //@ts-ignore
             setProvider(searchTrouble.data.provider)
             setChange(Math.random())
         }

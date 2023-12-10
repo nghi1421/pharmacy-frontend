@@ -135,10 +135,11 @@ const CreateDrugCategory: React.FC = () => {
 
                 <Grid item xs={8} sm={3}>
                     <FormControl fullWidth>
-                        <InputLabel>Phân loại công dụng</InputLabel>
+                        <InputLabel size='small'>Phân loại công dụng</InputLabel>
                         <Controller
                             render={({ field: { onChange, value } }) => (
                                     <Select
+                                        size='small'
                                         key='type-by-uses-select'
                                         onChange={onChange}
                                         value={value}

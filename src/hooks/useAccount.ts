@@ -1,14 +1,16 @@
 import { enqueueSnackbar } from 'notistack';
 import axiosClient from '../services/axios';
-import { API_USER } from '../utils/constants';
-import { useQuery } from 'react-query';
+import { API_STAFF, API_USER } from '../utils/constants';
+import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { formatDateTime } from '../utils/format';
 import { User } from '../types/User';
 import { DataMetaResponse } from '../types/response/DataResponse';
 import { Query } from '../types/Query';
-import { updateSearchParams } from '../utils/helper';
+import { defaultCatchErrorHandle, defaultOnSuccessHandle, updateSearchParams } from '../utils/helper';
 import { getAccessToken } from '../store/auth';
 import { AxiosHeaders } from 'axios';
+import { UseFormSetError } from 'react-hook-form';
+import { GrandAccountForm } from '../pages/staff/GrantAccount';
 
 function createData({
     id,
@@ -49,13 +51,41 @@ const useGetUsers = (query: Query) => {
         return undefined
       })
       .catch(error => {
-        // console.log(error.response.status)
-        // console.log('Error here',error.response.status)
+
       }) ,
     enabled: !!queryParams.toString()
   })
 };
 
+const useCreateAccount = (setError: UseFormSetError<any>) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: any) => {
+      return await axiosClient.post(API_USER, data)
+        .then(response => {
+          if (response.data.message) {
+            queryClient.invalidateQueries('users', { refetchInactive: true })
+            enqueueSnackbar(response.data.message, {
+                autoHideDuration: 3000,
+                variant: 'success'
+            })  
+          }
+          else {
+              enqueueSnackbar(response.data.errorMessage, {
+                  autoHideDuration: 3000,
+                  variant: 'error'
+              }) 
+          }
+        })
+        .catch(error => {
+          defaultCatchErrorHandle(error, setError)
+        }) 
+    }
+  })
+}
+
 export {
-    useGetUsers
+  useGetUsers,
+  useCreateAccount
 }

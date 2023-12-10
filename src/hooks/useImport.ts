@@ -1,6 +1,6 @@
 import { enqueueSnackbar } from 'notistack';
 import axiosClient from '../services/axios';
-import { API_IMPORT, API_IMPORT_WITH_ID} from '../utils/constants';
+import { API_IMPORT, API_IMPORT_WITH_ID } from '../utils/constants';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { formatCurrency, formatDate, formatNumber } from '../utils/format';
 import { ImportType } from '../types/ImportType';
@@ -14,29 +14,29 @@ import { DataMetaResponse } from '../types/response/DataResponse';
 import { handleAddress } from '../utils/address';
 import globalEvent from '../utils/emitter';
 
-function createData({id, importDate, staff, provider, note}: ImportType) {
-    return {
-        id, note, 
-        providerName: provider.name,
-        staffName: staff.name,
-        importDate: formatDate(importDate),
-    };
+function createData({ id, importDate, staff, provider, note }: ImportType) {
+  return {
+    id, note,
+    providerName: provider.name,
+    staffName: staff.name,
+    importDate: formatDate(importDate),
+  };
 }
 
 // @ts-ignore
-function createDataImport({id, importDate, staff, provider, note, totalPriceWithVat, totalPrice, vatValue}) {
-    return {
-        id, note,
-        staff: {...staff, address: handleAddress(staff.address)},
-        provider: {...provider, address: handleAddress(provider.address)},
-        importDate: formatDate(importDate),
-        totalPrice: formatCurrency(totalPrice),
-        totalPriceWithVat: formatCurrency(totalPriceWithVat),
-        vat: formatCurrency(vatValue)
-    };
+function createDataImport({ id, importDate, staff, provider, note, totalPriceWithVat, totalPrice, vatValue }) {
+  return {
+    id, note,
+    staff: { ...staff, address: handleAddress(staff.address) },
+    provider: { ...provider, address: handleAddress(provider.address) },
+    importDate: formatDate(importDate),
+    totalPrice: formatCurrency(totalPrice),
+    totalPriceWithVat: formatCurrency(totalPriceWithVat),
+    vat: formatCurrency(vatValue)
+  };
 }
 
- // @ts-ignore
+// @ts-ignore
 function createDataImportDetail({ drug, expiryDate, quantity, unitPrice, vat, batchId }) {
   return {
     drugId: drug.id,
@@ -70,7 +70,7 @@ const useGetImports = (query: Query) => {
         })
         return undefined
       }),
-  enabled: !!queryParams.toString()
+    enabled: !!queryParams.toString()
   })
 };
 
@@ -86,7 +86,7 @@ const useGetImport = () => {
         const handleImportDetail = response.data.data.importDetail.map(
           (importDetail: any) => createDataImportDetail(importDetail))
         globalEvent.emit('close-sidebar')
-        navigate( `/admin/imports/${importId}/view`,
+        navigate(`/admin/imports/${importId}/view`,
           {
             state: {
               importData: {
@@ -114,16 +114,19 @@ const useCreateImport = (setError: UseFormSetError<any>) => {
   return useMutation({
     mutationFn: async (data: ImportForm) => {
       return await axiosClient.post(API_IMPORT, data)
-          .then(response => response)
-          .catch(error => {
-            defaultCatchErrorHandle(error, setError)
-          }) 
-      },
+        .then(response => {
+          return response
+        })
+        .catch(error => {
+          console.log(error)
+          defaultCatchErrorHandle(error, setError)
+        })
+    },
     onSuccess: (response: any) => {
-        queryClient.invalidateQueries('drug-categories', { refetchInactive: true })
-        defaultOnSuccessHandle(queryClient, navigate, response, 'imports', '/admin/imports')
-      }
-    })
+      queryClient.invalidateQueries('drug-categories', { refetchInactive: true })
+      defaultOnSuccessHandle(queryClient, navigate, response, 'imports', '/admin/imports')
+    }
+  })
 }
 
 // const useUpdateImport = () => {
@@ -198,6 +201,6 @@ export {
   useGetImports,
   useGetImport,
   useCreateImport,
-//   useUpdateImport,
-//   useDeleteImport,
+  //   useUpdateImport,
+  //   useDeleteImport,
 }

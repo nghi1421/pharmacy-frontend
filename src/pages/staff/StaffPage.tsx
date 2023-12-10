@@ -39,6 +39,7 @@ const StaffPage: React.FC<{}> = () => {
     const deleteStaff = useDeleteStaff()
     const [openModal, setOpenModal] = useState<boolean>(false)
     const [openConfirmDialog, props] = useConfirmDialog(deleteStaff.mutate)
+    const [staffId, setStaffId] = useState<number>(0)
     const [openConfirmDialogRevokeAccount, revokeProps] = useConfirmDialog(deleteStaff.mutate)
     const { query, actionChangePage, actionSort, actionSearch, updateQueryParams } =
         useSearchQuery(getSearchColums(columnsList, GET_ARRAY_OF_KEY))
@@ -65,7 +66,7 @@ const StaffPage: React.FC<{}> = () => {
                 initOpen={openModal}
                 width={450}
                 handleClose={() => setOpenModal(false)}
-                children={<GrantAccount closeModal={() => setOpenModal(false)} />}
+                children={<GrantAccount closeModal={() => setOpenModal(false)} staffId={staffId}/>}
             />
             <Box sx={{
                 display: 'flex',
@@ -158,7 +159,7 @@ const StaffPage: React.FC<{}> = () => {
                                         <Tooltip title="Tạo và cấp tài khoản">
                                         <IconButton
                                             color='success'
-                                            onClick={() => { setOpenModal(true) }}
+                                                onClick={() => { setOpenModal(true); setStaffId(rowValue.id) }}
                                         >
                                             <PersonAddAltIcon></PersonAddAltIcon>
                                         </IconButton>

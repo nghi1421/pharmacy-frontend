@@ -1,6 +1,7 @@
-import { TextField } from "@mui/material";
+import { TextField, TextFieldPropsSizeOverrides } from "@mui/material";
 import { Controller } from "react-hook-form"
 import { NumericFormat } from "react-number-format";
+import { OverridableStringUnion } from '@mui/types';
 
 interface FormInputNumberProps {
     control: any
@@ -9,7 +10,7 @@ interface FormInputNumberProps {
     placeholder: string
     suffix?: string
     prefix?: string
-    size?: 'medium' | 'max' | 'small'
+    size?: OverridableStringUnion<"small" | "medium", TextFieldPropsSizeOverrides>
 }
 
 export const FormInputNumber: React.FC<FormInputNumberProps> =

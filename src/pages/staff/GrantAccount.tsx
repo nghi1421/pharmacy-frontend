@@ -1,11 +1,11 @@
-import { Box, Button, CircularProgress, FormControl, Grid, InputLabel, MenuItem, Select, Typography } from "@mui/material"
+import { Box, Button, CircularProgress, FormControl, Grid, InputLabel, MenuItem, Select } from "@mui/material"
 import { FormInputText } from "../../components/form/FormInputText"
 import yup from "../../utils/yup";
 import * as Yup from 'yup';
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Controller, useForm } from "react-hook-form";
 import { useGetRoles } from "../../hooks/useAuth";
-import { Role } from "../../types/Role";
+import { useCreateAccount } from "../../hooks/useAccount";
 
 export interface GrandAccountForm {
     username: string
@@ -23,19 +23,23 @@ const grantAccountValidate: Yup.ObjectSchema<GrandAccountForm> = yup.object({
 
 interface ChangePasswordProps {
     closeModal: () => void;
+    staffId: number
 }
 
-export const GrantAccount: React.FC<ChangePasswordProps> = ({ closeModal }) => {
+export const GrantAccount: React.FC<ChangePasswordProps> = ({ closeModal, staffId }) => {
     const { isLoading, data } = useGetRoles()
-    const { handleSubmit, reset, control, watch } = useForm<GrandAccountForm>({
+    const { handleSubmit, reset, control, setError } = useForm<GrandAccountForm>({
         defaultValues: {
             username: '',
             roleId: '1',
         },
         resolver: yupResolver(grantAccountValidate)
     });
+    const createAccount = useCreateAccount(setError)
+
 
     const onSubmit = (data: GrandAccountForm) => {
+        createAccount.mutate({...data, staffId})
     }
 
     const refreshForm = () => {
@@ -91,7 +95,7 @@ export const GrantAccount: React.FC<ChangePasswordProps> = ({ closeModal }) => {
                         sx={{ textTransform: 'none' }}
                         onClick={handleSubmit(onSubmit)}
                     >
-                        Đổi mật khẩu
+                        Tạo tài khoản
                     </Button>
 
                     <Button
