@@ -1,8 +1,8 @@
 import { useMutation } from "react-query";
 import axiosClient from "../services/axios";
-import { API_SEARCH_TROUBLE, API_TROUBLE } from "../utils/constants";
+import { API_BACK_DRUG_CATEGORY, API_SEARCH_TROUBLE, API_TROUBLE } from "../utils/constants";
 import { enqueueSnackbar } from "notistack";
-import { CreateTroubleForm, TroubleForm } from "../pages/trouble/TroublePage";
+import { BackDrugCategory, CreateTroubleForm, TroubleForm } from "../pages/trouble/TroublePage";
 import { pathToUrl } from "../utils/path";
 import { Provider } from "../types/Provider";
 import { Customer } from "../types/Customer";
@@ -17,6 +17,8 @@ export type HistorySales = {
     customer: Customer,
     quantity: number,
     drug: DrugCategory,
+    quantityBack: number | undefined,
+    recoveryTime: string | undefined
 }
 
 type InventoryImport = {
@@ -48,8 +50,12 @@ const createHistorySalesData = (historySales: HistorySales) => {
         phoneNumber: historySales.customer.phoneNumber,
         email: historySales.customer.email,
         address: handleAddress(historySales.customer.address),
-        quantity: formatNumber(historySales.quantity),
+        quantity: historySales.quantity,
         formatedQuantity: `${formatNumber(historySales.quantity)} ${historySales.drug.minimalUnit}`,
+        quantityBack: historySales.quantityBack,
+        formatedQuantityBack: `${formatNumber(historySales.quantityBack ?? 0)} ${historySales.drug.minimalUnit}`,
+        recoveryTime: historySales.recoveryTime ? new Date(historySales.recoveryTime) : undefined,
+        formatRecoveryTime: historySales.recoveryTime ? formatDateTime(historySales.recoveryTime) : undefined
     }
 }
 
@@ -135,7 +141,32 @@ const useCreateTrouble = () => {
     )
 }
 
+const useBackDrugCategory = () => {
+    return useMutation({
+        mutationFn: async (data: any) => {
+            return await axiosClient.post(API_BACK_DRUG_CATEGORY, data)
+                .then((response): AxiosResponse<any, any> => {
+                    if (response.data.message) {
+                        enqueueSnackbar(response.data.message, {
+                            autoHideDuration: 3000,
+                            variant: 'success'
+                        })
+                        return response.data.data
+                    }
+                    return response
+                })
+                .catch(error => {
+                    console.log(error);
+                    defaultCatchErrorHandle(error)
+                })
+        },
+    }
+    )
+}
+
+
 export {
+    useBackDrugCategory,
     useSeachTrouble,
     useCreateTrouble
 }

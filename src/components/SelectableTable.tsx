@@ -100,6 +100,12 @@ const headCells: readonly HeadCell[] = [
     disablePadding: false,
     label: 'Số lượng đã mua',
   },
+  {
+    id: 'formatedQuantityBack',
+    numeric: false,
+    disablePadding: false,
+    label: 'Số lượng đã trả',
+  },
 ];
 
 interface EnhancedTableProps {
@@ -280,6 +286,16 @@ export const SelectableTable: React.FC<SelectablTableProps> = ({ rows, setItem, 
     setPage(0);
   };
 
+  const bgColor = (row: any) => {
+    if (row.quantity === row.quantityBack) {
+      return '#dcfce7'
+    }
+    else if (row.quantityBack < row.quantity) {
+      return '#fff1f2'
+    }
+    return '#ffffff'
+  }
+
   const isSelected = (id: number) => selected.indexOf(id) !== -1;
 
   const emptyRows =
@@ -325,7 +341,7 @@ export const SelectableTable: React.FC<SelectablTableProps> = ({ rows, setItem, 
                     tabIndex={-1}
                     key={row.id}
                     selected={isItemSelected}
-                    sx={{ cursor: 'pointer' }}
+                    sx={{ cursor: 'pointer', bgcolor: bgColor(row) }}
                   >
                     <TableCell padding="checkbox">
                       <Checkbox
@@ -349,6 +365,7 @@ export const SelectableTable: React.FC<SelectablTableProps> = ({ rows, setItem, 
                     <TableCell align="left">{row.email}</TableCell>
                     <TableCell align="left">{row.address}</TableCell>
                     <TableCell align="left">{row.formatedQuantity}</TableCell>
+                    <TableCell align="left">{row.formatedQuantityBack ?? '_'}</TableCell>
                     <TableCell sx={{ pr: 0.5 }}>
                       <Button
                         color='success'

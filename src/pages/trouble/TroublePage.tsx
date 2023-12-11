@@ -6,7 +6,7 @@ import yup from "../../utils/yup";
 import { SelectableTable } from "../../components/SelectableTable";
 import { ModalComponent } from "../../components/Modal";
 import React, { useEffect, useState } from "react";
-import { useCreateTrouble, useSeachTrouble } from "../../hooks/useTrouble";
+import { useBackDrugCategory, useCreateTrouble, useSeachTrouble } from "../../hooks/useTrouble";
 import { InventoryImport } from "../../components/InventoryImportRow";
 import { TextShow } from "../../components/TextShow";
 import { Error } from "@mui/icons-material";
@@ -15,7 +15,7 @@ import { DrugCategory } from "../../types/DrugCategory";
 import { FormInputNumber } from "../../components/form/FormInputNumber";
 import { Trouble } from "../../types/Trouble";
 import { enqueueSnackbar } from "notistack";
-import { formatDateTime } from "../../utils/format";
+import { formatDateTime, formatNumber } from "../../utils/format";
 
 export interface TroubleForm {
     batchId: string
@@ -140,7 +140,21 @@ const TroublePage: React.FC<{}> = () => {
         createTrouble.mutate(data)
     }
     const [rowsData, setRowsData] = useState<any[]>([])
+    const updateData = (newRow: any) => {
+        const newRowsData = rowsData.map((row) => {
+            return row.exportId == newRow.export.id
+                ? {
+                    ...row, quantityBack: newRow.quantity,
+                    formatedQuantityBack: `${formatNumber(newRow.quantity ?? 0)} ${drugCategory?.minimalUnit}`,
+                    recoveryTime: newRow.recoveryTime ? new Date(newRow.recoveryTime) : undefined,
+                    formatRecoveryTime: newRow.recoveryTime ? formatDateTime(newRow.recoveryTime) : undefined
+                }
+                : row
+        })
 
+        setRowsData(newRowsData)
+        setChange(Math.random())
+    }
     useEffect(() => {
         if (createTrouble.data) {
             //@ts-ignore
@@ -185,6 +199,9 @@ const TroublePage: React.FC<{}> = () => {
                 children={
                     <RecoveryDrugForm
                         item={item}
+                        //@ts-ignore
+                        troubleId={trouble?.id ?? 0}
+                        updateData={updateData}
                         //@ts-ignore
                         drugCategory={drugCategory}
                         closeModal={() => setOpenModal(false)}
@@ -380,7 +397,7 @@ const backdrugCategory: Yup.ObjectSchema<BackDrugCategory> = yup.object({
     quantity: yup
         .number()
         .required()
-        .typeError('Mã danh mục thuốc bắt buộc'),
+        .typeError('Số lượng trả bắt buộc.'),
     recoveryTime: yup
         .date()
         .max(new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59), 'Thời gian trả thuốc không thể sau hôm nay.')
@@ -391,41 +408,47 @@ interface RecoveryDrugProps {
     item: any
     drugCategory: DrugCategory
     closeModal: () => void
+    troubleId: number
+    updateData: (a: any) => void
 }
 
-const RecoveryDrugForm: React.FC<RecoveryDrugProps> = ({ item, drugCategory, closeModal }) => {
+const RecoveryDrugForm: React.FC<RecoveryDrugProps> = ({ item, drugCategory, closeModal, troubleId, updateData }) => {
+    const refundDrugCategory = useBackDrugCategory()
     const {
         handleSubmit,
         control,
         reset,
-        watch
+        setError
     } = useForm<BackDrugCategory>({
         defaultValues: {
-            quantity: 0,
-            recoveryTime: new Date(),
+            quantity: item.quantityBack,
+            recoveryTime: item.recoveryTime ?? new Date(),
         },
         resolver: yupResolver(backdrugCategory)
     });
-    const [errorMessage, setErrorMessage] = useState<string>('')
     const refreshForm = () => {
         reset();
     }
 
     const onSubmit = (data: BackDrugCategory) => {
-        alert(data.quantity)
-    }
-    const getError = () => {
-        const quantity = watch('quantity')
-
-        if (quantity) {
-            if (quantity < 0) {
-                setErrorMessage('Số lượng trả phải lớn hơn bằng 0.')
-            }
+        if (data.quantity > item.quantity) {
+            setError('quantity', { type: 'custom', message: 'Số lượng trả phải nhỏ hơn số lượng mua.' })
         }
         else {
-            setErrorMessage('Số lượng trả bắt buộc.')
+            refundDrugCategory.mutate({
+                ...data,
+                exportId: item.exportId,
+                troubleId
+            })
         }
     }
+
+    useEffect(() => {
+        if (refundDrugCategory.data) {
+            updateData(refundDrugCategory.data)
+            closeModal();
+        }
+    }, [refundDrugCategory.data])
     return (
         <Grid spacing={2} container marginTop={1}>
             <Grid item xs={8} sm={12}>
@@ -460,7 +483,7 @@ const RecoveryDrugForm: React.FC<RecoveryDrugProps> = ({ item, drugCategory, clo
                     sx={{ textTransform: 'none' }}
                     onClick={handleSubmit(onSubmit)}
                 >
-                    Cập nhật
+                    Trả thuốc
                 </Button>
 
                 <Button
