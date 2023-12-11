@@ -70,34 +70,44 @@ const createProviderData = (provider: Provider) => {
 }
 const useSeachTrouble = () => {
 
-  return useMutation({
-    mutationFn: (data: TroubleForm) => axiosClient
-      .get(pathToUrl(API_SEARCH_TROUBLE, { batchId: data.batchId, drugId: data.drugId }))
-      .then((response) => {
-        if (response.data.message) {
-            enqueueSnackbar(response.data.message, {
-                autoHideDuration: 3000,
-                variant: 'success'
+    return useMutation({
+        mutationFn: (data: TroubleForm) => axiosClient
+            .get(pathToUrl(API_SEARCH_TROUBLE, { batchId: data.batchId, drugId: data.drugId }))
+            .then((response) => {
+                if (response.data.message) {
+                    enqueueSnackbar(response.data.message, {
+                        autoHideDuration: 3000,
+                        variant: 'success'
+                    })
+                    const data = response.data.data
+
+                    if (data.trouble) {
+                        return {
+                            provider: createProviderData(data.provider),
+                            historySales: data.historySales.map((historySales: HistorySales) => createHistorySalesData(historySales)),
+                            inventoryImports: data.inventoryImport.map((inventoryImport: InventoryImport) => createInventoryImport(inventoryImport)),
+                            drugCategory: data.drugCategory,
+                            trouble: data.trouble
+                        }
+                    }
+                    return {
+                        provider: createProviderData(data.provider),
+                        historySales: data.historySales.map((historySales: HistorySales) => createHistorySalesData(historySales)),
+                        inventoryImports: data.inventoryImport.map((inventoryImport: InventoryImport) => createInventoryImport(inventoryImport)),
+                        drugCategory: data.drugCategory
+                    }
+                }
+
+                return response
             })
-            const data = response.data.data
-            console.log(data);
-            return {
-                provider: createProviderData(data.provider),
-                historySales: data.historySales.map((historySales: HistorySales) => createHistorySalesData(historySales)),
-                inventoryImports: data.inventoryImport.map((inventoryImport: InventoryImport) => createInventoryImport(inventoryImport)),
-            }
-        }
-       
-        return response
-      })
-      .catch ((error) => {
-          console.log(error);
-         enqueueSnackbar(error.response.data.errorMessage, {
-          autoHideDuration: 3000,
-          variant: 'error'
-        })
-      }),
-  })
+            .catch((error) => {
+                console.log(error);
+                enqueueSnackbar(error.response.data.errorMessage, {
+                    autoHideDuration: 3000,
+                    variant: 'error'
+                })
+            }),
+    })
 };
 
 export {
