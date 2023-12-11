@@ -50,7 +50,7 @@ export type ExportData = {
     note: string
     prescriptionId: string
     staff: Staff
-    customer: CustomerData
+    customer: CustomerData | null
     exportDate: string
     totalPrice: string
     totalPriceWithVat: string

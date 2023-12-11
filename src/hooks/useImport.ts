@@ -118,89 +118,19 @@ const useCreateImport = (setError: UseFormSetError<any>) => {
           return response
         })
         .catch(error => {
-          console.log(error)
           defaultCatchErrorHandle(error, setError)
         })
     },
     onSuccess: (response: any) => {
       queryClient.invalidateQueries('drug-categories', { refetchInactive: true })
+      queryClient.invalidateQueries('inventories', { refetchInactive: true })
       defaultOnSuccessHandle(queryClient, navigate, response, 'imports', '/admin/imports')
     }
   })
 }
 
-// const useUpdateImport = () => {
-//   const queryClient = useQueryClient();
-//   const navigate = useNavigate();
-
-//   return useMutation({
-//     mutationFn: async (data: ImportEditForm) => {
-//       return await axiosClient.put(pathToUrl(API_IMPORT_WITH_ID, { ImportId: data.id }), data)
-//     },
-//     onSuccess: (response: any) => {
-//       if (response.data.message) {
-//         queryClient.invalidateQueries('Imports', { refetchInactive: true })
-//         navigate('/Imports')
-//         enqueueSnackbar(response.data.message, {
-//           autoHideDuration: 3000,
-//           variant: 'success'
-//         })  
-//       }
-//       else {
-//           enqueueSnackbar(response.data.errorMessage, {
-//             autoHideDuration: 3000,
-//             variant: 'error'
-//           }) 
-//       }
-//     },
-//     onError: (error: any) => {
-//       enqueueSnackbar('Lỗi server.',
-//         {
-//           autoHideDuration: 3000,
-//           variant: 'error'
-//         })
-//     }
-//   }
-//   ) 
-// }
-
-// const useDeleteImport = () => {
-//   const queryClient = useQueryClient();
-
-//   return useMutation({
-//     mutationFn: async (ImportId: string) => {
-//       return await axiosClient.delete(pathToUrl(API_IMPORT_WITH_ID, { ImportId }))
-//     },
-//     onSuccess: (response: any) => {
-//       if (response.data.message) {
-//         queryClient.invalidateQueries('Imports', { refetchInactive: true })
-//         enqueueSnackbar(response.data.message, {
-//           autoHideDuration: 3000,
-//           variant: 'success'
-//         })  
-//       }
-//       else {
-//           enqueueSnackbar(response.data.errorMessage, {
-//             autoHideDuration: 3000,
-//             variant: 'error'
-//           }) 
-//       }
-//     },
-//     onError: (error: any) => {
-//       enqueueSnackbar('Lỗi server.',
-//         {
-//           autoHideDuration: 3000,
-//           variant: 'error'
-//         })
-//     }
-//   }
-//   ) 
-// }
-
 export {
   useGetImports,
   useGetImport,
   useCreateImport,
-  //   useUpdateImport,
-  //   useDeleteImport,
 }

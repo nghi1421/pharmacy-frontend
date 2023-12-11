@@ -21,10 +21,10 @@ import dayjs from "dayjs";
 import TableCancelExportDrug from "../../components/table/TableCancelExportDrug";
 
 const useStyles = makeStyles({
-  customTextField: {
-    "& input::placeholder": {
-      fontSize: "15px"
-    }
+    customTextField: {
+        "& input::placeholder": {
+            fontSize: "15px"
+        }
     },
 })
 
@@ -50,7 +50,7 @@ const defaultValuesExport = {
     type: 1,
 }
 
- // @ts-ignore
+// @ts-ignore
 const exportValidate: Yup.ObjectSchema<CancelExportForm> = yup.object({
     note: yup
         .string()
@@ -58,18 +58,17 @@ const exportValidate: Yup.ObjectSchema<CancelExportForm> = yup.object({
     exportDate: yup
         .date()
         .max(new Date(dayjs().add(1, 'day').format('YYYY-MM-DD')), 'Thời gian xuất hàng không hợp lệ.'),
-    
+
 });
 
 const columns: ColumnDrugCategory[] = [
-    { key: 'id', value: 'Mã thuốc'},
+    { key: 'id', value: 'Mã thuốc' },
     { key: 'name', value: 'Tên thuốc' },
-    { key: 'importId', value: 'Mã phiếu nhập'},
-    { key: 'quantity', value: 'Số lượng tồn'},
+    { key: 'quantity', value: 'Số lượng tồn' },
     { key: 'formatedPrice', value: 'Đơn giá bán' },
     { key: 'minimalUnit', value: 'Đơn vị bán' },
     { key: 'vat', value: 'Thuế VAT' },
-    { key: 'use', value: 'Công dụng'},
+    { key: 'use', value: 'Công dụng' },
 ]
 
 const CancelExport: React.FC = () => {
@@ -86,8 +85,8 @@ const CancelExport: React.FC = () => {
         resolver: yupResolver(exportValidate)
     });
     const [search, setSearch] = useState<string>('')
-    const [exportData, setExportData] = useState<ExportData | null>(null)    
-    const [exportDetailData, setExportDetailData] = useState<ExportDetailPdf[] | null>(null)    
+    const [exportData, setExportData] = useState<ExportData | null>(null)
+    const [exportDetailData, setExportDetailData] = useState<ExportDetailPdf[] | null>(null)
     const createExport = useCreateCancelExport(setExportData, setExportDetailData);
     let componentRef = useRef<HTMLDivElement>(null);
     const handlePrint = useReactToPrint({
@@ -134,7 +133,7 @@ const CancelExport: React.FC = () => {
             if (!isInvalid && validateErrros.some(error => error.length > 0)) {
                 isInvalid = true;
             }
-            return {...drugCategory, errors: validate(drugCategory)}
+            return { ...drugCategory, errors: validate(drugCategory) }
         })
         setIsFirstSubmit(true);
         if (isInvalid) {
@@ -142,24 +141,24 @@ const CancelExport: React.FC = () => {
         }
         else {
             createExport.mutate({
-                type: 0,
+                type: 3,
                 staffId: staff.id,
                 exportDate: data.exportDate,
                 note: data.note,
                 exportDetails: selectedDrugs.map(drug => {
-                    return { drugId: drug.id, quantity: drug.exportQuantity}
+                    return { drugId: drug.id, quantity: drug.exportQuantity, importId: drug.importId }
                 })
             })
             setSelectedDrugs([]),
-            setDrugs(cloneDrugs)
+                setDrugs(cloneDrugs)
             setSearch(''),
-            reset()
+                reset()
         }
     };
 
     const checkDrugCategory = (drugCategory: any) => {
         const data = cloneDrugs.map(drug => {
-            return drug.id === drugCategory.id ? {...drug, checked: true} : drug
+            return drug.id === drugCategory.id ? { ...drug, checked: true } : drug
         })
         setCloneDrugs(data)
         if (search.trim().length > 0) {
@@ -170,12 +169,12 @@ const CancelExport: React.FC = () => {
         else {
             setDrugs(data)
         }
-        selectedDrugs.push({ ...drugCategory, checked: false, exportQuantity: 1, errors: ['', ''], importId: ''})
+        selectedDrugs.push({ ...drugCategory, checked: false, exportQuantity: 1, errors: ['', ''], importId: '' })
     }
 
     const unCheckDrugCategory = (drugCategory: any) => {
         const data = cloneDrugs.map(drug => {
-            return drug.id === drugCategory.id ? {...drug, checked: false} : drug
+            return drug.id === drugCategory.id ? { ...drug, checked: false } : drug
         })
         setCloneDrugs(data);
         if (search.trim().length > 0) {
@@ -194,7 +193,7 @@ const CancelExport: React.FC = () => {
     const validate = (drugCategory: any) => {
         const validateErrors = ['', '']
         if (drugCategory.exportQuantity > drugCategory.quantity) {
-            validateErrors[1] = 'Số lượng tồn không đủ để xuất bán.'
+            validateErrors[1] = 'Số lượng tồn không đủ.'
         }
         else {
             if (isNaN(drugCategory.exportQuantity)) {
@@ -257,8 +256,8 @@ const CancelExport: React.FC = () => {
                     </Grid>
                 </Grid>
             </Box>
-                
-                
+
+
             <Grid container spacing={3} marginTop={2}>
                 <Grid item xs={12} sm={12} container>
                     <Typography mb='20px' variant="subtitle2" sx={{ fontWeight: 'fontWeightBold', mt: 2, fontSize: 16 }}>
@@ -270,10 +269,10 @@ const CancelExport: React.FC = () => {
                         keyTable='selected-drug-export-category-table-key'
                         action={unCheckDrugCategory}
                         update={updateQuantity}
-                    /> 
+                    />
                 </Grid>
 
-                <Grid item xs={12} sm={12} container 
+                <Grid item xs={12} sm={12} container
                     sx={{
                         display: 'flex',
                         justifyContent: "end",
@@ -282,7 +281,7 @@ const CancelExport: React.FC = () => {
                 >
                 </Grid>
 
-                <Grid item xs={12} sm={12} container 
+                <Grid item xs={12} sm={12} container
                 >
                     <Box sx={{ display: 'flex', width: '100%', gap: 1 }}>
                         <Typography mb='20px' variant="subtitle2" sx={{ fontWeight: 'fontWeightBold', mt: 2, fontSize: 16 }}>
@@ -292,7 +291,7 @@ const CancelExport: React.FC = () => {
                             onChange={handleSearchData}
                             classes={{ root: classes.customTextField }}
                             size='small'
-                            sx={{ flexGrow: 1, my :'auto', mr: '20%', ml: 2}}
+                            sx={{ flexGrow: 1, my: 'auto', mr: '20%', ml: 2 }}
                             label="Tìm kiếm"
                             value={search}
                             placeholder="Nhập thông tin danh mục thuốc theo tên"
@@ -328,9 +327,9 @@ const CancelExport: React.FC = () => {
                                 m: 'auto',
                                 textTransform: 'none',
                             }}
-                            onClick={ () => refetch()}
+                            onClick={() => refetch()}
                         >
-                            <ReplayIcon  />
+                            <ReplayIcon />
                             Làm mới
                         </Button>
 
@@ -346,13 +345,13 @@ const CancelExport: React.FC = () => {
                         >
                             Quay về
                         </Button>
-                        
+
                     </Box>
                     {
                         drugCategoryLoading
-                        ?
+                            ?
                             <CircularProgress sx={{ margin: 'auto' }} />
-                        :
+                            :
                             <TableDrugCategories
                                 rows={drugs}
                                 tooltip='Nhấn để chọn thuốc'
@@ -361,9 +360,9 @@ const CancelExport: React.FC = () => {
                                 action={checkDrugCategory}
                                 type='export'
                             />
-                    }  
+                    }
                 </Grid>
-               
+
             </Grid>
         </Paper>
     )

@@ -5,28 +5,28 @@ import { Item } from "../../types/props/FormInputListProps"
 import TableData from "../../components/table/TableData"
 
 const staffRows: Item[] = [
-    {value: 'id', label: 'Mã nhân viên'},
-    {value: 'name', label: 'Tên nhân viên'},
-    {value: 'phoneNumber', label: 'Số điện thoại'},
-    {value: 'email', label: 'Email'},
-    {value: 'address', label: 'Địa chỉ'},
+    { value: 'id', label: 'Mã nhân viên' },
+    { value: 'name', label: 'Tên nhân viên' },
+    { value: 'phoneNumber', label: 'Số điện thoại' },
+    { value: 'email', label: 'Email' },
+    { value: 'address', label: 'Địa chỉ' },
 ]
 
 const customerRows: Item[] = [
-    {value: 'id', label: 'Mã khách hàng'},
-    {value: 'name', label: 'Tên khách hàng'},
-    {value: 'phoneNumber', label: 'Số điện thoại'},
-    {value: 'gender', label: 'Giới tính'},
-    {value: 'address', label: 'Địa chỉ'},
+    { value: 'id', label: 'Mã khách hàng' },
+    { value: 'name', label: 'Tên khách hàng' },
+    { value: 'phoneNumber', label: 'Số điện thoại' },
+    { value: 'gender', label: 'Giới tính' },
+    { value: 'address', label: 'Địa chỉ' },
 ]
 
 const columns = [
     { key: 'drugName', value: 'Tên thuốc' },
-    { key: 'quantity', value: 'Số lượng bán'},
-    { key: 'unit', value: 'Đơn vị bán'},
+    { key: 'quantity', value: 'Số lượng bán' },
+    { key: 'unit', value: 'Đơn vị bán' },
     { key: 'unitPrice', value: 'Đơn giá' },
-    { key: 'vat', value: 'Thuế VAT'},
-    { key: 'expiryDate', value: 'Hạn sử dụng'},
+    { key: 'vat', value: 'Thuế VAT' },
+    { key: 'expiryDate', value: 'Hạn sử dụng' },
 ]
 
 const DetailPage = () => {
@@ -45,47 +45,52 @@ const DetailPage = () => {
                 <Grid item xs={8} sm={2}>
                     <Typography>
                         <Typography display="inline" sx={{ fontWeight: 600 }}>
-                            Mã phiếu xuất: 
+                            Mã phiếu xuất:
                         </Typography>
 
-                        <Typography display="inline" sx={{ pl:1, textDecoration: 'none'}}>
-                            { state.exportData.export.id}
-                        </Typography>
-                    </Typography>
-                </Grid>    
-                <Grid item xs={8} sm={3}>
-                    <Typography>
-                        <Typography display="inline" sx={{ fontWeight: 600 }}>
-                            Ngày bán: 
-                        </Typography>
-
-                        <Typography display="inline" sx={{ pl:1, textDecoration: 'none'}}>
-                            { state.exportData.export.exportDate}
+                        <Typography display="inline" sx={{ pl: 1, textDecoration: 'none' }}>
+                            {state.exportData.export.id}
                         </Typography>
                     </Typography>
                 </Grid>
-                        
                 <Grid item xs={8} sm={3}>
-
                     <Typography>
                         <Typography display="inline" sx={{ fontWeight: 600 }}>
-                            Mã toa thuốc: 
+                            Ngày bán:
                         </Typography>
 
-                        <Typography display="inline" sx={{ pl:1, textDecoration: 'none'}}>
-                            { state.exportData.export.prescriptionId}
+                        <Typography display="inline" sx={{ pl: 1, textDecoration: 'none' }}>
+                            {state.exportData.export.exportDate}
                         </Typography>
                     </Typography>
                 </Grid>
 
                 <Grid item xs={8} sm={3}>
+
+                    {
+                        state.exportData.export.prescriptionId ?
+                            <Typography>
+                                <Typography display="inline" sx={{ fontWeight: 600 }}>
+                                    Mã toa thuốc:
+                                </Typography>
+
+                                <Typography display="inline" sx={{ pl: 1, textDecoration: 'none' }}>
+                                    {state.exportData.export.prescriptionId}
+                                </Typography>
+                            </Typography>
+                            :
+                            <></>
+                    }
+                </Grid>
+
+                <Grid item xs={8} sm={3}>
                     <Typography>
                         <Typography display="inline" sx={{ fontWeight: 600 }}>
-                            Ghi chú: 
+                            Ghi chú:
                         </Typography>
 
-                        <Typography display="inline" sx={{ pl:1, textDecoration: 'none'}}>
-                            { state.exportData.export.note}
+                        <Typography display="inline" sx={{ pl: 1, textDecoration: 'none' }}>
+                            {state.exportData.export.note}
                         </Typography>
                     </Typography>
                 </Grid>
@@ -96,15 +101,20 @@ const DetailPage = () => {
                         rows={staffRows}
                         title='Thông tin nhân viên'
                     />
-                    </Grid>
+                </Grid>
                 <Grid item xs={8} sm={6}>
-                    <InfoBox
-                        data={state.exportData.export.customer}
-                        rows={customerRows}
-                        title='Thông tin khách hàng'
-                    />
-                </Grid>   
-                    
+                    {
+                        state.exportData.export.customer ?
+                            <InfoBox
+                                data={state.exportData.export.customer}
+                                rows={customerRows}
+                                title='Thông tin khách hàng'
+                            />
+                            : <></>
+                    }
+
+                </Grid>
+
                 <Grid container spacing={2} marginTop={1}>
                     <Grid item xs={12} sm={12} container>
                         <Typography mb='20px' variant="subtitle2" sx={{ fontWeight: 'fontWeightBold', mt: 2, fontSize: 16 }}>
@@ -118,26 +128,26 @@ const DetailPage = () => {
                         />
                     </Grid>
 
-                    <Grid item xs={12} sm={12} container 
+                    <Grid item xs={12} sm={12} container
                         sx={{
                             display: 'flex',
                             justifyContent: "end",
                             gap: 4
                         }}
                     >
-                        <Typography variant="subtitle2" sx={{  }}>
-                            {`Tổng tiền (chưa tính VAT): ${state.exportData.export.totalPrice}` }
+                        <Typography variant="subtitle2" sx={{}}>
+                            {`Tổng tiền (chưa tính VAT): ${state.exportData.export.totalPrice}`}
                         </Typography>
 
-                        <Typography variant="subtitle2" sx={{  }}>
+                        <Typography variant="subtitle2" sx={{}}>
                             {`Tiền thuế VAT: ${state.exportData.export.vat}`}
                         </Typography>
 
-                        <Typography variant="subtitle2" sx={{ color: "#148c07"  }}>
-                            {`Tổng tiền: ${state.exportData.export.totalPriceWithVat}` }
+                        <Typography variant="subtitle2" sx={{ color: "#148c07" }}>
+                            {`Tổng tiền: ${state.exportData.export.totalPriceWithVat}`}
                         </Typography>
                     </Grid>
-                    <Grid item xs={12} sm={12} container 
+                    <Grid item xs={12} sm={12} container
                         sx={{
                             display: 'flex',
                             justifyContent: "end",

@@ -2,6 +2,7 @@ import { enqueueSnackbar } from 'notistack';
 import axiosClient from '../services/axios';
 import {
   API_CANCEL_EXPORT,
+  API_CREATE_CANCEL_EXPORT,
   API_EXPORT,
   API_EXPORT_TODAY,
   API_EXPORT_WITH_ID,
@@ -38,22 +39,22 @@ import { useContext } from 'react';
 import { AuthContext } from '../App';
 import { EditExportForm } from '../pages/export/EditSalesExport';
 
-function createData({id, exportDate, staff, customer, note, prescriptionId}: ExportType) {
-    return {
-        id, note, prescriptionId,
-        customerName: customer.name,
-        staffName: staff.name,
-        exportDate: formatDate(exportDate),
-    };
+function createData({ id, exportDate, staff, customer, note, prescriptionId }: ExportType) {
+  return {
+    id, note, prescriptionId: prescriptionId ?? '_',
+    customerName: customer ? customer.name : '_',
+    staffName: staff.name,
+    exportDate: formatDate(exportDate),
+  };
 }
 
-function createDataExportToday({id, exportDate, type, total}: ExportTodayType) {
-    return {
-      id, 
-      type,
-      exportDate: dayjs(exportDate).format('HH:mm:ss'),
-      total: formatCurrency(total)
-    };
+function createDataExportToday({ id, exportDate, type, total }: ExportTodayType) {
+  return {
+    id,
+    type,
+    exportDate: dayjs(exportDate).format('HH:mm:ss'),
+    total: formatCurrency(total)
+  };
 }
 
 function createDataExport({
@@ -66,20 +67,20 @@ function createDataExport({
   totalPriceWithVat,
   totalPrice
 }: ExportRawData): ExportData {
-    return {
-        id, note, prescriptionId,
-        staff: {...staff, address: handleAddress(staff.address)},
-        customer: {
-          ...customer,
-          address: handleAddress(customer.address),
-          gender: GenderEnum[customer.gender],
-          rawAddress: customer.address
-        },
-        exportDate: formatDate(exportDate),
-        totalPrice: formatCurrency(totalPrice),
-        totalPriceWithVat: formatCurrency(totalPriceWithVat),
-        vat: formatCurrency(totalPriceWithVat - totalPrice)
-    };
+  return {
+    id, note, prescriptionId,
+    staff: { ...staff, address: handleAddress(staff.address) },
+    customer: customer ? {
+      ...customer,
+      address: handleAddress(customer.address),
+      gender: GenderEnum[customer.gender],
+      rawAddress: customer.address
+    } : null,
+    exportDate: formatDate(exportDate),
+    totalPrice: formatCurrency(totalPrice),
+    totalPriceWithVat: formatCurrency(totalPriceWithVat),
+    vat: formatCurrency(totalPriceWithVat - totalPrice)
+  };
 }
 
 function createDataExportDetail({ drug, expiryDate, price, quantity, unitPrice, vat }: ExportDetailRawData): ExportDetailData {
@@ -124,7 +125,7 @@ const useGetExports = (query: Query) => {
         })
         return undefined
       }),
-  enabled: !!queryParams.toString()
+    enabled: !!queryParams.toString()
   })
 };
 
@@ -138,7 +139,7 @@ const useGetExportsToday = () => {
           const total = response.data.data.reduce((sum: number, item: any) => {
             return item.type === 1 ? sum + item.total : sum;
           }, 0)
-          
+
           return {
             data: response.data.data.map((myExport: ExportTodayType) => createDataExportToday(myExport)),
             total: formatCurrency(total)
@@ -161,7 +162,7 @@ const useGetExport = () => {
         const handleExportDetail = response.data.data.exportDetail.map(
           (exportDetail: any) => createDataExportDetail(exportDetail))
         globalEvent.emit('close-sidebar')
-        navigate( `/admin/exports/${exportId}/view`,
+        navigate(`/admin/exports/${exportId}/view`,
           {
             state: {
               exportData: {
@@ -192,14 +193,14 @@ const useGetExportToday = () => {
       .then((response) => {
         const handleExport = response.data.data.export
         const handleExportDetail = response.data.data.exportDetail
-        
-        navigate( `/sales/${exportId}/edit`,
+
+        navigate(`/sales/${exportId}/edit`,
           {
             state: {
               exportTodayIndex: {
                 export: handleExport,
                 exportDetail: handleExportDetail,
-                
+
               }
             },
             replace: true
@@ -240,8 +241,8 @@ const useCreateExport = (
         queryClient.invalidateQueries('exports-today', { refetchInactive: true })
         const handleExport = createDataExport(response.data.data.export)
         const handleExportDetail = response.data.data.exportDetail.map(
-              (exportDetail: ExportDetailRawData) => createExportDetailPdf(exportDetail))
-        
+          (exportDetail: ExportDetailRawData) => createExportDetailPdf(exportDetail))
+
         setExportData(handleExport)
         setExportDetailData(handleExportDetail)
         enqueueSnackbar(response.data.message, {
@@ -267,22 +268,9 @@ const useCreateCancelExport = (
 
   return useMutation({
     mutationFn: async (data: CancelExportForm) => {
-      return await axiosClient.post(API_CANCEL_EXPORT, data)
+      return await axiosClient.post(API_CREATE_CANCEL_EXPORT, data)
         .then((response): AxiosResponse<any, any> => {
           return response
-          // if (response.data.message) {
-            // const handleExport = createDataExport(response.data.data.export)
-            // const handleExportDetail = response.data.data.exportDetail.map(
-            //   (exportDetail: any) => createExportDetailPdf(exportDetail))
-            
-          //   return {
-          //     exportData: handleExport,
-          //     exportDetail: handleExportDetail,
-          //   } as ExportPdfData
-          // }
-          // else {
-          //   return response
-          // }
         })
         .catch(error => {
           console.log(error);
@@ -294,8 +282,8 @@ const useCreateCancelExport = (
         queryClient.invalidateQueries('drug-categories', { refetchInactive: true })
         const handleExport = createDataExport(response.data.data.export)
         const handleExportDetail = response.data.data.exportDetail.map(
-              (exportDetail: ExportDetailRawData) => createExportDetailPdf(exportDetail))
-        
+          (exportDetail: ExportDetailRawData) => createExportDetailPdf(exportDetail))
+
         setExportData(handleExport)
         setExportDetailData(handleExportDetail)
         enqueueSnackbar(response.data.message, {
@@ -319,7 +307,7 @@ const useRefundExport = () => {
   const { roleId } = useContext(AuthContext)
   return useMutation({
     mutationFn: async (exportId: string) => {
-      return await axiosClient.post(pathToUrl(API_REFUND_EXPORT_TODAY, { exportId:  exportId}))
+      return await axiosClient.post(pathToUrl(API_REFUND_EXPORT_TODAY, { exportId: exportId }))
     },
     onSuccess: (response: any) => {
       if (response.data.message) {
@@ -329,13 +317,13 @@ const useRefundExport = () => {
         enqueueSnackbar(response.data.message, {
           autoHideDuration: 3000,
           variant: 'success'
-        })  
+        })
       }
       else {
-          enqueueSnackbar(response.data.errorMessage, {
-            autoHideDuration: 3000,
-            variant: 'error'
-          }) 
+        enqueueSnackbar(response.data.errorMessage, {
+          autoHideDuration: 3000,
+          variant: 'error'
+        })
       }
     },
     onError: () => {
@@ -346,7 +334,7 @@ const useRefundExport = () => {
         })
     }
   }
-  ) 
+  )
 }
 
 const useRefundAndCreateNewExport = (
@@ -358,7 +346,7 @@ const useRefundAndCreateNewExport = (
   const { roleId } = useContext(AuthContext)
   return useMutation({
     mutationFn: async (data: EditExportForm) => {
-      return await axiosClient.post(pathToUrl(API_EXPORT_WITH_ID, { exportId:  data.id}), data)
+      return await axiosClient.post(pathToUrl(API_EXPORT_WITH_ID, { exportId: data.id }), data)
     },
     onSuccess: (response: any) => {
       if (response.data.message) {
@@ -367,7 +355,7 @@ const useRefundAndCreateNewExport = (
         navigate(roleId === 1 ? '/exports' : '/sales/create')
         const handleExport = createDataExport(response.data.data.export)
         const handleExportDetail = response.data.data.exportDetail.map(
-              (exportDetail: ExportDetailRawData) => createExportDetailPdf(exportDetail))
+          (exportDetail: ExportDetailRawData) => createExportDetailPdf(exportDetail))
         setExportData(handleExport)
         setExportDetailData(handleExportDetail)
         enqueueSnackbar(response.data.message, {
@@ -390,7 +378,7 @@ const useRefundAndCreateNewExport = (
         })
     }
   }
-  ) 
+  )
 }
 
 export {
