@@ -1,14 +1,16 @@
 import { useMutation } from "react-query";
 import axiosClient from "../services/axios";
-import { API_SEARCH_TROUBLE } from "../utils/constants";
+import { API_SEARCH_TROUBLE, API_TROUBLE } from "../utils/constants";
 import { enqueueSnackbar } from "notistack";
-import { TroubleForm } from "../pages/trouble/TroublePage";
+import { CreateTroubleForm, TroubleForm } from "../pages/trouble/TroublePage";
 import { pathToUrl } from "../utils/path";
 import { Provider } from "../types/Provider";
 import { Customer } from "../types/Customer";
 import { DrugCategory } from "../types/DrugCategory";
 import { handleAddress } from "../utils/address";
 import { formatDateTime, formatNumber } from "../utils/format";
+import { AxiosResponse } from "axios";
+import { defaultCatchErrorHandle } from "../utils/helper";
 
 export type HistorySales = {
     exportId: number,
@@ -110,6 +112,30 @@ const useSeachTrouble = () => {
     })
 };
 
+const useCreateTrouble = () => {
+    return useMutation({
+        mutationFn: async (data: CreateTroubleForm) => {
+            return await axiosClient.post(API_TROUBLE, data)
+                .then((response): AxiosResponse<any, any> => {
+                    if (response.data.message) {
+                        enqueueSnackbar(response.data.message, {
+                            autoHideDuration: 3000,
+                            variant: 'success'
+                        })
+                        return response.data.data
+                    }
+                    return response
+                })
+                .catch(error => {
+                    console.log(error);
+                    defaultCatchErrorHandle(error)
+                })
+        },
+    }
+    )
+}
+
 export {
-    useSeachTrouble
+    useSeachTrouble,
+    useCreateTrouble
 }

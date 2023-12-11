@@ -39,6 +39,7 @@ export const API_TYPE_BY_USE_WITH_ID = 'type-by-uses/:typeId';
 export const API_INVENTORY = 'inventories'
 
 export const API_SEARCH_TROUBLE = 'troubles/:batchId/:drugId'
+export const API_TROUBLE = 'troubles'
 
 export const API_GET_STATISTICS_TODAY = 'statistics-today';
 export const API_GET_STATISTICS = 'statistics';

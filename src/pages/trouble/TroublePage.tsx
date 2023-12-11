@@ -6,7 +6,7 @@ import yup from "../../utils/yup";
 import { SelectableTable } from "../../components/SelectableTable";
 import { ModalComponent } from "../../components/Modal";
 import React, { useEffect, useState } from "react";
-import { useSeachTrouble } from "../../hooks/useTrouble";
+import { useCreateTrouble, useSeachTrouble } from "../../hooks/useTrouble";
 import { InventoryImport } from "../../components/InventoryImportRow";
 import { TextShow } from "../../components/TextShow";
 import { Error } from "@mui/icons-material";
@@ -93,6 +93,7 @@ const TroublePage: React.FC<{}> = () => {
         defaultValues: defaultValues,
         resolver: yupResolver(createTroubleForm)
     });
+    const createTrouble = useCreateTrouble()
 
     const onSubmit = (data: TroubleForm) => {
         setTrouble(null)
@@ -136,9 +137,16 @@ const TroublePage: React.FC<{}> = () => {
         }
     }
     const onSubmitCreateTrouble = (data: CreateTroubleForm) => {
-        alert(JSON.stringify(data));
+        createTrouble.mutate(data)
     }
     const [rowsData, setRowsData] = useState<any[]>([])
+
+    useEffect(() => {
+        if (createTrouble.data) {
+            //@ts-ignore
+            setTrouble(createTrouble.data);
+        }
+    }, [createTrouble.data])
     useEffect(() => {
         if (searchTrouble.data) {
             //@ts-ignore
@@ -231,7 +239,7 @@ const TroublePage: React.FC<{}> = () => {
                         {
                             trouble
                                 ?
-                                <Box >
+                                <Box sx={{ p: 2 }}>
                                     <Typography
                                         variant="h4"
                                         fontWeight='500'
@@ -323,7 +331,7 @@ const TroublePage: React.FC<{}> = () => {
                                         marginBottom={2}
                                         fontWeight='500'
                                     >
-                                        Tồn kho
+                                        {trouble ? 'Tồn kho đã hủy' : 'Tồn kho '}
                                     </Typography>
 
                                     <Box sx={{
@@ -335,7 +343,7 @@ const TroublePage: React.FC<{}> = () => {
                                     }}>
                                         <Typography sx={{ flex: 1, textAlign: 'left', fontWeight: 600 }}>Mã phiếu nhập</Typography>
                                         <Typography sx={{ flex: 1, textAlign: 'left', fontWeight: 600 }}>Thời gian nhập</Typography>
-                                        <Typography sx={{ flex: 1, textAlign: 'left', pr: 1, fontWeight: 600 }}>Tồn</Typography>
+                                        <Typography sx={{ flex: 1, textAlign: 'left', pr: 1, fontWeight: 600 }}>{trouble ? 'SL hủy' : 'Tồn'}</Typography>
                                     </Box>
                                     <Box>
                                         {
