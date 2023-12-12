@@ -369,6 +369,8 @@ const SalesExport: React.FC = () => {
                                 }}
                             />
                             <Button
+                                disabled={selectedDrugs.length === 0
+                                    || selectedDrugs.some(drug => drug.error.length > 0)}
                                 variant="contained"
                                 color="primary"
                                 sx={{

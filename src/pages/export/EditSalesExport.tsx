@@ -33,10 +33,10 @@ import TableData from "../../components/table/TableData";
 import { DrugCategory, DrugCategoryHandled } from "../../types/DrugCategory";
 
 const useStyles = makeStyles({
-  customTextField: {
-    "& input::placeholder": {
-      fontSize: "15px"
-    }
+    customTextField: {
+        "& input::placeholder": {
+            fontSize: "15px"
+        }
     },
 })
 
@@ -100,7 +100,7 @@ const customerFormValidate: Yup.ObjectSchema<CustomerEditForm> = yup.object({
         .phoneNumber('Số điện thoại không hợp lệ.'),
 })
 
- // @ts-ignore
+// @ts-ignore
 const exportValidate: Yup.ObjectSchema<ExportForm> = yup.object({
     note: yup
         .string()
@@ -111,22 +111,22 @@ const exportValidate: Yup.ObjectSchema<ExportForm> = yup.object({
 });
 
 const columns: ColumnDrugCategory[] = [
-    { key: 'id', value: 'Mã thuốc'},
+    { key: 'id', value: 'Mã thuốc' },
     { key: 'name', value: 'Tên thuốc' },
-    { key: 'quantity', value: 'Số lượng tồn'},
+    { key: 'quantity', value: 'Số lượng tồn' },
     { key: 'formatedPrice', value: 'Đơn giá bán' },
     { key: 'minimalUnit', value: 'Đơn vị bán' },
     { key: 'vat', value: 'Thuế VAT' },
-    { key: 'use', value: 'Công dụng'},
+    { key: 'use', value: 'Công dụng' },
 ]
 
 const columnsDetail: ColumnDrugCategory[] = [
     { key: 'id', value: 'Mã thuốc' },
     { key: 'drugName', value: 'Tên thuốc' },
-    { key: 'quantity', value: 'Số lượng bán'},
+    { key: 'quantity', value: 'Số lượng bán' },
     { key: 'unitPrice', value: 'Đơn giá' },
-    { key: 'vat', value: 'Thuế VAT'},
-    { key: 'expiryDate', value: 'Hạn sử dụng'},
+    { key: 'vat', value: 'Thuế VAT' },
+    { key: 'expiryDate', value: 'Hạn sử dụng' },
 ]
 
 const EditSalesExport: React.FC = () => {
@@ -141,7 +141,7 @@ const EditSalesExport: React.FC = () => {
         setValue: setValueCustomer,
         clearErrors,
     } = useForm<CustomerForm>({
-        defaultValues: {...state.exportTodayIndex.export.customer},
+        defaultValues: { ...state.exportTodayIndex.export.customer },
         resolver: yupResolver(customerFormValidate)
     });
     const setCustomer = (customer: CustomerForm) => {
@@ -150,7 +150,7 @@ const EditSalesExport: React.FC = () => {
         setValueCustomer('gender', customer.gender)
         setAddress(customer.address)
         clearErrors('phoneNumber'),
-        clearErrors('name')
+            clearErrors('name')
     }
     const searchCustomer = useSearchCustomer(setCustomer)
     const [drugs, setDrugs] = useState<any[]>([])
@@ -167,7 +167,7 @@ const EditSalesExport: React.FC = () => {
     });
     const [address, setAddress] = useState<string>('');
     const [search, setSearch] = useState<string>('')
-    const [exportData, setExportData] = useState<ExportData | null>(null)    
+    const [exportData, setExportData] = useState<ExportData | null>(null)
     const [exportDetailData, setExportDetailData] = useState<ExportDetailPdf[] | null>(null)
     const refundAndCreate = useRefundAndCreateNewExport(setExportData, setExportDetailData);
     const [selectedExport, setSelectedExport] = useState<number>(state.exportTodayIndex.export.id)
@@ -191,7 +191,7 @@ const EditSalesExport: React.FC = () => {
 
             const selectDrugIds = state.exportTodayIndex.exportDetail.map((detail: any) => detail.drug.id)
             setSelectedDrugs(state.exportTodayIndex.exportDetail.map((detail: any) => {
-                const drug: DrugCategoryHandled|null = drugCategories.find((drug: DrugCategory) => drug.id === detail.drug.id)
+                const drug: DrugCategoryHandled | null = drugCategories.find((drug: DrugCategory) => drug.id === detail.drug.id)
                 return {
                     id: detail.drug.id,
                     name: detail.drug.name,
@@ -211,7 +211,7 @@ const EditSalesExport: React.FC = () => {
                 return { ...drug, checked: false }
             });
             const handleDrugs = data.map((drug: any) => {
-                return selectDrugIds.includes(drug.id) ? {...drug, checked: true} : drug
+                return selectDrugIds.includes(drug.id) ? { ...drug, checked: true } : drug
             })
             setCloneDrugs(handleDrugs)
             setDrugs(handleDrugs)
@@ -264,8 +264,8 @@ const EditSalesExport: React.FC = () => {
         console.log(selectedDrugs);
         const isInvalid = selectedDrugs.length === 0
             || selectedDrugs.some(drug => drug.error.length > 0);
-        
-        handleSubmitCustomer((_) => {})()
+
+        handleSubmitCustomer((_) => { })()
         if (isInvalid) {
             if (selectedDrugs.length === 0) {
                 enqueueSnackbar('Vui lòng chọn ít nhất một danh mục thuốc.', {
@@ -287,14 +287,14 @@ const EditSalesExport: React.FC = () => {
                     name: watch('name'),
                     phoneNumber: watch('phoneNumber'),
                     address: address,
-                    gender: watch('gender') 
+                    gender: watch('gender')
                 },
                 type: 2,
                 staffId: staff.id,
                 exportDate: data.exportDate,
                 note: data.note,
                 exportDetails: selectedDrugs.map(drug => {
-                    return { drugId: drug.id, quantity: drug.exportQuantity}
+                    return { drugId: drug.id, quantity: drug.exportQuantity }
                 })
             })
         }
@@ -302,7 +302,7 @@ const EditSalesExport: React.FC = () => {
 
     const checkDrugCategory = (drugCategory: any) => {
         const data = cloneDrugs.map(drug => {
-            return drug.id === drugCategory.id ? {...drug, checked: true} : drug
+            return drug.id === drugCategory.id ? { ...drug, checked: true } : drug
         })
         setCloneDrugs(data)
         if (search.trim().length > 0) {
@@ -313,12 +313,12 @@ const EditSalesExport: React.FC = () => {
         else {
             setDrugs(data)
         }
-        selectedDrugs.push({...drugCategory, checked: false, exportQuantity: 1, error: ''})
+        selectedDrugs.push({ ...drugCategory, checked: false, exportQuantity: 1, error: '' })
     }
 
     const unCheckDrugCategory = (drugCategory: any) => {
         const data = cloneDrugs.map(drug => {
-            return drug.id === drugCategory.id ? {...drug, checked: false} : drug
+            return drug.id === drugCategory.id ? { ...drug, checked: false } : drug
         })
         setCloneDrugs(data);
         if (search.trim().length > 0) {
@@ -336,7 +336,6 @@ const EditSalesExport: React.FC = () => {
 
     const updateQuantity = (drugCategory: any) => {
         let validateError = ''
-        console.log('quantity', drugCategory.rawQuantity, '---- export quantity', drugCategory.exportQuantity)
         if (drugCategory.exportQuantity > drugCategory.rawQuantity) {
             validateError = 'Số lượng tồn không đủ để xuất bán.'
         }
@@ -352,7 +351,7 @@ const EditSalesExport: React.FC = () => {
             }
         }
         setSelectedDrugs(selectedDrugs.map(drug => {
-            return drug.id === drugCategory.id ?  {...drugCategory, error: validateError} : drug
+            return drug.id === drugCategory.id ? { ...drugCategory, error: validateError } : drug
         }))
     }
 
@@ -361,7 +360,7 @@ const EditSalesExport: React.FC = () => {
             <ConfirmDialog
                 content="Vui lòng cân nhắc trước khi hoàn đơn thuốc."
                 title="Bạn có thật sự muốn hoàn đơn toàn bộ đơn thuốc này không?"
-                { ...props }
+                {...props}
             />
             <Paper sx={{ px: 6, py: 4, flex: 3 }}>
                 <Typography variant="h4" gutterBottom mb='20px'>
@@ -369,170 +368,170 @@ const EditSalesExport: React.FC = () => {
                 </Typography>
                 {
                     state.exportTodayIndex.export.type === 1
-                    ?
-                    <Box sx={{ display: 'flex', gap: 2 }}>
-                        <Grid container spacing={1.5} width='30%' sx={{ flex: 2 }}>
-                            <Grid item xs={8} sm={12} sx={{ mt: -2 }}>
-                                <Typography
-                                    variant="subtitle2"
-                                >
-                                    <Typography display="inline" sx={{ fontWeight: 'bold' }}>
-                                        Mã phiếu:
-                                    </Typography>
-                                        <Typography display="inline" sx={{ textDecoration: 'none'}}>
-                                            { ` ${state.exportTodayIndex.export.id}`}
+                        ?
+                        <Box sx={{ display: 'flex', gap: 2 }}>
+                            <Grid container spacing={1.5} width='30%' sx={{ flex: 2 }}>
+                                <Grid item xs={8} sm={12} sx={{ mt: -2 }}>
+                                    <Typography
+                                        variant="subtitle2"
+                                    >
+                                        <Typography display="inline" sx={{ fontWeight: 'bold' }}>
+                                            Mã phiếu:
+                                        </Typography>
+                                        <Typography display="inline" sx={{ textDecoration: 'none' }}>
+                                            {` ${state.exportTodayIndex.export.id}`}
                                         </Typography>
                                     </Typography>
                                     <Typography
                                         variant="subtitle2"
                                     >
-                                    <Typography display="inline" sx={{ fontWeight: 'bold' }}>
-                                        Mã đơn thuốc:
-                                    </Typography>
-                                        <Typography display="inline" sx={{ textDecoration: 'none'}}>
-                                            { ` ${state.exportTodayIndex.export.prescriptionId}`}
+                                        <Typography display="inline" sx={{ fontWeight: 'bold' }}>
+                                            Mã đơn thuốc:
+                                        </Typography>
+                                        <Typography display="inline" sx={{ textDecoration: 'none' }}>
+                                            {` ${state.exportTodayIndex.export.prescriptionId}`}
                                         </Typography>
                                     </Typography>
-                            </Grid>
+                                </Grid>
 
-                            <Grid item xs={8} sm={12}>
-                                <FormInputDate
-                                    name="exportDate"
-                                    control={control}
-                                    label="Ngày xuất hàng"
-                                    placeholder='x'
-                                    withTime={true}
-                                />
-                            </Grid>
-                            <Grid item xs={8} sm={12}>
-                                <FormInputText
-                                    name="note"
-                                    control={control}
-                                    label="Ghi chú"
-                                    placeholder='Nhập ghi chú'
-                                />
-                            </Grid>
-                        
-                        </Grid>
-
-                        <Grid container spacing={1.5} sx={{ flex: 4 }}>
-                            <Grid item xs={8} sm={4}>
-                                <Controller
-                                    name='phoneNumber'
-                                    control={customerControl}
-                                    render={({
-                                        field: { onChange, value },
-                                        fieldState: { error },
-                                    }) => (
-                                    <TextField
-                                        size='small'
-                                        type='text'
-                                        helperText={error ? error.message : null}
-                                        error={!!error}
-                                        onChange={onChange}
-                                        onBlur={() => {
-                                            searchCustomer.mutate(watch('phoneNumber'))
-                                        }
-                                        }
-                                        value={value}
-                                        fullWidth
-                                        label="Số điện thoại khách hàng"
-                                        variant="outlined"
-                                        placeholder='Nhập số điện thoại khách hàng'
+                                <Grid item xs={8} sm={12}>
+                                    <FormInputDate
+                                        name="exportDate"
+                                        control={control}
+                                        label="Ngày xuất hàng"
+                                        placeholder='x'
+                                        withTime={true}
                                     />
-                                    )}
-                                />
-                            </Grid>
-                            <Grid item xs={8} sm={6}>
-                                <FormInputText
-                                    size="small"
-                                    name="name"     
-                                    control={customerControl}
-                                    label="Họ và tên khách hàng"
-                                    placeholder='Nhập họ và tên khách hàng'
-                                />
-                            </Grid>
-                            <Grid item xs={8} sm={2}>
-                                <FormInputDropdown
-                                    name="gender"
-                                    control={customerControl}
-                                    label="Giới tính"
-                                    placeholder='Giới tính'
-                                    list={genders}
-                                />
-                            </Grid>
-                            <Address key={change} gridSize={6} setAddress={setAddress} size='small' initAddress={address} />
-                        </Grid>
-                    </Box>
-                : 
-                <Grid container spacing={1}>
-                    <Grid item xs={8} sm={2}>
-                        <Typography
-                            variant="subtitle2" 
-                        >
-                        <Typography display="inline" sx={{ fontWeight: 'bold' }}>
-                                Mã đơn:
-                            </Typography>
-                            <Typography display="inline" sx={{ textDecoration: 'none'}}>
-                                { ` ${state.exportTodayIndex.export.id}`}
-                            </Typography>
-                        </Typography>        
-                    </Grid>
+                                </Grid>
+                                <Grid item xs={8} sm={12}>
+                                    <FormInputText
+                                        name="note"
+                                        control={control}
+                                        label="Ghi chú"
+                                        placeholder='Nhập ghi chú'
+                                    />
+                                </Grid>
 
-                    <Grid item xs={8} sm={4}>
-                        <TextShow title="Nhân viên tạo" data={state.exportTodayIndex.export.staff.name} />
-                    </Grid>
-                            
-                    <Grid item xs={8} sm={3}>
-                        <TextShow title="Thời gian" data={dayjs(state.exportTodayIndex.export.exportDate).format('HH:mm:ss')} />
-                    </Grid>
-                    
-                    <Grid item xs={8} sm={3} sx={{ marginTop: -0.25 }}>
-                        <Typography
-                            variant="subtitle2"
-                        >
-                            <Typography display="inline" sx={{ fontWeight: 'bold' }}>
-                                Loại:
-                            </Typography>
-                            <Typography display="inline" sx={{ textDecoration: 'none'}}>
-                                <Chip
-                                    sx={{ paddingLeft: 1}}
-                                    //@ts-ignore
-                                    label={getVairantLabelType(state.exportTodayIndex.export.type)}
-                                    //@ts-ignore
-                                    color={getVairantColorType(state.exportTodayIndex.export.type)}
-                                    variant="outlined"
-                                />
-                            </Typography>
-                        </Typography>       
-                    </Grid>
-                    
-                    <Grid item xs={8} sm={4}>
-                        <TextShow title="Mã đơn thuốc" data={state.exportTodayIndex.export.prescriptionId} />
-                    </Grid>
-                    
-                    <Grid item xs={8} sm={4}>
-                        <TextShow title="Khách hàng" data={state.exportTodayIndex.export.customer.name} />
-                    </Grid>
-                    
-                    <Grid item xs={8} sm={4}>
-                        <TextShow title="Số điện thoại" data={state.exportTodayIndex.export.customer.phoneNumber} />
-                    </Grid>
-                    
-                    <Grid item xs={8} sm={12}>
-                        <TextShow title="Địa chỉ" data={handleAddress(state.exportTodayIndex.export.customer.address)} />
-                    </Grid>
-                    
-                    <Grid item xs={8} sm={12}>
-                        <TextShow title="Ghi chú" data={state.exportTodayIndex.export.note} />
-                    </Grid>
-                </Grid>
+                            </Grid>
+
+                            <Grid container spacing={1.5} sx={{ flex: 4 }}>
+                                <Grid item xs={8} sm={4}>
+                                    <Controller
+                                        name='phoneNumber'
+                                        control={customerControl}
+                                        render={({
+                                            field: { onChange, value },
+                                            fieldState: { error },
+                                        }) => (
+                                            <TextField
+                                                size='small'
+                                                type='text'
+                                                helperText={error ? error.message : null}
+                                                error={!!error}
+                                                onChange={onChange}
+                                                onBlur={() => {
+                                                    searchCustomer.mutate(watch('phoneNumber'))
+                                                }
+                                                }
+                                                value={value}
+                                                fullWidth
+                                                label="Số điện thoại khách hàng"
+                                                variant="outlined"
+                                                placeholder='Nhập số điện thoại khách hàng'
+                                            />
+                                        )}
+                                    />
+                                </Grid>
+                                <Grid item xs={8} sm={6}>
+                                    <FormInputText
+                                        size="small"
+                                        name="name"
+                                        control={customerControl}
+                                        label="Họ và tên khách hàng"
+                                        placeholder='Nhập họ và tên khách hàng'
+                                    />
+                                </Grid>
+                                <Grid item xs={8} sm={2}>
+                                    <FormInputDropdown
+                                        name="gender"
+                                        control={customerControl}
+                                        label="Giới tính"
+                                        placeholder='Giới tính'
+                                        list={genders}
+                                    />
+                                </Grid>
+                                <Address key={change} gridSize={6} setAddress={setAddress} size='small' initAddress={address} />
+                            </Grid>
+                        </Box>
+                        :
+                        <Grid container spacing={1}>
+                            <Grid item xs={8} sm={2}>
+                                <Typography
+                                    variant="subtitle2"
+                                >
+                                    <Typography display="inline" sx={{ fontWeight: 'bold' }}>
+                                        Mã đơn:
+                                    </Typography>
+                                    <Typography display="inline" sx={{ textDecoration: 'none' }}>
+                                        {` ${state.exportTodayIndex.export.id}`}
+                                    </Typography>
+                                </Typography>
+                            </Grid>
+
+                            <Grid item xs={8} sm={4}>
+                                <TextShow title="Nhân viên tạo" data={state.exportTodayIndex.export.staff.name} />
+                            </Grid>
+
+                            <Grid item xs={8} sm={3}>
+                                <TextShow title="Thời gian" data={dayjs(state.exportTodayIndex.export.exportDate).format('HH:mm:ss')} />
+                            </Grid>
+
+                            <Grid item xs={8} sm={3} sx={{ marginTop: -0.25 }}>
+                                <Typography
+                                    variant="subtitle2"
+                                >
+                                    <Typography display="inline" sx={{ fontWeight: 'bold' }}>
+                                        Loại:
+                                    </Typography>
+                                    <Typography display="inline" sx={{ textDecoration: 'none' }}>
+                                        <Chip
+                                            sx={{ paddingLeft: 1 }}
+                                            //@ts-ignore
+                                            label={getVairantLabelType(state.exportTodayIndex.export.type)}
+                                            //@ts-ignore
+                                            color={getVairantColorType(state.exportTodayIndex.export.type)}
+                                            variant="outlined"
+                                        />
+                                    </Typography>
+                                </Typography>
+                            </Grid>
+
+                            <Grid item xs={8} sm={4}>
+                                <TextShow title="Mã đơn thuốc" data={state.exportTodayIndex.export.prescriptionId} />
+                            </Grid>
+
+                            <Grid item xs={8} sm={4}>
+                                <TextShow title="Khách hàng" data={state.exportTodayIndex.export.customer.name} />
+                            </Grid>
+
+                            <Grid item xs={8} sm={4}>
+                                <TextShow title="Số điện thoại" data={state.exportTodayIndex.export.customer.phoneNumber} />
+                            </Grid>
+
+                            <Grid item xs={8} sm={12}>
+                                <TextShow title="Địa chỉ" data={handleAddress(state.exportTodayIndex.export.customer.address)} />
+                            </Grid>
+
+                            <Grid item xs={8} sm={12}>
+                                <TextShow title="Ghi chú" data={state.exportTodayIndex.export.note} />
+                            </Grid>
+                        </Grid>
                 }
-                    
+
                 {
                     state.exportTodayIndex.export.type === 1
                         ?
-                         <Grid container spacing={3} marginTop={2}>
+                        <Grid container spacing={3} marginTop={2}>
                             <Grid item xs={12} sm={12} container>
                                 <Typography mb='20px' variant="subtitle2" sx={{ fontWeight: 'fontWeightBold', mt: 2, fontSize: 16 }}>
                                     Thuốc đã chọn
@@ -543,30 +542,30 @@ const EditSalesExport: React.FC = () => {
                                     keyTable='selected-drug-export-category-table-key'
                                     action={unCheckDrugCategory}
                                     update={updateQuantity}
-                                /> 
+                                />
                             </Grid>
 
-                            <Grid item xs={12} sm={12} container 
+                            <Grid item xs={12} sm={12} container
                                 sx={{
                                     display: 'flex',
                                     justifyContent: "end",
                                     gap: 4
                                 }}
                             >
-                                <Typography variant="subtitle2" sx={{  }}>
-                                    Tổng tiền (chưa tính VAT): { pay[0] ? pay[0].toLocaleString() : '_'}đ
+                                <Typography variant="subtitle2" sx={{}}>
+                                    Tổng tiền (chưa tính VAT): {pay[0] ? pay[0].toLocaleString() : '_'}đ
                                 </Typography>
 
-                                <Typography variant="subtitle2" sx={{  }}>
-                                    Tiền thuế VAT: { pay[1] ? pay[1].toLocaleString() : '_'}đ
+                                <Typography variant="subtitle2" sx={{}}>
+                                    Tiền thuế VAT: {pay[1] ? pay[1].toLocaleString() : '_'}đ
                                 </Typography>
 
-                                <Typography variant="subtitle2" sx={{ color: "#148c07"  }}>
-                                    Tổng tiền: { pay[2] ? pay[2].toLocaleString() : '_'}đ
+                                <Typography variant="subtitle2" sx={{ color: "#148c07" }}>
+                                    Tổng tiền: {pay[2] ? pay[2].toLocaleString() : '_'}đ
                                 </Typography>
                             </Grid>
 
-                            <Grid item xs={12} sm={12} container 
+                            <Grid item xs={12} sm={12} container
                             >
                                 <Box sx={{ display: 'flex', width: '100%', gap: 1 }}>
                                     <Typography mb='20px' variant="subtitle2" sx={{ fontWeight: 'fontWeightBold', mt: 2, fontSize: 16 }}>
@@ -576,7 +575,7 @@ const EditSalesExport: React.FC = () => {
                                         onChange={handleSearchData}
                                         classes={{ root: classes.customTextField }}
                                         size='small'
-                                        sx={{ flexGrow: 1, my :'auto', mr: '20%', ml: 2}}
+                                        sx={{ flexGrow: 1, my: 'auto', mr: '20%', ml: 2 }}
                                         label="Tìm kiếm"
                                         value={search}
                                         placeholder="Nhập thông tin danh mục thuốc theo tên"
@@ -591,6 +590,8 @@ const EditSalesExport: React.FC = () => {
                                         }}
                                     />
                                     <Button
+                                        disabled={selectedDrugs.length === 0
+                                            || selectedDrugs.some(drug => drug.error.length > 0)}
                                         variant="contained"
                                         color="primary"
                                         sx={{
@@ -604,6 +605,8 @@ const EditSalesExport: React.FC = () => {
                                     </Button>
 
                                     <Button
+                                        disabled={selectedDrugs.length === 0
+                                            || selectedDrugs.some(drug => drug.error.length > 0)}
                                         variant="contained"
                                         color="error"
                                         sx={{
@@ -611,71 +614,71 @@ const EditSalesExport: React.FC = () => {
                                             m: 'auto',
                                             textTransform: 'none',
                                         }}
-                                        onClick={() => {openConfirmDialog(selectedExport.toString())}}
+                                        onClick={() => { openConfirmDialog(selectedExport.toString()) }}
                                     >
                                         Hoàn toàn bộ
                                     </Button>
-                                    
+
                                 </Box>
-                        {
-                            drugCategoryLoading
-                            ?
-                                <CircularProgress sx={{ margin: 'auto' }} />
-                            :
-                                <TableDrugCategories
-                                    rows={drugs}
-                                    tooltip='Nhấn để chọn thuốc'
-                                    columns={columns}
-                                    keyTable='drug-category-table-key'
-                                    action={checkDrugCategory}
-                                    type='export'
-                                />
-                        }  
-                    </Grid>
-                </Grid>
-                :
-                <Grid container spacing={2} marginTop={1}>
-                    <Grid item xs={12} sm={12} container>
-                        <Typography mb='20px' variant="subtitle2" sx={{ fontWeight: 'fontWeightBold', mt: 2, fontSize: 16 }}>
-                            Chi tiết
-                        </Typography>
-                        <TableData
-                            keyTable='export-detail'
-                            rows={state.exportTodayIndex.exportDetail.map((exportDetail: ExportDetailRawData) => {
-                                return {
-                                    id: exportDetail.drug.id,
-                                    drugName: exportDetail.drug.name,
-                                    quantity: `${formatNumber(exportDetail.quantity)} ${exportDetail.drug.minimalUnit}`,
-                                    unitPrice: formatCurrency(exportDetail.unitPrice),
-                                    vat: `${exportDetail.vat*100}%`,
-                                    expiryDate: formatDate(exportDetail.expiryDate)
+                                {
+                                    drugCategoryLoading
+                                        ?
+                                        <CircularProgress sx={{ margin: 'auto' }} />
+                                        :
+                                        <TableDrugCategories
+                                            rows={drugs}
+                                            tooltip='Nhấn để chọn thuốc'
+                                            columns={columns}
+                                            keyTable='drug-category-table-key'
+                                            action={checkDrugCategory}
+                                            type='export'
+                                        />
                                 }
-                            })}
-                            columns={columnsDetail}
-                            isLoading={false}
-                        />
-                    </Grid>
+                            </Grid>
+                        </Grid>
+                        :
+                        <Grid container spacing={2} marginTop={1}>
+                            <Grid item xs={12} sm={12} container>
+                                <Typography mb='20px' variant="subtitle2" sx={{ fontWeight: 'fontWeightBold', mt: 2, fontSize: 16 }}>
+                                    Chi tiết
+                                </Typography>
+                                <TableData
+                                    keyTable='export-detail'
+                                    rows={state.exportTodayIndex.exportDetail.map((exportDetail: ExportDetailRawData) => {
+                                        return {
+                                            id: exportDetail.drug.id,
+                                            drugName: exportDetail.drug.name,
+                                            quantity: `${formatNumber(exportDetail.quantity)} ${exportDetail.drug.minimalUnit}`,
+                                            unitPrice: formatCurrency(exportDetail.unitPrice),
+                                            vat: `${exportDetail.vat * 100}%`,
+                                            expiryDate: formatDate(exportDetail.expiryDate)
+                                        }
+                                    })}
+                                    columns={columnsDetail}
+                                    isLoading={false}
+                                />
+                            </Grid>
 
-                    <Grid item xs={12} sm={12} container 
-                        sx={{
-                            display: 'flex',
-                            justifyContent: "end",
-                            gap: 4
-                        }}
-                    >
-                        <Typography variant="subtitle2" sx={{  }}>
-                            Tổng tiền (chưa tính VAT): { pay[0] ? pay[0].toLocaleString() : '_'}đ
-                        </Typography>
+                            <Grid item xs={12} sm={12} container
+                                sx={{
+                                    display: 'flex',
+                                    justifyContent: "end",
+                                    gap: 4
+                                }}
+                            >
+                                <Typography variant="subtitle2" sx={{}}>
+                                    Tổng tiền (chưa tính VAT): {pay[0] ? pay[0].toLocaleString() : '_'}đ
+                                </Typography>
 
-                        <Typography variant="subtitle2" sx={{  }}>
-                            Tiền thuế VAT: { pay[1] ? pay[1].toLocaleString() : '_'}đ
-                        </Typography>
+                                <Typography variant="subtitle2" sx={{}}>
+                                    Tiền thuế VAT: {pay[1] ? pay[1].toLocaleString() : '_'}đ
+                                </Typography>
 
-                        <Typography variant="subtitle2" sx={{ color: "#148c07"  }}>
-                            Tổng tiền: { pay[2] ? pay[2].toLocaleString() : '_'}đ
-                        </Typography>
-                    </Grid>
-                </Grid>
+                                <Typography variant="subtitle2" sx={{ color: "#148c07" }}>
+                                    Tổng tiền: {pay[2] ? pay[2].toLocaleString() : '_'}đ
+                                </Typography>
+                            </Grid>
+                        </Grid>
                 }
 
                 <div style={{ display: 'none' }}>
@@ -686,9 +689,9 @@ const EditSalesExport: React.FC = () => {
                         exportDetail={exportDetailData}
                     />
                 </div>
-                
+
             </Paper>
-            <Box sx={{ flex: 1, px: 2, py: 1}}></Box>
+            <Box sx={{ flex: 1, px: 2, py: 1 }}></Box>
             <TodaySales exportIdSelected={selectedExport} />
         </Box>
     )
