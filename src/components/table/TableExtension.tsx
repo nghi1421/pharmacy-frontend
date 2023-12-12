@@ -34,12 +34,12 @@ export const TableExtension: React.FC<TableExtensionProps> = ({
     const handleSearchData = (event: React.ChangeEvent<HTMLInputElement>) => {
         clearTimeout(time);
         setSearch(event.target.value as string)
-            setTime(setTimeout(() => {
-                actionSearch({
-                    searchTerm: event.target.value as string,
-                    searchColumns: watchSearchList
-                })
-            }, 500)
+        setTime(setTimeout(() => {
+            actionSearch({
+                searchTerm: event.target.value as string,
+                searchColumns: watchSearchList
+            })
+        }, 500)
         )
     }
 
@@ -47,15 +47,15 @@ export const TableExtension: React.FC<TableExtensionProps> = ({
         <Paper sx={{ px: 3, py: 1, display: 'flex', gap: 2 }}>
             <TextField
                 onChange={handleSearchData}
-                onClick={() =>
-                    {
-                        if (watchSearchList.length === 0) {
-                            warningSearchField()
-                        }
+                onClick={() => {
+                    if (watchSearchList.length === 0) {
+                        warningSearchField()
                     }
+                }
                 }
                 sx={{ width: '40%' }}
                 label="Tìm kiếm"
+                size='small'
                 value={search}
                 disabled={watchSearchList.length === 0}
                 placeholder="Nhập thông tin tìm kiếm"
@@ -81,10 +81,10 @@ export const TableExtension: React.FC<TableExtensionProps> = ({
                 open={openSetting}
                 onClose={onCloseFilter}
                 MenuListProps={{
-                'aria-labelledby': 'basic-button',
+                    'aria-labelledby': 'basic-button',
                 }}
             >
-                <Box sx={{ px:3, py:2 }}>
+                <Box sx={{ px: 3, py: 2 }}>
                     <FormInputMultiCheckbox
                         initValue={initSearchColumns}
                         name='searchableList'
@@ -97,6 +97,6 @@ export const TableExtension: React.FC<TableExtensionProps> = ({
                 </Box>
             </Menu>
         </Paper>
-        
+
     )
 }

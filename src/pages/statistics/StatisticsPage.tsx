@@ -22,7 +22,7 @@ export interface StatisticsForm {
     endDate: Date;
 }
 
- // @ts-ignore
+// @ts-ignore
 const statsiticsValidate: Yup.ObjectSchema<StatisticsForm> = yup.object({
     startDate: yup
         .date()
@@ -31,12 +31,16 @@ const statsiticsValidate: Yup.ObjectSchema<StatisticsForm> = yup.object({
                 const start = dayjs(val.value.toString()).startOf('day')
                 const end = dayjs(endDate.toString()).endOf('day')
                 if (start.diff(end, 'day') + 1 !== 0) {
-                    return schema.max(new Date(end.toString()),'Ngày bắt đầu phải trước ngày kết thúc.')
+                    return schema.max(new Date(end.toString()), 'Ngày bắt đầu phải trước ngày kết thúc.')
                 }
                 return schema;
-            }),
+            })
+        .required('Ngày kết thúc bắt buộc')
+        .typeError('Ngày bắt đầu không hợp lệ.'),
     endDate: yup
         .date()
+        .required('Ngày kết thúc bắt buộc')
+        .typeError('Ngày kết thúc không hợp lệ.'),
 });
 
 const StatisticsPage = () => {
@@ -83,11 +87,11 @@ const StatisticsPage = () => {
             <Grid item xs={8} sm={12}>
                 <Paper sx={{ px: 3, py: 2 }}>
                     <Typography
-                            variant="h4"
-                            fontWeight='500'
-                            sx={{ pb: 2, marginBottom: 2 }}
-                        >
-                        Thống kê { getCurrentDateRange().startDate } - { getCurrentDateRange().endDate }
+                        variant="h4"
+                        fontWeight='500'
+                        sx={{ pb: 2, marginBottom: 2 }}
+                    >
+                        Thống kê {getCurrentDateRange().startDate} - {getCurrentDateRange().endDate}
                     </Typography>
                     <Grid spacing={2} container>
                         <Grid item xs={8} sm={3}>
@@ -123,27 +127,27 @@ const StatisticsPage = () => {
                         <Grid item xs={8} sm={12}>
                             <Stack direction="row" spacing={1}>
                                 {
-                                    dateRanges.map((dateRange) => 
+                                    dateRanges.map((dateRange) =>
                                         <Chip
                                             label={dateRange.label}
                                             color="primary"
                                             sx={{ cursor: dateRange.checked ? 'not-allowed' : 'pointer' }}
                                             variant={dateRange.checked ? "filled" : "outlined"}
                                             onClick={() => {
-                                               chooseDateRange(dateRange)
+                                                chooseDateRange(dateRange)
                                             }}
                                         />
                                     )
                                 }
-                            </Stack> 
+                            </Stack>
                         </Grid>
-      
+
                     </Grid>
                 </Paper>
             </Grid>
             {
                 !isLoadingStatistics && statisticsData
-                    ? 
+                    ?
                     <React.Fragment>
                         <Grid item xs={8} sm={3}>
                             <Paper sx={{
@@ -160,7 +164,7 @@ const StatisticsPage = () => {
                                     m: 1,
                                     bgcolor: 'background.paper',
                                     borderRadius: 1,
-                            
+
                                 }}
                                 >
                                     <Typography
@@ -189,32 +193,32 @@ const StatisticsPage = () => {
                                     {
                                         isLoadingStatistics
                                             ?
-                                                <CircularProgress sx={{ margin: 'auto' }} />
+                                            <CircularProgress sx={{ margin: 'auto' }} />
                                             :
-                                        <CountUp
-                                            end={statisticsData.salesEarnings}
-                                            duration={2.75}
-                                            decimals={3}
-                                            decimal="."
-                                            suffix=' VND'
-                                        >
-                                            {({ countUpRef }) => (
-                                                <div style={{
-                                                    width: '100%',
-                                                    display: 'flex',
-                                                    justifyItems: 'flex-end',
-                                                    justifyContent: 'end'
-                                                }}>
-                                                    <span ref={countUpRef} style={{ fontSize: 20}} />
-                                                </div>
-                                            )}
-                                        </CountUp>
+                                            <CountUp
+                                                end={statisticsData.salesEarnings}
+                                                duration={2.75}
+                                                decimals={3}
+                                                decimal="."
+                                                suffix=' VND'
+                                            >
+                                                {({ countUpRef }) => (
+                                                    <div style={{
+                                                        width: '100%',
+                                                        display: 'flex',
+                                                        justifyItems: 'flex-end',
+                                                        justifyContent: 'end'
+                                                    }}>
+                                                        <span ref={countUpRef} style={{ fontSize: 20 }} />
+                                                    </div>
+                                                )}
+                                            </CountUp>
                                     }
-                                    
+
                                 </Box>
                             </Paper>
                         </Grid>
-                                
+
                         <Grid item xs={8} sm={3}>
                             <Paper sx={{
                                 zIndex: 0,
@@ -230,7 +234,7 @@ const StatisticsPage = () => {
                                     m: 1,
                                     bgcolor: 'background.paper',
                                     borderRadius: 1,
-                            
+
                                 }}
                                 >
                                     <Typography
@@ -258,30 +262,30 @@ const StatisticsPage = () => {
                                     {
                                         isLoadingStatistics
                                             ?
-                                                <CircularProgress sx={{ margin: 'auto' }} />
+                                            <CircularProgress sx={{ margin: 'auto' }} />
                                             :
-                                        <CountUp
-                                            end={statisticsData.salesCount}
-                                            duration={2.75}
-                                            decimal=","
-                                        >
-                                            {({ countUpRef }) => (
-                                                <div style={{
-                                                    width: '100%',
-                                                    display: 'flex',
-                                                    justifyItems: 'flex-end',
-                                                    justifyContent: 'end'
-                                                }}>
-                                                    <span ref={countUpRef} style={{ fontSize: 20}} />
-                                                </div>
-                                            )}
-                                        </CountUp>
+                                            <CountUp
+                                                end={statisticsData.salesCount}
+                                                duration={2.75}
+                                                decimal=","
+                                            >
+                                                {({ countUpRef }) => (
+                                                    <div style={{
+                                                        width: '100%',
+                                                        display: 'flex',
+                                                        justifyItems: 'flex-end',
+                                                        justifyContent: 'end'
+                                                    }}>
+                                                        <span ref={countUpRef} style={{ fontSize: 20 }} />
+                                                    </div>
+                                                )}
+                                            </CountUp>
                                     }
-                                
+
                                 </Box>
                             </Paper>
                         </Grid>
-                        
+
                         <Grid item xs={8} sm={3}>
                             <Paper sx={{
                                 zIndex: 0,
@@ -325,24 +329,24 @@ const StatisticsPage = () => {
                                     {
                                         isLoadingStatistics
                                             ?
-                                                <CircularProgress sx={{ margin: 'auto' }} />
+                                            <CircularProgress sx={{ margin: 'auto' }} />
                                             :
-                                        <CountUp
-                                            end={statisticsData.importQuantity}
-                                            duration={2.75}
-                                            decimal=","
-                                        >
-                                            {({ countUpRef }) => (
-                                                <div style={{
-                                                    width: '100%',
-                                                    display: 'flex',
-                                                    justifyItems: 'flex-end',
-                                                    justifyContent: 'end'
-                                                }}>
-                                                    <span ref={countUpRef} style={{ fontSize: 20}} />
-                                                </div>
-                                            )}
-                                        </CountUp>
+                                            <CountUp
+                                                end={statisticsData.importQuantity}
+                                                duration={2.75}
+                                                decimal=","
+                                            >
+                                                {({ countUpRef }) => (
+                                                    <div style={{
+                                                        width: '100%',
+                                                        display: 'flex',
+                                                        justifyItems: 'flex-end',
+                                                        justifyContent: 'end'
+                                                    }}>
+                                                        <span ref={countUpRef} style={{ fontSize: 20 }} />
+                                                    </div>
+                                                )}
+                                            </CountUp>
                                     }
                                 </Box>
                             </Paper>
@@ -363,7 +367,7 @@ const StatisticsPage = () => {
                                     m: 1,
                                     bgcolor: 'background.paper',
                                     borderRadius: 1,
-                            
+
                                 }}
                                 >
                                     <Typography
@@ -392,24 +396,24 @@ const StatisticsPage = () => {
                                     {
                                         isLoadingStatistics
                                             ?
-                                                <CircularProgress sx={{ margin: 'auto' }} />
+                                            <CircularProgress sx={{ margin: 'auto' }} />
                                             :
-                                        <CountUp
-                                            end={statisticsData.customerPurchases}
-                                            duration={2.75}
-                                            decimal=","
-                                        >
-                                            {({ countUpRef }) => (
-                                                <div style={{
-                                                    width: '100%',
-                                                    display: 'flex',
-                                                    justifyItems: 'flex-end',
-                                                    justifyContent: 'end'
-                                                }}>
-                                                    <span ref={countUpRef} style={{ fontSize: 20}} />
-                                                </div>
-                                            )}
-                                        </CountUp>
+                                            <CountUp
+                                                end={statisticsData.customerPurchases}
+                                                duration={2.75}
+                                                decimal=","
+                                            >
+                                                {({ countUpRef }) => (
+                                                    <div style={{
+                                                        width: '100%',
+                                                        display: 'flex',
+                                                        justifyItems: 'flex-end',
+                                                        justifyContent: 'end'
+                                                    }}>
+                                                        <span ref={countUpRef} style={{ fontSize: 20 }} />
+                                                    </div>
+                                                )}
+                                            </CountUp>
                                     }
                                 </Box>
                             </Paper>
@@ -418,17 +422,17 @@ const StatisticsPage = () => {
                         <Grid item xs={8} sm={6}>
                             <Paper sx={{ px: 3, py: 2 }}>
                                 {
-                                    isLoadingStatistics 
+                                    isLoadingStatistics
                                         ?
-                                    <CircularProgress sx={{ margin: 'auto' }} />
+                                        <CircularProgress sx={{ margin: 'auto' }} />
                                         :
-                                    <LineChart
-                                        title='Biểu đồ doanh thu'
-                                        labels={statisticsData.labels}
-                                        data={statisticsData.salesEarningsList}
-                                        xlabel='doanh thu'
-                                        isFormatCurrentcy={true}
-                                    />
+                                        <LineChart
+                                            title='Biểu đồ doanh thu'
+                                            labels={statisticsData.labels}
+                                            data={statisticsData.salesEarningsList}
+                                            xlabel='doanh thu'
+                                            isFormatCurrentcy={true}
+                                        />
                                 }
                             </Paper>
                         </Grid>
@@ -436,17 +440,17 @@ const StatisticsPage = () => {
                         <Grid item xs={8} sm={6}>
                             <Paper sx={{ px: 3, py: 2 }}>
                                 {
-                                    isLoadingStatistics 
+                                    isLoadingStatistics
                                         ?
-                                    <CircularProgress sx={{ margin: 'auto' }} />
+                                        <CircularProgress sx={{ margin: 'auto' }} />
                                         :
-                                    <LineChart
-                                        title='Biểu đồ doanh số'
-                                        labels={statisticsData.labels}
-                                        data={statisticsData.salesCountList}
-                                        xlabel='doanh số'
-                                        isFormatCurrentcy={false}
-                                    />
+                                        <LineChart
+                                            title='Biểu đồ doanh số'
+                                            labels={statisticsData.labels}
+                                            data={statisticsData.salesCountList}
+                                            xlabel='doanh số'
+                                            isFormatCurrentcy={false}
+                                        />
                                 }
                             </Paper>
                         </Grid>
@@ -454,16 +458,16 @@ const StatisticsPage = () => {
                         <Grid item xs={8} sm={6}>
                             <Paper sx={{ px: 3, py: 2 }}>
                                 {
-                                    isLoadingStatistics 
+                                    isLoadingStatistics
                                         ?
-                                    <CircularProgress sx={{ margin: 'auto' }} />
+                                        <CircularProgress sx={{ margin: 'auto' }} />
                                         :
-                                    <BarChart
-                                        title='Lượt khách'
-                                        labels={statisticsData.labels}
-                                        data={statisticsData.customerPurchasesList}
-                                        xlabel='lượt khách'
-                                    />
+                                        <BarChart
+                                            title='Lượt khách'
+                                            labels={statisticsData.labels}
+                                            data={statisticsData.customerPurchasesList}
+                                            xlabel='lượt khách'
+                                        />
                                 }
                             </Paper>
                         </Grid>
@@ -471,15 +475,15 @@ const StatisticsPage = () => {
                         <Grid item xs={8} sm={6}>
                             <Paper sx={{ px: 3, py: 2 }}>
                                 {
-                                    isLoadingStatistics 
+                                    isLoadingStatistics
                                         ?
-                                    <CircularProgress sx={{ margin: 'auto' }} />
+                                        <CircularProgress sx={{ margin: 'auto' }} />
                                         :
-                                    <PieChart
-                                        title='Danh mục thuốc'
-                                        labels={statisticsData.topSales.map((data: any) => data.name)}
-                                        data={statisticsData.topSales.map((data: any) => data.sales)}
-                                    />
+                                        <PieChart
+                                            title='Danh mục thuốc'
+                                            labels={statisticsData.topSales.map((data: any) => data.name)}
+                                            data={statisticsData.topSales.map((data: any) => data.sales)}
+                                        />
                                 }
                             </Paper>
                         </Grid>
@@ -507,15 +511,15 @@ const StatisticsPage = () => {
                             <Typography
                                 variant="h6"
                                 fontWeight='500'
-                                
-                            sx={{ opacity: '0.3', pb: 4}}
+
+                                sx={{ opacity: '0.3', pb: 4 }}
                             >
-                            Không có dữ liệu
+                                Không có dữ liệu
                             </Typography>
                         </Paper>
                     </Grid>
             }
-            
+
 
         </Grid>
     )

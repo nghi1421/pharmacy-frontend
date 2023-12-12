@@ -15,20 +15,20 @@ const defaultValues = {
     name: "",
 };
 
- // @ts-ignore
+// @ts-ignore
 const positionFormValidate: Yup.ObjectSchema<PositionForm>
     = yup.object({
-    name: yup
-        .string()
-        .required('Tên chức vụ bắt buộc.')
-        .max(255),
-})
+        name: yup
+            .string()
+            .required('Tên chức vụ bắt buộc.')
+            .max(100, 'Tên chức vụ không quá 100 kí tự')
+    })
 const CreatePosition: React.FC = () => {
     const navigate = useNavigate()
     const { handleSubmit, reset, control, setError } = useForm<PositionForm>({
         defaultValues: defaultValues,
         resolver: yupResolver(positionFormValidate)
-    }); 
+    });
     const createPosition = useCreatePosition(setError);
 
     const onSubmit = (data: PositionForm) => {
@@ -38,9 +38,9 @@ const CreatePosition: React.FC = () => {
     const backToTable = () => {
         navigate('/admin/positions')
     }
-    
+
     return (
-        <Paper sx={{ px:6, py:4 }}>
+        <Paper sx={{ px: 6, py: 4 }}>
             <Typography variant="h6" gutterBottom mb='20px'>
                 Thông tin chức vụ
             </Typography>
@@ -54,7 +54,7 @@ const CreatePosition: React.FC = () => {
                     />
                 </Grid>
 
-                <Grid item xs={12} sm={12} container 
+                <Grid item xs={12} sm={12} container
                     sx={{
                         display: 'flex',
                         justifyContent: "end",

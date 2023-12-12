@@ -6,7 +6,7 @@ import yup from "../../utils/yup";
 import { SelectableTable } from "../../components/SelectableTable";
 import { ModalComponent } from "../../components/Modal";
 import React, { useEffect, useState } from "react";
-import { useBackDrugCategory, useCreateTrouble, useSeachTrouble } from "../../hooks/useTrouble";
+import { useBackDrugCategory, useCreateTrouble, useSeachTrouble, useSendNotification } from "../../hooks/useTrouble";
 import { InventoryImport } from "../../components/InventoryImportRow";
 import { TextShow } from "../../components/TextShow";
 import { Error } from "@mui/icons-material";
@@ -76,6 +76,7 @@ const TroublePage: React.FC<{}> = () => {
     const [provider, setProvider] = useState<any>(null)
     const [item, setItem] = useState<any>()
     const [trouble, setTrouble] = useState<Trouble | null>(null)
+    const sendNoti = useSendNotification()
     const searchTrouble = useSeachTrouble()
     const {
         handleSubmit,
@@ -117,10 +118,7 @@ const TroublePage: React.FC<{}> = () => {
     const sendNotification = (list: number[]) => {
         if (trouble) {
             if (list.length > 0) {
-                enqueueSnackbar('Gửi thông báo thành công.', {
-                    variant: 'success',
-                    autoHideDuration: 3000
-                })
+                sendNoti.mutate({ exportIds: list, troubleId: trouble.id })
             }
             else {
                 enqueueSnackbar('Vui lòng chọn phiếu mua hàng gửi thông báo', {
@@ -374,6 +372,7 @@ const TroublePage: React.FC<{}> = () => {
                         </Paper>
                         <SelectableTable
                             key={change}
+                            unit={drugCategory?.minimalUnit ?? '_'}
                             sendNotification={sendNotification}
                             setItem={(row: any) => { setItem(row) }}
                             rows={rowsData}

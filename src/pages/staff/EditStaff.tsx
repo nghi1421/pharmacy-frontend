@@ -20,7 +20,7 @@ export interface StaffEditForm {
     name: string;
     phoneNumber: string;
     gender: string;
-    dob: Date|null;
+    dob: Date | null;
     email: string,
     identification: string;
     positionId: string;
@@ -36,15 +36,17 @@ const staffFormValidate: Yup.ObjectSchema<StaffForm> = yup.object({
     name: yup
         .string()
         .required('Tên nhân viên bắt buộc.')
-        .max(255),
+        .max(255, 'Tên nhân viên tối đa 255 kí tự'),
     phoneNumber: yup
         .string()
         .required('Số điện thoại bắt buộc.')
+        .max(15, 'Số điện thoại tối đa 15 kí tự')
         //@ts-ignore
         .phoneNumber('Số điện thoại không hợp lệ.'),
     email: yup
         .string()
         .required('Email bắt buộc.')
+        .max(255, 'Email tối đa 255 kí tự')
         .email('Email không hợp lệ.'),
     gender: yup
         .string()
@@ -52,9 +54,12 @@ const staffFormValidate: Yup.ObjectSchema<StaffForm> = yup.object({
         .oneOf(['0', '1', '2']),
     dob: yup
         .date()
-        .max(maxDate, 'Nhân viên phải trên 18 tuổi.'),
+        .max(maxDate, 'Nhân viên phải trên 18 tuổi.')
+        .required('Ngày sinh bắt buộc')
+        .typeError('Ngày sinh không hợp lệ.'),
     identification: yup
         .string()
+        .max(20, 'CCCD tối đa 20 kí tự')
         //@ts-ignore
         .onlyNumber('CCCD không hợp lệ.'),
 })
@@ -66,7 +71,7 @@ const EditStaff: React.FC = () => {
     const [counter, setCounter] = useState(Math.random())
     const [address, setAddress] = useState<string>('')
     const { handleSubmit, reset, control, setError } = useForm<StaffEditForm>({
-        defaultValues: {...state.staffData, positionId: state.staffData.position.id},
+        defaultValues: { ...state.staffData, positionId: state.staffData.position.id },
         resolver: yupResolver(staffFormValidate)
     });
     const updateStaff = useUpdateStaff(setError)
@@ -79,9 +84,9 @@ const EditStaff: React.FC = () => {
         navigate('/admin/staffs')
     }
     return (
-        <Paper sx={{ px:6, py:4 }}>
+        <Paper sx={{ px: 6, py: 4 }}>
             {
-                state.staffData ? 
+                state.staffData ?
                     <React.Fragment>
                         <Typography variant="h6" gutterBottom mb='20px'>
                             Thông tin nhân viên
@@ -128,7 +133,7 @@ const EditStaff: React.FC = () => {
                                     placeholder='Nhập số CCCD nhân viên'
                                 />
                             </Grid>
-                        
+
                             <Grid item xs={8} sm={4}>
                                 <FormControl fullWidth>
                                     <InputLabel >Chức vụ</InputLabel>
@@ -145,24 +150,24 @@ const EditStaff: React.FC = () => {
                                                         ?
                                                         <CircularProgress sx={{ margin: 'auto' }} />
                                                         :
-                                                    data.map((position: any) => (<MenuItem
-                                                        key={`position-${position.id}`}
-                                                        value={position.id}>
-                                                                {position.name}
-                                                            </MenuItem>)
+                                                        data.map((position: any) => (<MenuItem
+                                                            key={`position-${position.id}`}
+                                                            value={position.id}>
+                                                            {position.name}
+                                                        </MenuItem>)
                                                         )
                                                 }
                                             </Select>
                                         )}
                                         control={control}
                                         name='positionId'
-                                    />    
-                    
+                                    />
+
                                 </FormControl>
                             </Grid>
-                                
-                            <Address setAddress={setAddress} key={counter} initAddress={state.staffData.address} />  
-                                
+
+                            <Address setAddress={setAddress} key={counter} initAddress={state.staffData.address} />
+
                             <Grid item xs={8} sm={4}>
                                 <FormInputDate
                                     name="dob"
@@ -171,17 +176,17 @@ const EditStaff: React.FC = () => {
                                     placeholder='x'
                                 />
                             </Grid>
-                            
+
                             <Grid item xs={12} sm={12}>
                                 <FormInputCheckBox
                                     name="isWorking"
                                     control={control}
                                     label="Nhân viên đang làm việc"
                                     placeholder='x'
-                                    />
+                                />
                             </Grid>
 
-                            <Grid item xs={12} sm={12} container 
+                            <Grid item xs={12} sm={12} container
                                 sx={{
                                     display: 'flex',
                                     justifyContent: "end",
@@ -227,8 +232,8 @@ const EditStaff: React.FC = () => {
                             </Grid>
                         </Grid>
                     </React.Fragment>
-            : <>Not found</>    
-        }
+                    : <>Not found</>
+            }
         </Paper>
     )
 }

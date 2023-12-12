@@ -24,16 +24,22 @@ const customerFormValidate: Yup.ObjectSchema<CustomerEditForm> = yup.object({
     name: yup
         .string()
         .required('Tên khách hàng bắt buộc.')
-        .max(255),
+        .max(255, 'Tên khách hàng tối đa 255 kí tự'),
     phoneNumber: yup
         .string()
         .required('Số điện thoại bắt buộc.')
-        //@ts-ignore
-        .phoneNumber('Số điện thoại không hợp lệ.'),
+        // @ts-ignore
+        .phoneNumber('Số điện thoại không hợp lệ.')
+        .max(15, 'Số điện thoại tối đa 15 kí tự'),
     email: yup
         .string()
         .required('Email bắt buộc.')
-        .email('Email không hợp lệ.'),
+        .email('Email không hợp lệ.')
+        .max(255, 'Email tối đa 255 kí tự'),
+    gender: yup
+        .string()
+        .required('Giới tính bắt buộc')
+        .oneOf(['0', '1', '2'], 'Giới tinh không hợp lệ.'),
 })
 const EditCustomer: React.FC = () => {
     const { state } = useLocation()
@@ -41,7 +47,7 @@ const EditCustomer: React.FC = () => {
     const [counter, setCounter] = useState(Math.random())
     const [address, setAddress] = useState<string>('')
     const { handleSubmit, reset, control, setError } = useForm<CustomerEditForm>({
-        defaultValues: {...state.customerData, id: state.customerData.id},
+        defaultValues: { ...state.customerData, id: state.customerData.id },
         resolver: yupResolver(customerFormValidate)
     });
     const updateCustomer = useUpdateCustomer(setError)
@@ -53,102 +59,102 @@ const EditCustomer: React.FC = () => {
         navigate('/admin/customers')
     }
     return (
-        <Paper sx={{ px:6, py:4 }}>
+        <Paper sx={{ px: 6, py: 4 }}>
             {
-                state.customerData ? 
+                state.customerData ?
                     <React.Fragment>
                         <Typography variant="h6" gutterBottom mb='20px'>
                             Thông tin khách hàng
                         </Typography>
                         <Grid container spacing={3}>
-                        <Grid item xs={8} sm={4}>
-                            <FormInputText
-                                size='small'
-                                name="name"
-                                control={control}
-                                label="Tên khách hàng"
-                                placeholder='Nhập tên khách hàng'
-                            />
-                        </Grid>
-                        <Grid item xs={8} sm={3}>
-                            <FormInputText
-                                size='small'
-                                name="phoneNumber"
-                                control={control}
-                                label="Số điện thoại"
-                                placeholder='Nhập họ số điện thoại'
-                            />
-                        </Grid>
+                            <Grid item xs={8} sm={4}>
+                                <FormInputText
+                                    size='small'
+                                    name="name"
+                                    control={control}
+                                    label="Tên khách hàng"
+                                    placeholder='Nhập tên khách hàng'
+                                />
+                            </Grid>
+                            <Grid item xs={8} sm={3}>
+                                <FormInputText
+                                    size='small'
+                                    name="phoneNumber"
+                                    control={control}
+                                    label="Số điện thoại"
+                                    placeholder='Nhập họ số điện thoại'
+                                />
+                            </Grid>
 
-                        <Grid item xs={8} sm={3}>
-                            <FormInputText
-                                name="email"
-                                control={control}
-                                label="Email"
-                                placeholder='Nhập thông tin email'
-                            />
-                        </Grid>
-                        <Grid item xs={8} sm={2}>
-                        <FormInputDropdown
-                            size='small'
-                            name="gender"
-                            control={control}
-                            label="Giới tính"
-                            placeholder='Giới tính'
-                            list={genders}
-                        />
-                        </Grid>
-                            
-                        <Address setAddress={setAddress} key={counter} initAddress={state.customerData.address} size='small'/>  
+                            <Grid item xs={8} sm={3}>
+                                <FormInputText
+                                    name="email"
+                                    control={control}
+                                    label="Email"
+                                    placeholder='Nhập thông tin email'
+                                />
+                            </Grid>
+                            <Grid item xs={8} sm={2}>
+                                <FormInputDropdown
+                                    size='small'
+                                    name="gender"
+                                    control={control}
+                                    label="Giới tính"
+                                    placeholder='Giới tính'
+                                    list={genders}
+                                />
+                            </Grid>
 
-                        <Grid item xs={12} sm={12} container 
-                            sx={{
-                                display: 'flex',
-                                justifyContent: "end",
-                                gap: 2
-                            }}
-                        >
-                            <Button
-                                variant="contained"
-                                color="primary"
+                            <Address setAddress={setAddress} key={counter} initAddress={state.customerData.address} size='small' />
+
+                            <Grid item xs={12} sm={12} container
                                 sx={{
-                                    textTransform: 'none',
-                                }}
-                                onClick={handleSubmit(onSubmit)}
-                            >
-                                Cập nhật
-                            </Button>
-                            
-                            <Button
-                                variant="contained"
-                                color="success"
-                                sx={{
-                                    textTransform: 'none',
-                                }}
-                                onClick={() => {
-                                    reset();
-                                    setCounter(counter + 1)
-                                    setAddress('')
+                                    display: 'flex',
+                                    justifyContent: "end",
+                                    gap: 2
                                 }}
                             >
-                                Làm mới
-                            </Button>
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    sx={{
+                                        textTransform: 'none',
+                                    }}
+                                    onClick={handleSubmit(onSubmit)}
+                                >
+                                    Cập nhật
+                                </Button>
 
-                            <Button
-                                variant="contained"
-                                color="error"
-                                sx={{
-                                    textTransform: 'none',
-                                }}
-                                onClick={backToTable}
-                            >
-                                Quay về
-                            </Button>
+                                <Button
+                                    variant="contained"
+                                    color="success"
+                                    sx={{
+                                        textTransform: 'none',
+                                    }}
+                                    onClick={() => {
+                                        reset();
+                                        setCounter(counter + 1)
+                                        setAddress('')
+                                    }}
+                                >
+                                    Làm mới
+                                </Button>
+
+                                <Button
+                                    variant="contained"
+                                    color="error"
+                                    sx={{
+                                        textTransform: 'none',
+                                    }}
+                                    onClick={backToTable}
+                                >
+                                    Quay về
+                                </Button>
+                            </Grid>
                         </Grid>
-                    </Grid>
                     </React.Fragment>
-            : <>Not found</>    
-        }
+                    : <>Not found</>
+            }
         </Paper>
     )
 }

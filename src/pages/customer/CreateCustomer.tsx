@@ -27,27 +27,29 @@ const defaultValues = {
     address: ''
 };
 
- // @ts-ignore
+// @ts-ignore
 const customerFormValidate: Yup.ObjectSchema<CustomerForm>
     = yup.object({
-    name: yup
-        .string()
-        .required('Tên khách hàng bắt buộc.')
-        .max(255),
-    phoneNumber: yup
-        .string()
-        .required('Số điện thoại bắt buộc.')
-         // @ts-ignore
-        .phoneNumber('Số điện thoại không hợp lệ.'),
-    email: yup
-        .string()
-        .required('Email bắt buộc.')
-        .email('Email không hợp lệ.'),
-    gender: yup
-        .string()
-        .required('Giới tính bắt buộc')
-        .oneOf(['0', '1', '2'], 'Giới tinh không hợp lệ.'),
-})
+        name: yup
+            .string()
+            .required('Tên khách hàng bắt buộc.')
+            .max(255, 'Tên khách hàng tối đa 255 kí tự'),
+        phoneNumber: yup
+            .string()
+            .required('Số điện thoại bắt buộc.')
+            // @ts-ignore
+            .phoneNumber('Số điện thoại không hợp lệ.')
+            .max(15, 'Số điện thoại tối đa 15 kí tự'),
+        email: yup
+            .string()
+            .required('Email bắt buộc.')
+            .email('Email không hợp lệ.')
+            .max(255, 'Email tối đa 255 kí tự'),
+        gender: yup
+            .string()
+            .required('Giới tính bắt buộc')
+            .oneOf(['0', '1', '2'], 'Giới tinh không hợp lệ.'),
+    })
 const CreateCustomer: React.FC = () => {
     const navigate = useNavigate()
     const [address, setAddress] = useState<string>('')
@@ -59,14 +61,14 @@ const CreateCustomer: React.FC = () => {
     const createCustomer = useCreateCustomer(setError)
 
     const onSubmit = (data: CustomerForm) => {
-        createCustomer.mutate({...data, address: address})
+        createCustomer.mutate({ ...data, address: address })
     };
 
     const backToTable = () => {
         navigate('/admin/customers')
     }
     return (
-        <Paper sx={{ px:6, py:4 }}>
+        <Paper sx={{ px: 6, py: 4 }}>
             <Typography variant="h6" gutterBottom mb='20px'>
                 Thông tin khách hàng
             </Typography>
@@ -96,7 +98,7 @@ const CreateCustomer: React.FC = () => {
                         placeholder='Nhập thông tin email'
                     />
                 </Grid>
-                    
+
                 <Grid item xs={8} sm={2}>
                     <FormInputDropdown
                         name="gender"
@@ -107,9 +109,9 @@ const CreateCustomer: React.FC = () => {
                     />
                 </Grid>
 
-                <Address setAddress={setAddress} key={counter} size='small'/>  
+                <Address setAddress={setAddress} key={counter} size='small' />
 
-                <Grid item xs={12} sm={12} container 
+                <Grid item xs={12} sm={12} container
                     sx={{
                         display: 'flex',
                         justifyContent: "end",

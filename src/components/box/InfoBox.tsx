@@ -1,5 +1,6 @@
 import { Box, Typography } from "@mui/material"
 import { Item } from "../../types/props/FormInputListProps"
+import { TextShow } from "../TextShow"
 
 interface InfoBox {
     rows: Item[]
@@ -7,7 +8,7 @@ interface InfoBox {
     title: string
 }
 
-export const InfoBox: React.FC<InfoBox> = ({ rows, data, title}) => {
+export const InfoBox: React.FC<InfoBox> = ({ rows, data, title }) => {
     return (
         <Box
             sx={{
@@ -19,25 +20,14 @@ export const InfoBox: React.FC<InfoBox> = ({ rows, data, title}) => {
                 boxShadow: 1
             }}
         >
-        <Typography mb='20px' variant="subtitle2" sx={{ fontWeight: 'fontWeightBold', fontSize: 16, mt: 2 }}>
-            {title}
-        </Typography>
-        {
-            data && rows.map((row) => (
-                <Typography
-                    mt='8px'
-                    mb='8px'
-                >
-                    <Typography display="inline" sx={{ textDecoration: 'underline' }}>
-                        {row.label}:
-                    </Typography>
-
-                    <Typography display="inline" sx={{ pl:1, textDecoration: 'none'}}>
-                        { data[row.value] }
-                    </Typography>
-                </Typography>
-            ))
-        }           
+            <Typography mb='20px' variant="subtitle2" sx={{ fontWeight: 'fontWeightBold', fontSize: 20, mt: 2 }}>
+                {title}
+            </Typography>
+            {
+                data && rows.map((row) => (
+                    <TextShow title={row.label} data={data[row.value]}></TextShow>
+                ))
+            }
         </Box>
     )
 }

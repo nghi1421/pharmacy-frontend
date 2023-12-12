@@ -15,7 +15,6 @@ import yup from "../../utils/yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useCreateCancelExport } from "../../hooks/useExport";
 import { useReactToPrint } from "react-to-print";
-import { enqueueSnackbar } from "notistack";
 import { ExportData, ExportDetailPdf } from "../../types/ExportType";
 import dayjs from "dayjs";
 import TableCancelExportDrug from "../../components/table/TableCancelExportDrug";
@@ -197,10 +196,10 @@ const CancelExport: React.FC = () => {
         }
         else {
             if (isNaN(drugCategory.exportQuantity)) {
-                validateErrors[1] = 'Số lượng bán bắt buộc'
+                validateErrors[1] = 'Số lượng bán bắt buộc.'
             }
             else if (drugCategory.exportQuantity === 0) {
-                validateErrors[1] = 'Số lượng bán lớn hơn 0'
+                validateErrors[1] = 'Số lượng bán lớn hơn 0.'
             }
             else {
                 validateErrors[1] = ''
@@ -246,7 +245,7 @@ const CancelExport: React.FC = () => {
                         />
                     </Grid>
 
-                    <Grid item xs={8} sm={3}>
+                    <Grid item xs={8} sm={6}>
                         <FormInputText
                             name="note"
                             control={control}
@@ -260,7 +259,7 @@ const CancelExport: React.FC = () => {
 
             <Grid container spacing={3} marginTop={2}>
                 <Grid item xs={12} sm={12} container>
-                    <Typography mb='20px' variant="subtitle2" sx={{ fontWeight: 'fontWeightBold', mt: 2, fontSize: 16 }}>
+                    <Typography mb='20px' variant="subtitle2" sx={{ fontWeight: 'fontWeightBold', mt: 2, fontSize: 20 }}>
                         Thuốc đã chọn
                     </Typography>
                     <TableCancelExportDrug
@@ -284,7 +283,7 @@ const CancelExport: React.FC = () => {
                 <Grid item xs={12} sm={12} container
                 >
                     <Box sx={{ display: 'flex', width: '100%', gap: 1 }}>
-                        <Typography mb='20px' variant="subtitle2" sx={{ fontWeight: 'fontWeightBold', mt: 2, fontSize: 16 }}>
+                        <Typography mb='20px' variant="subtitle2" sx={{ fontWeight: 'fontWeightBold', mt: 2, fontSize: 20 }}>
                             Danh mục thuốc
                         </Typography>
                         <TextField
@@ -315,7 +314,7 @@ const CancelExport: React.FC = () => {
                             }}
                             onClick={handleSubmit(onSubmit)}
                         >
-                            Tạo phiếu & Xuất hóa đơn
+                            Tạo phiếu
                         </Button>
 
                         <Button

@@ -7,7 +7,6 @@ import { useGetDataProviders } from "../../hooks/useProvider";
 import { getStaff } from "../../store/auth";
 import { FormInputText } from "../../components/form/FormInputText";
 import { FormInputDate } from "../../components/form/FormInputDate";
-import { FormInputCurrency } from "../../components/form/FormInputCurrency";
 import { useGetDataDrugCategories } from "../../hooks/useDrugCategory";
 import TableImportSelectDrug from "../../components/table/TableImportSelectDrug";
 import TableDrugCategories from "../../components/table/TableDrugCategories";
@@ -19,11 +18,11 @@ import dayjs from "dayjs";
 import yup from "../../utils/yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Provider } from "../../types/Provider";
-import { ErrorMessage } from '@hookform/error-message/dist';
 import { useCreateImport } from "../../hooks/useImport";
+import { TextShow } from "../../components/TextShow";
 
 const useStyles = makeStyles({
-  customTextField: {
+    customTextField: {
         "& input::placeholder": {
             fontSize: "15px"
         }
@@ -61,14 +60,16 @@ const defaultValues = {
     staffId: 0,
 };
 
- // @ts-ignore
+// @ts-ignore
 const importValidate: Yup.ObjectSchema<ImportForm> = yup.object({
     note: yup
         .string()
         .max(255, 'Ghi chú không quá 255 kí tự'),
     importDate: yup
         .date()
-        .max(new Date(dayjs().add(1,'day').format('YYYY-MM-DD')), 'Thời gian nhập hàng không hợp lệ.'),
+        .max(new Date(dayjs().add(1, 'day').format('YYYY-MM-DD')), 'Thời gian nhập hàng không hợp lệ.')
+        .required('Ngày nhập hàng bắt buộc.')
+        .typeError('Ngày nhập hàng không hợp lệ.'),
     provider: yup
         .object()
         .typeError('Vui lòng chọn công ty dược.')
@@ -76,13 +77,13 @@ const importValidate: Yup.ObjectSchema<ImportForm> = yup.object({
 })
 
 const columns: ColumnDrugCategory[] = [
-    { key: 'id', value: 'Mã thuốc'},
+    { key: 'id', value: 'Mã thuốc' },
     { key: 'name', value: 'Tên thuốc' },
     { key: 'quantity', value: 'Tồn kho' },
     { key: 'unit', value: 'Đơn vị nhập' },
     { key: 'formatedPrice', value: 'Đơn giá bán' },
     { key: 'minimalUnit', value: 'Đơn vị bán' },
-    { key: 'use', value: 'Công dụng'},
+    { key: 'use', value: 'Công dụng' },
 ]
 
 const CreateImport: React.FC = () => {
@@ -94,9 +95,9 @@ const CreateImport: React.FC = () => {
     const [drugs, setDrugs] = useState<any[]>([])
     const [cloneDrugs, setCloneDrugs] = useState<any[]>([])
     const [selectedDrugs, setSelectedDrugs] = useState<any[]>([])
-    const [pay, setPay] = useState<number[]>([0 , 0, 0])
+    const [pay, setPay] = useState<number[]>([0, 0, 0])
     const { data: providers, isLoading: providerLoading } = useGetDataProviders()
-    const { handleSubmit, control, watch, formState: { errors }, setError } = useForm<ImportForm>({
+    const { handleSubmit, control, watch, setError } = useForm<ImportForm>({
         defaultValues: defaultValues,
         resolver: yupResolver(importValidate)
     });
@@ -140,7 +141,7 @@ const CreateImport: React.FC = () => {
             }, 0)
 
             const vat = selectedDrugs.reduce((value, drug) => {
-                return value + drug.rawVat*drug.quantity * drug.unitPrice
+                return value + drug.rawVat * drug.quantity * drug.unitPrice
             }, 0)
 
             const total = vat + withoutVat;
@@ -156,20 +157,20 @@ const CreateImport: React.FC = () => {
         const validateErrors = ['', '', '', '']
         validateErrors[3] = drugCategory.batchId.length === 0 ? 'Mã lô thuốc bắt buộc.' : ''
         validateErrors[2] = dayjs(drugCategory.expiryDate).isBefore(dayjs(), 'day') ? 'Thuốc đã hết hạn sử dụng.' : ''
-        validateErrors[1] =  isNaN(drugCategory.unitPrice) || drugCategory.unitPrice === 0 ? 'Đơn giá bắt buộc.' : ''
-        validateErrors[0] = isNaN(drugCategory.quantity) || drugCategory.quantity === 0 ?'Số lượng nhập bắt buộc.' : ''
+        validateErrors[1] = isNaN(drugCategory.unitPrice) || drugCategory.unitPrice === 0 ? 'Đơn giá bắt buộc.' : ''
+        validateErrors[0] = isNaN(drugCategory.quantity) || drugCategory.quantity === 0 ? 'Số lượng nhập bắt buộc.' : ''
 
         return validateErrors;
     }
 
-    const onSubmit = (data: ImportForm) => { 
+    const onSubmit = (data: ImportForm) => {
         let isInvalid = false;
         const validatedDrugs = selectedDrugs.map(drugCategory => {
             const validateErrros = validate(drugCategory);
             if (!isInvalid && validateErrros.some(error => error.length > 0)) {
                 isInvalid = true;
             }
-            return {...drugCategory, errors: validate(drugCategory)}
+            return { ...drugCategory, errors: validate(drugCategory) }
         })
         setIsFirstSubmit(true);
         if (isInvalid) {
@@ -178,16 +179,16 @@ const CreateImport: React.FC = () => {
         else {
             const result = createImport.mutate({
                 ...data,
-                providerId: data.provider ?  data.provider.id : 1,
+                providerId: data.provider ? data.provider.id : 1,
                 staffId: staff.id,
                 importDetails: validatedDrugs.map(drug => {
-                    return { 
+                    return {
                         drugId: drug.id,
                         unitPrice: drug.unitPrice,
                         batchId: drug.batchId,
                         quantity: drug.quantity,
                         expiryDate: drug.expiryDate,
-                     } as ImportDetail
+                    } as ImportDetail
                 })
             })
             console.log(result);
@@ -196,7 +197,7 @@ const CreateImport: React.FC = () => {
 
     const checkDrugCategory = (drugCategory: any) => {
         const data = cloneDrugs.map(drug => {
-            return drug.id === drugCategory.id ? {...drug, checked: true} : drug
+            return drug.id === drugCategory.id ? { ...drug, checked: true } : drug
         })
         setCloneDrugs(data)
         if (search.trim().length > 0) {
@@ -207,7 +208,7 @@ const CreateImport: React.FC = () => {
         else {
             setDrugs(data)
         }
-        
+
         selectedDrugs.push({
             ...drugCategory,
             checked: false,
@@ -221,7 +222,7 @@ const CreateImport: React.FC = () => {
 
     const unCheckDrugCategory = (drugCategory: any) => {
         const data = cloneDrugs.map(drug => {
-            return drug.id === drugCategory.id ? {...drug, checked: false} : drug
+            return drug.id === drugCategory.id ? { ...drug, checked: false } : drug
         })
         setCloneDrugs(data);
         if (search.trim().length > 0) {
@@ -243,10 +244,10 @@ const CreateImport: React.FC = () => {
             return drug.id === drugCategory.id
                 ? (
                     !isFirstSubmit
-                    ? { ...drugCategory, errors: validateErrors }
-                    : { ...drugCategory, errors: validate(drugCategory) }
+                        ? { ...drugCategory, errors: validateErrors }
+                        : { ...drugCategory, errors: validate(drugCategory) }
                 )
-             : drug
+                : drug
         }))
     }
 
@@ -256,21 +257,21 @@ const CreateImport: React.FC = () => {
     }
 
     return (
-        <Paper sx={{ px:6, py:4 }}>
+        <Paper sx={{ px: 6, py: 4 }}>
             <Typography variant="h4" gutterBottom mb='20px'>
-                Thông tin phiếu nhập thuốc
+                Thông tin phiếu nhập
             </Typography>
             <Grid container spacing={3} >
                 <Grid item xs={8} sm={6} sx={{ pb: 2 }}>
-                    <Box sx={{ border: 1,height: '100%', borderColor: 'grey.300', px: 2, borderRadius: 2, boxShadow: 1 }}>
-                        <Typography variant="subtitle2" mb='20px' sx={{ fontWeight: 'fontWeightBold', fontSize: 16, mt: 2 }}>
+                    <Box sx={{ border: 1, height: '100%', borderColor: 'grey.300', px: 2, borderRadius: 2, boxShadow: 1 }}>
+                        <Typography variant="subtitle2" mb='20px' sx={{ fontWeight: 'fontWeightBold', fontSize: 20, mt: 2 }}>
                             Công ty dược
                         </Typography>
                         {
-                                providerLoading
-                            ?
+                            providerLoading
+                                ?
                                 <CircularProgress sx={{ margin: 'auto' }} />
-                            :
+                                :
                                 <FormAutocomplete
                                     size='small'
                                     control={control}
@@ -278,47 +279,12 @@ const CreateImport: React.FC = () => {
                                     placeholder='Chọn tên công ty dược'
                                     name='provider'
                                     options={providers}
-                                />    
+                                />
                         }
 
-                        <Typography
-                            mt='8px'
-                            mb='8px'
-                        >
-                            <Typography display="inline" sx={{ textDecoration: 'underline' }}>
-                                Số điện thoại:   
-                            </Typography>
-
-                            <Typography display="inline" sx={{ pl:1, textDecoration: 'none'}}>
-                                {watchProvider?.phoneNumber ? watchProvider.phoneNumber : ''}
-                            </Typography>
-                        </Typography>
-
-                        <Typography
-                            mt='8px'
-                            mb='8px'
-                        >
-                            <Typography display="inline" sx={{ textDecoration: 'underline' }}>
-                                Email:   
-                            </Typography>
-
-                            <Typography display="inline" sx={{ pl:1, textDecoration: 'none'}}>
-                                {watchProvider?.email ? watchProvider.email : ''}
-                            </Typography>
-                        </Typography>
-
-                        <Typography
-                            mt='8px'
-                            mb='8px'
-                        >
-                            <Typography display="inline" sx={{ textDecoration: 'underline' }}>
-                                Địa chỉ:   
-                            </Typography>
-
-                            <Typography display="inline" sx={{ pl:1, textDecoration: 'none'}}>
-                                {watchProvider?.address ? watchProvider.address : ''}
-                            </Typography>
-                        </Typography>
+                        <TextShow title='Số điện thoại' data={watchProvider?.phoneNumber ? watchProvider.phoneNumber : ''} />
+                        <TextShow title='Email' data={watchProvider?.email ? watchProvider.email : ''} />
+                        <TextShow title='Địa chỉ' data={watchProvider?.address ? watchProvider.address : ''} />
                     </Box>
                 </Grid>
 
@@ -333,61 +299,13 @@ const CreateImport: React.FC = () => {
                             boxShadow: 1
                         }}
                     >
-                    <Typography mb='20px' variant="subtitle2" sx={{ fontWeight: 'fontWeightBold', fontSize: 16, mt: 2 }}>
-                        Thông tin nhân viên
-                    </Typography>
-        
-                    <Typography
-                        mt='8px'
-                        mb='8px'
-                    >
-                        <Typography display="inline" sx={{ textDecoration: 'underline' }}>
-                            Tên nhân viên:   
+                        <Typography mb='20px' variant="subtitle2" sx={{ fontWeight: 'fontWeightBold', fontSize: 20, mt: 2 }}>
+                            Thông tin nhân viên
                         </Typography>
-
-                        <Typography display="inline" sx={{ pl:1, textDecoration: 'none'}}>
-                            {staff?.name ? staff.name : ''}
-                        </Typography>
-                    </Typography>
-
-                    <Typography
-                        mt='8px'
-                        mb='8px'
-                    >
-                        <Typography display="inline" sx={{ textDecoration: 'underline' }}>
-                            Số điện thoại:   
-                        </Typography>
-
-                        <Typography display="inline" sx={{ pl:1, textDecoration: 'none'}}>
-                            {staff?.phoneNumber ? staff.phoneNumber : ''}
-                        </Typography>
-                    </Typography>
-
-                    <Typography
-                        mt='8px'
-                        mb='8px'
-                    >
-                        <Typography display="inline" sx={{ textDecoration: 'underline' }}>
-                            Email:   
-                        </Typography>
-
-                        <Typography display="inline" sx={{ pl:1, textDecoration: 'none'}}>
-                            {staff?.email ? staff.email : ''}
-                        </Typography>
-                    </Typography>
-
-                    <Typography
-                        mt='8px'
-                        mb='8px'
-                    >
-                        <Typography display="inline" sx={{ textDecoration: 'underline' }}>
-                            Địa chỉ:   
-                        </Typography>
-
-                        <Typography display="inline" sx={{ pl:1, textDecoration: 'none'}}>
-                            {staff?.address ? staff.address : ''}
-                        </Typography>
-                    </Typography>
+                        <TextShow title='Tên nhân viên' data={staff?.name ? staff.name : ''} />
+                        <TextShow title='Số điện thoại' data={staff?.phoneNumber ? staff.phoneNumber : ''} />
+                        <TextShow title='Email' data={staff?.email ? staff.email : ''} />
+                        <TextShow title='Địa chỉ' data={staff?.address ? staff.address : ''} />
                     </Box>
                 </Grid>
 
@@ -413,7 +331,7 @@ const CreateImport: React.FC = () => {
                 </Grid>
 
                 <Grid item xs={12} sm={12} container>
-                    <Typography mb='20px' variant="subtitle2" sx={{ fontWeight: 600, fontSize: 16, mt: 2 }}>
+                    <Typography mb='20px' variant="subtitle2" sx={{ fontWeight: 600, fontSize: 20, mt: 2 }}>
                         Thuốc đã chọn
                     </Typography>
                     <TableImportSelectDrug
@@ -422,10 +340,10 @@ const CreateImport: React.FC = () => {
                         keyTable='selected-drug-category-table-key'
                         action={unCheckDrugCategory}
                         update={updateSelectedDrugs}
-                    /> 
+                    />
                 </Grid>
 
-                <Grid item xs={12} sm={12} container 
+                <Grid item xs={12} sm={12} container
                     sx={{
                         display: 'flex',
                         justifyContent: "end",
@@ -433,29 +351,29 @@ const CreateImport: React.FC = () => {
                     }}
                 >
                     <Typography variant="subtitle2">
-                        Tổng tiền (chưa tính VAT): { pay[0] ? pay[0].toLocaleString() : '_'} VND
+                        Tổng tiền (chưa tính VAT): {pay[0] ? pay[0].toLocaleString() : '_'} VND
                     </Typography>
 
                     <Typography variant="subtitle2">
-                        Tiền thuế VAT: { pay[1] ? pay[1].toLocaleString() : '_'} VND
+                        Tiền thuế VAT: {pay[1] ? pay[1].toLocaleString() : '_'} VND
                     </Typography>
 
-                    <Typography variant="subtitle2" sx={{ color: "#148c07", fontWeight: 600,  }}>
-                        Tổng tiền: { pay[2] ? pay[2].toLocaleString() : '_'} VND
+                    <Typography variant="subtitle2" sx={{ color: "#148c07", fontWeight: 600, }}>
+                        Tổng tiền: {pay[2] ? pay[2].toLocaleString() : '_'} VND
                     </Typography>
                 </Grid>
 
-                <Grid item xs={12} sm={12} container 
+                <Grid item xs={12} sm={12} container
                 >
-                   <Box sx={{ display: 'flex', width: '100%', gap: 1 }}>
-                        <Typography mb='20px' variant="subtitle2" sx={{ fontWeight: 'fontWeightBold', mt: 2, fontSize: 16 }}>
+                    <Box sx={{ display: 'flex', width: '100%', gap: 1 }}>
+                        <Typography mb='20px' variant="subtitle2" sx={{ fontWeight: 'fontWeightBold', mt: 2, fontSize: 20 }}>
                             Danh mục thuốc
                         </Typography>
                         <TextField
                             onChange={handleSearchData}
                             classes={{ root: classes.customTextField }}
                             size='small'
-                            sx={{ flexGrow: 1, my :'auto', mr: '20%', ml: 2}}
+                            sx={{ flexGrow: 1, my: 'auto', mr: '20%', ml: 2 }}
                             label="Tìm kiếm"
                             value={search}
                             placeholder="Nhập thông tin danh mục thuốc theo tên"
@@ -491,9 +409,9 @@ const CreateImport: React.FC = () => {
                                 m: 'auto',
                                 textTransform: 'none',
                             }}
-                            onClick={ () => refetch()}
+                            onClick={() => refetch()}
                         >
-                            <ReplayIcon  />
+                            <ReplayIcon />
                             Làm mới
                         </Button>
 
@@ -512,9 +430,9 @@ const CreateImport: React.FC = () => {
                     </Box>
                     {
                         drugCategoryLoading
-                        ?
+                            ?
                             <CircularProgress sx={{ margin: 'auto' }} />
-                        :
+                            :
                             <TableDrugCategories
                                 rows={drugs}
                                 tooltip='Nhấn để chọn thuốc'
@@ -523,7 +441,7 @@ const CreateImport: React.FC = () => {
                                 action={checkDrugCategory}
                                 type='import'
                             />
-                    }  
+                    }
                 </Grid>
             </Grid>
         </Paper>

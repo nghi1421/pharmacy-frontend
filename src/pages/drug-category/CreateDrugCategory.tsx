@@ -8,6 +8,7 @@ import * as Yup from 'yup'
 import { FormInputFloat } from "../../components/form/FormInputFloat";
 import { useGetDataTypeByUses } from "../../hooks/useTypeByUse";
 import { useCreateDrugCategory } from "../../hooks/useDrugCategory";
+import { FormInputNumber } from "../../components/form/FormInputNumber";
 
 export interface DrugCategoryForm {
     name: string;
@@ -35,7 +36,7 @@ const defaultValues = {
     price: 0,
 };
 
- // @ts-ignore
+// @ts-ignore
 const drugCategoryVaidate: Yup.ObjectSchema<DrugCategoryForm> = yup.object({
     name: yup
         .string()
@@ -88,7 +89,7 @@ const CreateDrugCategory: React.FC = () => {
         navigate('/admin/drug-categories')
     }
     return (
-        <Paper sx={{ px:6, py:4 }}>
+        <Paper sx={{ px: 6, py: 4 }}>
             <Typography variant="h6" gutterBottom mb='20px'>
                 Thông tin danh mục thuốc
             </Typography>
@@ -138,45 +139,43 @@ const CreateDrugCategory: React.FC = () => {
                         <InputLabel size='small'>Phân loại công dụng</InputLabel>
                         <Controller
                             render={({ field: { onChange, value } }) => (
-                                    <Select
-                                        size='small'
-                                        key='type-by-uses-select'
-                                        onChange={onChange}
-                                        value={value}
-                                        label='Phân loại công dụng'
-                                    >
-                                        {
-                                            isLoading
-                                                ?
-                                                <CircularProgress sx={{ margin: 'auto' }} />
-                                                :
-                                                data.map((typeByUse: any) => (
-                                                    <MenuItem
-                                                        key={`type-by-uses-${typeByUse.id}`}
-                                                        value={typeByUse.id}
-                                                    >
-                                                        {typeByUse.name}
-                                                    </MenuItem>)
-                                                )
-                                        }
+                                <Select
+                                    size='small'
+                                    key='type-by-uses-select'
+                                    onChange={onChange}
+                                    value={value}
+                                    label='Phân loại công dụng'
+                                >
+                                    {
+                                        isLoading
+                                            ?
+                                            <CircularProgress sx={{ margin: 'auto' }} />
+                                            :
+                                            data.map((typeByUse: any) => (
+                                                <MenuItem
+                                                    key={`type-by-uses-${typeByUse.id}`}
+                                                    value={typeByUse.id}
+                                                >
+                                                    {typeByUse.name}
+                                                </MenuItem>)
+                                            )
+                                    }
                                 </Select>
                             )}
                             control={control}
                             name='typeId'
-                        />    
-        
+                        />
+
                     </FormControl>
                 </Grid>
                 <Grid item xs={8} sm={3}>
-                    <FormInputFloat
+                    <FormInputNumber
                         name='conversionQuantity'
                         label='Số lượng quy đổi'
-                        step='1'
-                        min={0}
-                        max={200000}
+                        placeholder='Nhập số lượng quy đổi'
                         prefix={`1 ${watchUnit} = `}
                         control={control}
-                        postfix={ watchMinimalUnit}
+                        suffix={` ${watchMinimalUnit}`}
                     />
                 </Grid>
 
@@ -207,7 +206,7 @@ const CreateDrugCategory: React.FC = () => {
                     />
                 </Grid>
 
-                <Grid item xs={12} sm={12} container 
+                <Grid item xs={12} sm={12} container
                     sx={{
                         display: 'flex',
                         justifyContent: "end",

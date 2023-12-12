@@ -1,5 +1,5 @@
 import { useQuery } from "react-query";
-import { formatDateTime, formatNumber } from "../utils/format";
+import { formatDate, formatDateTime, formatNumber } from "../utils/format";
 import axiosClient from "../services/axios";
 import { DataMetaResponse } from "../types/response/DataResponse";
 import { enqueueSnackbar } from "notistack";
@@ -9,28 +9,28 @@ import { Inventory } from "../types/Inventory";
 import { Query } from "../types/Query";
 
 function createData({
-    drugId,
-    name,
-    minimalUnit,
-    inventory,
-    salesQuantity,
-    brokenQuantity,
-    importQuantity,
-    importSelling,
-    expiryDateSelling
+  drugId,
+  name,
+  minimalUnit,
+  inventory,
+  salesQuantity,
+  brokenQuantity,
+  importQuantity,
+  importSelling,
+  expiryDateSelling
 }: Inventory) {
-    return {
-        drugId: drugId,
-        name: name,
-        minimalUnit: minimalUnit,
-        inventory: `${formatNumber(inventory)} ${minimalUnit}`,
-        salesQuantity: `${formatNumber(salesQuantity)} ${minimalUnit}`,
-        brokenQuantity: `${formatNumber(brokenQuantity)} ${minimalUnit}`,
-        importQuantity: `${formatNumber(importQuantity)} ${minimalUnit}`,
-        importId: `${importSelling.id}`,
-        importDate: formatDateTime(importSelling.importDate),
-        expiryDateSelling: expiryDateSelling
-    };
+  return {
+    drugId: drugId,
+    name: name,
+    minimalUnit: minimalUnit,
+    inventory: `${formatNumber(inventory)} ${minimalUnit}`,
+    salesQuantity: `${formatNumber(salesQuantity)} ${minimalUnit}`,
+    brokenQuantity: `${formatNumber(brokenQuantity)} ${minimalUnit}`,
+    importQuantity: `${formatNumber(importQuantity)} ${minimalUnit}`,
+    importId: `${importSelling.id}`,
+    importDate: formatDateTime(importSelling.importDate),
+    expiryDateSelling: formatDate(expiryDateSelling)
+  };
 }
 
 const useInventories = (query: Query) => {
@@ -57,5 +57,5 @@ const useInventories = (query: Query) => {
 };
 
 export {
-    useInventories
+  useInventories
 }

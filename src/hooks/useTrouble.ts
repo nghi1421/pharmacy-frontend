@@ -1,6 +1,6 @@
 import { useMutation } from "react-query";
 import axiosClient from "../services/axios";
-import { API_BACK_DRUG_CATEGORY, API_SEARCH_TROUBLE, API_TROUBLE } from "../utils/constants";
+import { API_BACK_DRUG_CATEGORY, API_SEARCH_TROUBLE, API_SEND_NOTIFICATION, API_TROUBLE } from "../utils/constants";
 import { enqueueSnackbar } from "notistack";
 import { BackDrugCategory, CreateTroubleForm, TroubleForm } from "../pages/trouble/TroublePage";
 import { pathToUrl } from "../utils/path";
@@ -41,6 +41,8 @@ export interface HandledData {
     address: string
     quantity: number
     formatedQuantity: string
+    quantityBack: number
+    formatedQuantityBack: string
 }
 
 const createHistorySalesData = (historySales: HistorySales) => {
@@ -164,9 +166,34 @@ const useBackDrugCategory = () => {
     )
 }
 
+const useSendNotification = () => {
+    return useMutation({
+        mutationFn: async (data: any) => {
+            return await axiosClient.post(API_SEND_NOTIFICATION, data)
+                .then((response): AxiosResponse<any, any> => {
+                    if (response.data.message) {
+                        enqueueSnackbar(response.data.message, {
+                            autoHideDuration: 3000,
+                            variant: 'success'
+                        })
+                        return response.data.data
+                    }
+                    return response
+                })
+                .catch(error => {
+                    console.log(error);
+                    defaultCatchErrorHandle(error)
+                })
+        },
+    }
+    )
+}
+
+
 
 export {
     useBackDrugCategory,
     useSeachTrouble,
-    useCreateTrouble
+    useCreateTrouble,
+    useSendNotification
 }

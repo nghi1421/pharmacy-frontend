@@ -19,6 +19,7 @@ import { Button } from '@mui/material';
 import { HandledData } from '../hooks/useTrouble';
 import { StyledTableCell } from './table/TableHeader';
 import { makeStyles } from '@mui/styles';
+import { formatNumber } from '../utils/format';
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
@@ -74,13 +75,13 @@ const headCells: readonly HeadCell[] = [
     id: 'name',
     numeric: false,
     disablePadding: false,
-    label: 'Tên khách hàng',
+    label: 'Khách hàng',
   },
   {
     id: 'phoneNumber',
     numeric: false,
     disablePadding: false,
-    label: 'Số điện thoại',
+    label: 'SĐT',
   },
   {
     id: 'email',
@@ -95,16 +96,16 @@ const headCells: readonly HeadCell[] = [
     label: 'Địa chỉ',
   },
   {
-    id: 'formatedQuantity',
-    numeric: false,
+    id: 'quantity',
+    numeric: true,
     disablePadding: false,
-    label: 'Số lượng đã mua',
+    label: 'SL mua',
   },
   {
-    id: 'formatedQuantityBack',
-    numeric: false,
+    id: 'quantityBack',
+    numeric: true,
     disablePadding: false,
-    label: 'Số lượng đã trả',
+    label: 'SL trả',
   },
 ];
 
@@ -230,9 +231,10 @@ interface SelectablTableProps {
   openModal: () => void;
   setSearchRows: (a: any[]) => void;
   sendNotification: (a: number[]) => void;
+  unit: string;
 }
 
-export const SelectableTable: React.FC<SelectablTableProps> = ({ rows, setItem, openModal, setSearchRows, sendNotification }) => {
+export const SelectableTable: React.FC<SelectablTableProps> = ({ rows, setItem, openModal, setSearchRows, sendNotification, unit }) => {
   const [order, setOrder] = React.useState<Order>('asc');
   const [orderBy, setOrderBy] = React.useState<keyof HandledData>('exportId');
   const [selected, setSelected] = React.useState<readonly number[]>([]);
@@ -364,8 +366,8 @@ export const SelectableTable: React.FC<SelectablTableProps> = ({ rows, setItem, 
                     <TableCell align="left">{row.phoneNumber}</TableCell>
                     <TableCell align="left">{row.email}</TableCell>
                     <TableCell align="left">{row.address}</TableCell>
-                    <TableCell align="left">{row.formatedQuantity}</TableCell>
-                    <TableCell align="left">{row.formatedQuantityBack ?? '_'}</TableCell>
+                    <TableCell align="left">{`${formatNumber(row.quantity)} ${unit}`}</TableCell>
+                    <TableCell align="left">{row?.quantityBack ? `${formatNumber(row.quantityBack)} ${unit}` : '_'}</TableCell>
                     <TableCell sx={{ pr: 0.5 }}>
                       <Button
                         color='success'

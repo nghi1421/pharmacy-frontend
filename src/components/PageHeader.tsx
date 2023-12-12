@@ -7,7 +7,7 @@ interface PageHeaderProps {
     title: string;
 }
 
-export const PageHeader: React.FC<PageHeaderProps> = ({ clickAdd, title}) => {
+export const PageHeader: React.FC<PageHeaderProps> = ({ clickAdd, title }) => {
     return (
         <Box sx={{
             display: 'flex',
@@ -22,7 +22,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({ clickAdd, title}) => {
             <Typography
                 variant="h4"
                 fontWeight='500'
-                sx={{ px:3, py: 2 }}
+                sx={{ px: 3, py: 2 }}
             >
                 {title}
             </Typography>

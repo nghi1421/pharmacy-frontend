@@ -57,15 +57,17 @@ const staffFormValidate: Yup.ObjectSchema<StaffForm> = yup.object({
     name: yup
         .string()
         .required('Tên nhân viên bắt buộc.')
-        .max(255),
+        .max(255, 'Tên nhân viên tối đa 255 kí tự'),
     phoneNumber: yup
         .string()
         .required('Số điện thoại bắt buộc.')
+        .max(15, 'Số điện thoại tối đa 15 kí tự')
         //@ts-ignore
         .phoneNumber('Số điện thoại không hợp lệ.'),
     email: yup
         .string()
         .required('Email bắt buộc.')
+        .max(255, 'Email tối đa 255 kí tự')
         .email('Email không hợp lệ.'),
     gender: yup
         .string()
@@ -73,9 +75,12 @@ const staffFormValidate: Yup.ObjectSchema<StaffForm> = yup.object({
         .oneOf(['0', '1', '2']),
     dob: yup
         .date()
-        .max(maxDate, 'Nhân viên phải trên 18 tuổi.'),
+        .max(maxDate, 'Nhân viên phải trên 18 tuổi.')
+        .required('Ngày sinh bắt buộc')
+        .typeError('Ngày sinh không hợp lệ.'),
     identification: yup
         .string()
+        .max(20, 'CCCD tối đa 20 kí tự')
         //@ts-ignore
         .onlyNumber('CCCD không hợp lệ.'),
 })
@@ -91,14 +96,14 @@ const CreateStaff: React.FC = () => {
     });
     const createStaff = useCreateStaff(setError)
 
-    const onSubmit = (data: StaffForm) => createStaff.mutate({...data, address: address})
+    const onSubmit = (data: StaffForm) => createStaff.mutate({ ...data, address: address })
 
     const backToTable = () => {
         navigate('/admin/staffs')
     }
 
     return (
-        <Paper sx={{ px:6, py:4 }}>
+        <Paper sx={{ px: 6, py: 4 }}>
             <Typography variant="h6" gutterBottom mb='20px'>
                 Thông tin nhân viên
             </Typography>
@@ -144,41 +149,41 @@ const CreateStaff: React.FC = () => {
                         placeholder='Nhập số CCCD nhân viên'
                     />
                 </Grid>
-            
+
                 <Grid item xs={8} sm={4}>
                     <FormControl fullWidth>
                         <InputLabel >Chức vụ</InputLabel>
                         <Controller
                             render={({ field: { onChange, value } }) => (
-                                    <Select
-                                        size='small'
-                                        onChange={onChange}
-                                        value={value}
-                                        label='Chức vụ'
-                                    >
-                                        {
-                                            isLoading
-                                                ?
-                                                <CircularProgress sx={{ margin: 'auto' }} />
-                                                :
+                                <Select
+                                    size='small'
+                                    onChange={onChange}
+                                    value={value}
+                                    label='Chức vụ'
+                                >
+                                    {
+                                        isLoading
+                                            ?
+                                            <CircularProgress sx={{ margin: 'auto' }} />
+                                            :
                                             data.map((position: any) => (<MenuItem
                                                 key={`position-${position.id}`}
                                                 value={position.id}>
-                                                        {position.name}
-                                                    </MenuItem>)
-                                                )
-                                        }
+                                                {position.name}
+                                            </MenuItem>)
+                                            )
+                                    }
                                 </Select>
                             )}
                             control={control}
                             name='positionId'
-                        />    
-        
+                        />
+
                     </FormControl>
                 </Grid>
-                    
-                <Address setAddress={setAddress} key={counter} />  
-                    
+
+                <Address setAddress={setAddress} key={counter} />
+
                 <Grid item xs={8} sm={4}>
                     <FormInputDate
                         name="dob"
@@ -187,17 +192,17 @@ const CreateStaff: React.FC = () => {
                         placeholder='x'
                     />
                 </Grid>
-                
+
                 <Grid item xs={12} sm={12}>
                     <FormInputCheckBox
                         name="isWorking"
                         control={control}
                         label="Nhân viên đang làm việc"
                         placeholder='x'
-                        />
+                    />
                 </Grid>
 
-                <Grid item xs={12} sm={12} container 
+                <Grid item xs={12} sm={12} container
                     sx={{
                         display: 'flex',
                         justifyContent: "end",

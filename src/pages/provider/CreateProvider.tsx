@@ -27,17 +27,19 @@ const defaultValues = {
 const providerFormValidate: Yup.ObjectSchema<ProviderForm> = yup.object({
     name: yup
         .string()
-        .required('Công ti dược bắt buộc.')
-        .max(255),
+        .required('Tên coogn ty dược bắt buộc.')
+        .max(255, 'Tên coogn ty dược tối đa 255 kí tự'),
     phoneNumber: yup
         .string()
         .required('Số điện thoại bắt buộc.')
-        //@ts-ignore
-        .phoneNumber('Số điện thoại không hợp lệ.'),
+        // @ts-ignore
+        .phoneNumber('Số điện thoại không hợp lệ.')
+        .max(15, 'Số điện thoại tối đa 15 kí tự'),
     email: yup
         .string()
         .required('Email bắt buộc.')
-        .email('Email không hợp lệ.'),
+        .email('Email không hợp lệ.')
+        .max(255, 'Email tối đa 255 kí tự'),
 })
 const CreateProvider: React.FC = () => {
     const navigate = useNavigate()
@@ -49,17 +51,17 @@ const CreateProvider: React.FC = () => {
     });
     const createProvider = useCreateProvider(setError)
 
-    const onSubmit = (data: ProviderForm) => createProvider.mutate({...data, address: address});
+    const onSubmit = (data: ProviderForm) => createProvider.mutate({ ...data, address: address });
 
     const backToTable = () => {
         navigate('/admin/providers')
     }
     return (
-        <Paper sx={{ px:6, py:4 }}>
+        <Paper sx={{ px: 6, py: 4 }}>
             <Typography variant="h6" gutterBottom mb='20px'>
                 Thông tin công ty dược
             </Typography>
-            
+
             <Grid container spacing={3}>
                 <Grid item xs={8} sm={4}>
                     <FormInputText
@@ -77,7 +79,7 @@ const CreateProvider: React.FC = () => {
                         placeholder='Nhập họ số điện thoại'
                     />
                 </Grid>
-                
+
                 <Grid item xs={8} sm={4}>
                     <FormInputText
                         name="email"
@@ -86,10 +88,10 @@ const CreateProvider: React.FC = () => {
                         placeholder='Nhập email công ty dược'
                     />
                 </Grid>
-                    
-                <Address setAddress={setAddress} key={counter} />  
 
-                <Grid item xs={12} sm={12} container 
+                <Address setAddress={setAddress} key={counter} />
+
+                <Grid item xs={12} sm={12} container
                     sx={{
                         display: 'flex',
                         justifyContent: "end",
@@ -106,7 +108,7 @@ const CreateProvider: React.FC = () => {
                     >
                         Thêm
                     </Button>
-                    
+
                     <Button
                         variant="contained"
                         color="success"

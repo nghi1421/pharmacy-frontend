@@ -26,10 +26,10 @@ import { useExportPdf } from "../../hooks/useExportPdf";
 import { AuthContext } from "../../App";
 
 const useStyles = makeStyles({
-  customTextField: {
-    "& input::placeholder": {
-      fontSize: "15px"
-    }
+    customTextField: {
+        "& input::placeholder": {
+            fontSize: "15px"
+        }
     },
 })
 
@@ -77,19 +77,25 @@ const customerFormValidate: Yup.ObjectSchema<CustomerEditForm> = yup.object({
     name: yup
         .string()
         .required('Tên khách hàng bắt buộc.')
-        .max(255),
+        .max(255, 'Tên khách hàng tối đa 255 kí tự'),
     phoneNumber: yup
         .string()
         .required('Số điện thoại bắt buộc.')
-        //@ts-ignore
-        .phoneNumber('Số điện thoại không hợp lệ.'),
+        // @ts-ignore
+        .phoneNumber('Số điện thoại không hợp lệ.')
+        .max(15, 'Số điện thoại tối đa 15 kí tự'),
     email: yup
         .string()
         .required('Email bắt buộc.')
-        .email('Email không hợp lệ.'),
+        .email('Email không hợp lệ.')
+        .max(255, 'Email tối đa 255 kí tự'),
+    gender: yup
+        .string()
+        .required('Giới tính bắt buộc')
+        .oneOf(['0', '1', '2'], 'Giới tinh không hợp lệ.'),
 })
 
- // @ts-ignore
+// @ts-ignore
 const exportValidate: Yup.ObjectSchema<ExportForm> = yup.object({
     note: yup
         .string()
@@ -100,13 +106,13 @@ const exportValidate: Yup.ObjectSchema<ExportForm> = yup.object({
 });
 
 const columns: ColumnDrugCategory[] = [
-    { key: 'id', value: 'Mã thuốc'},
+    { key: 'id', value: 'Mã thuốc' },
     { key: 'name', value: 'Tên thuốc' },
-    { key: 'quantity', value: 'Số lượng tồn'},
+    { key: 'quantity', value: 'Số lượng tồn' },
     { key: 'formatedPrice', value: 'Đơn giá bán' },
     { key: 'minimalUnit', value: 'Đơn vị bán' },
     { key: 'vat', value: 'Thuế VAT' },
-    { key: 'use', value: 'Công dụng'},
+    { key: 'use', value: 'Công dụng' },
 ]
 
 const SalesExport: React.FC = () => {
@@ -133,7 +139,7 @@ const SalesExport: React.FC = () => {
         setValueCustomer('gender', customer.gender)
         setAddress(customer.address)
         clearErrors('phoneNumber'),
-        clearErrors('name')
+            clearErrors('name')
         clearErrors('email')
     }
     const searchCustomer = useSearchCustomer(setCustomer)
@@ -143,7 +149,7 @@ const SalesExport: React.FC = () => {
     });
     const [address, setAddress] = useState<string>('');
 
-    const {exportData, exportDetailData, componentRef, setExportData, setExportDetailData} = useExportPdf()
+    const { exportData, exportDetailData, componentRef, setExportData, setExportDetailData } = useExportPdf()
     const createExport = useCreateExport(setExportData, setExportDetailData);
     const {
         handleSearchData,
@@ -162,13 +168,13 @@ const SalesExport: React.FC = () => {
     } = useSalesExport()
 
     const onSubmit = (data: ExportForm) => {
-        handleSubmitCustomer((_) => {})()
+        handleSubmitCustomer((_) => { })()
         if (Object.keys(errors).length > 0) {
             return;
         }
         const isInvalid = selectedDrugs.length === 0
             || selectedDrugs.some(drug => drug.error.length > 0);
-        
+
         if (isInvalid) {
             if (selectedDrugs.length === 0) {
                 enqueueSnackbar('Vui lòng chọn ít nhất một danh mục thuốc.', {
@@ -190,21 +196,21 @@ const SalesExport: React.FC = () => {
                     phoneNumber: watch('phoneNumber'),
                     email: watch('email'),
                     address: address,
-                    gender: watch('gender') 
+                    gender: watch('gender')
                 },
                 type: 1,
                 staffId: staff.id,
                 exportDate: data.exportDate,
                 note: data.note,
                 exportDetails: selectedDrugs.map(drug => {
-                    return { drugId: drug.id, quantity: drug.exportQuantity}
+                    return { drugId: drug.id, quantity: drug.exportQuantity }
                 })
             })
             setSelectedDrugs([]),
-            setDrugs(cloneDrugs)
+                setDrugs(cloneDrugs)
             setSearch(''),
-            reset()
-            setValue('exportDate',new Date())
+                reset()
+            setValue('exportDate', new Date())
             resetCustomer()
             setAddress('')
         }
@@ -230,29 +236,29 @@ const SalesExport: React.FC = () => {
                                     field: { onChange, value },
                                     fieldState: { error },
                                 }) => (
-                                <TextField
-                                    size='small'
-                                    type='text'
-                                    helperText={error ? error.message : null}
-                                    error={!!error}
-                                    onChange={onChange}
-                                    onBlur={() => {
-                                        searchCustomer.mutate(watch('phoneNumber'))
-                                    }
-                                    }
-                                    value={value}
-                                    fullWidth
-                                    label="Số điện thoại khách hàng"
-                                    variant="outlined"
-                                    placeholder='Nhập số điện thoại khách hàng'
-                                />
+                                    <TextField
+                                        size='small'
+                                        type='text'
+                                        helperText={error ? error.message : null}
+                                        error={!!error}
+                                        onChange={onChange}
+                                        onBlur={() => {
+                                            searchCustomer.mutate(watch('phoneNumber'))
+                                        }
+                                        }
+                                        value={value}
+                                        fullWidth
+                                        label="Số điện thoại khách hàng"
+                                        variant="outlined"
+                                        placeholder='Nhập số điện thoại khách hàng'
+                                    />
                                 )}
                             />
                         </Grid>
                         <Grid item xs={8} sm={4}>
-                           <FormInputText
+                            <FormInputText
                                 size="small"
-                                name="name"     
+                                name="name"
                                 control={customerControl}
                                 label="Họ và tên"
                                 placeholder='Nhập họ và tên'
@@ -261,19 +267,19 @@ const SalesExport: React.FC = () => {
                         <Grid item xs={8} sm={4}>
                             <FormInputText
                                 size="small"
-                                name="email"     
+                                name="email"
                                 control={customerControl}
                                 label="Email"
                                 placeholder='Nhập Email'
                             />
                         </Grid>
-                      
+
                         <Address gridSize={6} setAddress={setAddress} size='small' initAddress={address} />
-                        
+
                     </Grid>
 
                     <Grid container spacing={1.5} width='30%' sx={{ flex: 2 }}>
-                          <Grid item xs={8} sm={12}>
+                        <Grid item xs={8} sm={12}>
                             <FormInputDropdown
                                 name="gender"
                                 control={customerControl}
@@ -302,11 +308,11 @@ const SalesExport: React.FC = () => {
                         </Grid>
                     </Grid>
                 </Box>
-                    
-                    
+
+
                 <Grid container spacing={3} marginTop={2}>
                     <Grid item xs={12} sm={12} container>
-                        <Typography mb='20px' variant="subtitle2" sx={{ fontWeight: 'fontWeightBold', mt: 2, fontSize: 16 }}>
+                        <Typography mb='20px' variant="subtitle2" sx={{ fontWeight: 'fontWeightBold', mt: 2, fontSize: 20 }}>
                             Thuốc đã chọn
                         </Typography>
                         <TableExportSelectDrug
@@ -315,40 +321,40 @@ const SalesExport: React.FC = () => {
                             keyTable='selected-drug-export-category-table-key'
                             action={unCheckDrugCategory}
                             update={updateQuantity}
-                        /> 
+                        />
                     </Grid>
 
-                    <Grid item xs={12} sm={12} container 
+                    <Grid item xs={12} sm={12} container
                         sx={{
                             display: 'flex',
                             justifyContent: "end",
                             gap: 4
                         }}
                     >
-                        <Typography variant="subtitle2" sx={{  }}>
-                            Tổng tiền (chưa tính VAT): { pay[0] ? pay[0].toLocaleString() : '_'} VND
+                        <Typography variant="subtitle2" sx={{}}>
+                            Tổng tiền (chưa tính VAT): {pay[0] ? pay[0].toLocaleString() : '_'} VND
                         </Typography>
 
-                        <Typography variant="subtitle2" sx={{  }}>
-                            Tiền thuế VAT: { pay[1] ? pay[1].toLocaleString() : '_'} VND
+                        <Typography variant="subtitle2" sx={{}}>
+                            Tiền thuế VAT: {pay[1] ? pay[1].toLocaleString() : '_'} VND
                         </Typography>
 
-                        <Typography variant="subtitle2" sx={{ color: "#148c07"  }}>
-                            Tổng tiền: { pay[2] ? pay[2].toLocaleString() : '_'} VND
+                        <Typography variant="subtitle2" sx={{ color: "#148c07" }}>
+                            Tổng tiền: {pay[2] ? pay[2].toLocaleString() : '_'} VND
                         </Typography>
                     </Grid>
 
-                    <Grid item xs={12} sm={12} container 
+                    <Grid item xs={12} sm={12} container
                     >
                         <Box sx={{ display: 'flex', width: '100%', gap: 1 }}>
-                            <Typography mb='20px' variant="subtitle2" sx={{ fontWeight: 'fontWeightBold', mt: 2, fontSize: 16 }}>
+                            <Typography mb='20px' variant="subtitle2" sx={{ fontWeight: 'fontWeightBold', mt: 2, fontSize: 20 }}>
                                 Danh mục thuốc
                             </Typography>
                             <TextField
                                 onChange={handleSearchData}
                                 classes={{ root: classes.customTextField }}
                                 size='small'
-                                sx={{ flexGrow: 1, my :'auto', mr: '20%', ml: 2}}
+                                sx={{ flexGrow: 1, my: 'auto', mr: '0%', ml: 2 }}
                                 label="Tìm kiếm"
                                 value={search}
                                 placeholder="Nhập thông tin danh mục thuốc theo tên"
@@ -377,20 +383,20 @@ const SalesExport: React.FC = () => {
 
                             {
                                 roleId === 1
-                                ?
-                                <>
-                                    <Button
-                                        variant='contained'
-                                        color="success"
-                                        aria-label="Delete"
-                                        sx={{
-                                            height: '70%',
-                                            m: 'auto',
-                                            textTransform: 'none',
-                                        }}
-                                            onClick={ () => {}}
+                                    ?
+                                    <>
+                                        <Button
+                                            variant='contained'
+                                            color="success"
+                                            aria-label="Delete"
+                                            sx={{
+                                                height: '70%',
+                                                m: 'auto',
+                                                textTransform: 'none',
+                                            }}
+                                            onClick={() => { }}
                                         >
-                                            <ReplayIcon  />
+                                            <ReplayIcon />
                                             Làm mới
                                         </Button>
 
@@ -405,17 +411,17 @@ const SalesExport: React.FC = () => {
                                             onClick={backToTable}
                                         >
                                             Quay về
-                                    </Button>
+                                        </Button>
                                     </>
-                                : <></>
+                                    : <></>
                             }
-                            
+
                         </Box>
                         {
                             drugCategoryLoading
-                            ?
+                                ?
                                 <CircularProgress sx={{ margin: 'auto' }} />
-                            :
+                                :
                                 <TableDrugCategories
                                     rows={drugs}
                                     tooltip='Nhấn để chọn thuốc'
@@ -424,9 +430,9 @@ const SalesExport: React.FC = () => {
                                     action={checkDrugCategory}
                                     type='export'
                                 />
-                        }  
+                        }
                     </Grid>
-                
+
                 </Grid>
                 <div style={{ display: 'none' }}>
                     <ExportBill
@@ -436,9 +442,9 @@ const SalesExport: React.FC = () => {
                         exportDetail={exportDetailData}
                     />
                 </div>
-                
+
             </Paper>
-            <Box sx={{ flex: 1, px: 2, py: 1}}></Box>
+            <Box sx={{ flex: 1, px: 2, py: 1 }}></Box>
             <TodaySales />
         </Box>
     )
