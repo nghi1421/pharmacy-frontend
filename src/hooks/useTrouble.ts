@@ -61,11 +61,11 @@ const createHistorySalesData = (historySales: HistorySales) => {
     }
 }
 
-const createInventoryImport = (inventoryImport: InventoryImport) => {
+const createInventoryImport = (inventoryImport: InventoryImport, unit: string) => {
     return {
         importId: inventoryImport.importId,
         importDate: formatDateTime(inventoryImport.importDate),
-        inventory: formatNumber(inventoryImport.inventory),
+        inventory: `${formatNumber(inventoryImport.inventory)} ${unit}`,
     }
 }
 
@@ -95,7 +95,7 @@ const useSeachTrouble = () => {
                         return {
                             provider: createProviderData(data.provider),
                             historySales: data.historySales.map((historySales: HistorySales) => createHistorySalesData(historySales)),
-                            inventoryImports: data.inventoryImport.map((inventoryImport: InventoryImport) => createInventoryImport(inventoryImport)),
+                            inventoryImports: data.inventoryImport.map((inventoryImport: InventoryImport) => createInventoryImport(inventoryImport, data.drugCategory.minimalUnit)),
                             drugCategory: data.drugCategory,
                             trouble: data.trouble
                         }
@@ -103,7 +103,7 @@ const useSeachTrouble = () => {
                     return {
                         provider: createProviderData(data.provider),
                         historySales: data.historySales.map((historySales: HistorySales) => createHistorySalesData(historySales)),
-                        inventoryImports: data.inventoryImport.map((inventoryImport: InventoryImport) => createInventoryImport(inventoryImport)),
+                        inventoryImports: data.inventoryImport.map((inventoryImport: InventoryImport) => createInventoryImport(inventoryImport, data.drugCategory.minimalUnit)),
                         drugCategory: data.drugCategory
                     }
                 }

@@ -16,6 +16,7 @@ import { FormInputNumber } from "../../components/form/FormInputNumber";
 import { Trouble } from "../../types/Trouble";
 import { enqueueSnackbar } from "notistack";
 import { formatDateTime, formatNumber } from "../../utils/format";
+import EmptyImage from '../../assets/images/no-data.jpg'
 
 export interface TroubleForm {
     batchId: string
@@ -346,7 +347,7 @@ const TroublePage: React.FC<{}> = () => {
                                         marginBottom={2}
                                         fontWeight='500'
                                     >
-                                        {trouble ? 'Tồn kho đã hủy' : 'Tồn kho '}
+                                        {trouble ? 'Tồn kho đã hủy' : 'Tồn kho'}
                                     </Typography>
 
                                     <Box sx={{
@@ -358,7 +359,7 @@ const TroublePage: React.FC<{}> = () => {
                                     }}>
                                         <Typography sx={{ flex: 1, textAlign: 'left', fontWeight: 600 }}>Mã phiếu nhập</Typography>
                                         <Typography sx={{ flex: 1, textAlign: 'left', fontWeight: 600 }}>Thời gian nhập</Typography>
-                                        <Typography sx={{ flex: 1, textAlign: 'left', pr: 1, fontWeight: 600 }}>{trouble ? 'SL hủy' : 'Tồn'}</Typography>
+                                        <Typography sx={{ flex: 1, textAlign: 'left', pr: 1, fontWeight: 600 }}>{trouble ? 'SL' : 'SL Tồn'}</Typography>
                                     </Box>
                                     <Box>
                                         {
@@ -379,7 +380,37 @@ const TroublePage: React.FC<{}> = () => {
                             openModal={() => { handleOpenModal() }}
                         ></SelectableTable>
                     </Paper>
-                    : <>No data found</>
+                    : <Grid
+                        container
+                        spacing={0}
+                        direction="column"
+                        alignItems="center"
+                        justifyContent="center"
+                        sx={{ bgcolor: 'white', borderRadius: 2 }}
+                    >
+                        <Grid item xs={3}>
+                            <Box
+                                component="img"
+                                sx={{
+
+                                    height: 150,
+                                    width: 150,
+                                }}
+                                alt="No data."
+                                src={EmptyImage}
+                            />
+                        </Grid>
+                        <Grid item xs={4}>
+                            <Typography
+                                variant="h6"
+                                fontWeight='500'
+
+                                sx={{ opacity: '0.3', pb: 4 }}
+                            >
+                                Không có dữ liệu
+                            </Typography>
+                        </Grid>
+                    </Grid>
             }
         </Box>
     )
