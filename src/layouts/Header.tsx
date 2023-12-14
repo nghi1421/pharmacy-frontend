@@ -1,6 +1,6 @@
 import { AccountCircle } from "@mui/icons-material"
 import { Divider, IconButton, Menu, MenuItem, Toolbar, Typography, styled } from "@mui/material"
-import MuiAppBar, { AppBarProps as MuiAppBarProps  } from '@mui/material/AppBar';
+import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import { useContext, useEffect, useState } from "react";
 import MenuIcon from '@mui/icons-material/Menu';
 import { getAccessToken, getStaff, setAccessToken, setStaff } from "../store/auth";
@@ -15,13 +15,13 @@ import { ChangePassword } from "../pages/ChangePassword";
 
 
 interface HeaderProps {
-    open: boolean;
-    setOpen: (newOpen: boolean) => void
-    preventOpen?: boolean
+  open: boolean;
+  setOpen: (newOpen: boolean) => void
+  preventOpen?: boolean
 }
 
 interface AppBarProps extends MuiAppBarProps {
-    open?: boolean;
+  open?: boolean;
 }
 
 const drawerWidth: number = 240;
@@ -29,156 +29,156 @@ const drawerWidth: number = 240;
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== 'open',
 })<AppBarProps>(({ theme, open }) => ({
-    zIndex: theme.zIndex.drawer + 1,
+  zIndex: theme.zIndex.drawer + 1,
+  transition: theme.transitions.create(['width', 'margin'], {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.leavingScreen,
+  }),
+  ...(open && {
+    marginLeft: drawerWidth,
+    width: `calc(100% - ${drawerWidth}px)`,
     transition: theme.transitions.create(['width', 'margin'], {
       easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
+      duration: theme.transitions.duration.enteringScreen,
     }),
-    ...(open && {
-        marginLeft: drawerWidth,
-        width: `calc(100% - ${drawerWidth}px)`,
-        transition: theme.transitions.create(['width', 'margin'], {
-          easing: theme.transitions.easing.sharp,
-          duration: theme.transitions.duration.enteringScreen,
-        }),
-    }),
+  }),
 }));
 
 const Header: React.FC<HeaderProps> = ({ open, setOpen, preventOpen }) => {
-    const [avatarEl, setAvatarEl] = useState<HTMLButtonElement | null>(null);
-    const [openModalUpdateProfile, setOpenModalUpdateProfile] = useState<boolean>(false)
-    const [openModalChangePassword, setOpenModalChangePassword] = useState<boolean>(false)
-    const { roleId, setRoleId, setUsername } =  useContext(AuthContext)
-    const freshToken = useRefreshToken()
-    const staff = getStaff()
-    const navigate = useNavigate()
-    const openSetting = Boolean(avatarEl);
-    const accessToken = getAccessToken()
+  const [avatarEl, setAvatarEl] = useState<HTMLButtonElement | null>(null);
+  const [openModalUpdateProfile, setOpenModalUpdateProfile] = useState<boolean>(false)
+  const [openModalChangePassword, setOpenModalChangePassword] = useState<boolean>(false)
+  const { roleId, setRoleId, setUsername } = useContext(AuthContext)
+  const freshToken = useRefreshToken()
+  const staff = getStaff()
+  const navigate = useNavigate()
+  const openSetting = Boolean(avatarEl);
+  const accessToken = getAccessToken()
 
-    useEffect(() => {
-      if (!staff) {
-        navigate('/login')
-      }
-      if (!accessToken) {
-        freshToken.mutate()
-      }
-    })
-
-    const handleAvatarClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-      setAvatarEl(e.currentTarget);
-    };
-
-    const handleAvatarClose = () => {
-      setAvatarEl(null);
-    };
-
-    const handleLogout = () => {
-      setStaff(null);
-      setAccessToken(null);
-      setRoleId(null)
-      setUsername(null)
-      enqueueSnackbar('Đăng xuất thành công.', {
-        variant: 'success',
-        autoHideDuration: 3000
-      })
+  useEffect(() => {
+    if (!staff) {
       navigate('/login')
-      const queryClient = useQueryClient();
-      queryClient.removeQueries();
     }
-
-    const toggleDrawer = () => {
-        setOpen(!open);
-    };
-
-    const handleUpdateProfile = () => {
-      setOpenModalUpdateProfile(true)
-      handleAvatarClose()
+    if (!accessToken) {
+      freshToken.mutate()
     }
-  
-    const handleChangePassword = () => {
-      setOpenModalChangePassword(true)
-      handleAvatarClose()
-    }
-    return (
-        <AppBar position="absolute" open={open}>
-            <ModalComponent
-              title='Cập nhật thông tin'
-              initOpen={openModalUpdateProfile}
-              handleClose={() => setOpenModalUpdateProfile(false)}
-              children={<ProfilePage closeModal={() => setOpenModalUpdateProfile(false)} />}
-            />
+  })
 
-            <ModalComponent
-              width={500}
-              title='Đổi mật khẩu'
-              initOpen={openModalChangePassword}
-              handleClose={() => setOpenModalChangePassword(false)}
-              children={<ChangePassword closeModal={() => setOpenModalChangePassword(false)} />}
-            />
-          <Toolbar
-            sx={{
-              pr: '24px',
-            }}
-          >
-            {
-              preventOpen ?
-              null
-              :
-              <IconButton
-                edge="start"
-                color="inherit"
-                aria-label="open drawer"
-                onClick={toggleDrawer}
-                sx={{
-                  marginRight: '36px',
-                  ...(open && { display: 'none' }),
-                }}
-              >
-                <MenuIcon />
-              </IconButton>
-            }
-            
-            <Typography
-              component="h1"
-              variant="h6"
+  const handleAvatarClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    setAvatarEl(e.currentTarget);
+  };
+
+  const handleAvatarClose = () => {
+    setAvatarEl(null);
+  };
+
+  const handleLogout = () => {
+    setStaff(null);
+    setAccessToken(null);
+    setRoleId(null)
+    setUsername(null)
+    enqueueSnackbar('Đăng xuất thành công.', {
+      variant: 'success',
+      autoHideDuration: 3000
+    })
+    navigate('/login')
+    const queryClient = useQueryClient();
+    queryClient.removeQueries();
+  }
+
+  const toggleDrawer = () => {
+    setOpen(!open);
+  };
+
+  const handleUpdateProfile = () => {
+    setOpenModalUpdateProfile(true)
+    handleAvatarClose()
+  }
+
+  const handleChangePassword = () => {
+    setOpenModalChangePassword(true)
+    handleAvatarClose()
+  }
+  return (
+    <AppBar position="absolute" open={open}>
+      <ModalComponent
+        title='Cập nhật thông tin'
+        initOpen={openModalUpdateProfile}
+        handleClose={() => setOpenModalUpdateProfile(false)}
+        children={<ProfilePage closeModal={() => setOpenModalUpdateProfile(false)} />}
+      />
+
+      <ModalComponent
+        width={500}
+        title='Đổi mật khẩu'
+        initOpen={openModalChangePassword}
+        handleClose={() => setOpenModalChangePassword(false)}
+        children={<ChangePassword closeModal={() => setOpenModalChangePassword(false)} />}
+      />
+      <Toolbar
+        sx={{
+          pr: '24px',
+        }}
+      >
+        {
+          preventOpen ?
+            null
+            :
+            <IconButton
+              edge="start"
               color="inherit"
-              noWrap
-              sx={{ flexGrow: 1 }}
-          >
-              { roleId == 1 ? 'Trang quản lí' : 'Trang bán hàng'}
-          </Typography>
-
-          <Typography
-              variant="body2"
-              color="inherit"
-              noWrap
+              aria-label="open drawer"
+              onClick={toggleDrawer}
+              sx={{
+                marginRight: '36px',
+                ...(open && { display: 'none' }),
+              }}
             >
-              {staff.name}
-          </Typography>
-          <IconButton
-            id="basic-button"
-            color="inherit"
-            onClick={handleAvatarClick}
-          >
-              <AccountCircle />
-          </IconButton>
-          <Menu
-            id="basic-menu"
-            anchorEl={avatarEl}
-            open={openSetting}
-            onClose={handleAvatarClose}
-            MenuListProps={{
-              'aria-labelledby': 'basic-button',
-            }}
-          >
-            <MenuItem onClick={handleUpdateProfile}>Cập nhật thông tin</MenuItem>
-            <MenuItem onClick={handleChangePassword}>Đổi mật khẩu</MenuItem>
-              <Divider />
-            <MenuItem onClick={handleLogout}>Đăng xuất</MenuItem>
-          </Menu>
-        </Toolbar>
-        </AppBar>
-    )
+              <MenuIcon />
+            </IconButton>
+        }
+
+        <Typography
+          component="h1"
+          variant="h6"
+          color="inherit"
+          noWrap
+          sx={{ flexGrow: 1 }}
+        >
+          {roleId == 1 ? 'Trang quản lí' : 'Trang bán hàng'}
+        </Typography>
+
+        <Typography
+          variant="body2"
+          color="inherit"
+          noWrap
+        >
+          {staff.name}
+        </Typography>
+        <IconButton
+          id="basic-button"
+          color="inherit"
+          onClick={handleAvatarClick}
+        >
+          <AccountCircle />
+        </IconButton>
+        <Menu
+          id="basic-menu"
+          anchorEl={avatarEl}
+          open={openSetting}
+          onClose={handleAvatarClose}
+          MenuListProps={{
+            'aria-labelledby': 'basic-button',
+          }}
+        >
+          <MenuItem onClick={handleUpdateProfile}>Cập nhật thông tin</MenuItem>
+          <MenuItem onClick={handleChangePassword}>Đổi mật khẩu</MenuItem>
+          <Divider />
+          <MenuItem onClick={handleLogout}>Đăng xuất</MenuItem>
+        </Menu>
+      </Toolbar>
+    </AppBar>
+  )
 }
 
 export default Header

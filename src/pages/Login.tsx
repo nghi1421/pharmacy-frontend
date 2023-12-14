@@ -25,7 +25,7 @@ const defaultValues: LoginForm = {
     password: '',
 }
 
- // @ts-ignore
+// @ts-ignore
 const authFormValidate: Yup.ObjectSchema<LoginForm> = yup.object({
     username: yup
         .string()
@@ -39,28 +39,28 @@ const authFormValidate: Yup.ObjectSchema<LoginForm> = yup.object({
 
 
 const Login = () => {
-  const { roleId, setRoleId, setUsername } = React.useContext(AuthContext)
+    const { roleId, setRoleId, setUsername } = React.useContext(AuthContext)
     const login = useLogin()
     const accessToken = getAccessToken()
     const { handleSubmit, control } = useForm<LoginForm>({
         defaultValues: defaultValues,
         resolver: yupResolver(authFormValidate)
     });
-    
+
     const onSubmit = (data: LoginForm) => {
         login.mutate(data);
     };
-        
+
     if (accessToken && roleId) {
         const queryClient = useQueryClient();
         switch (roleId) {
             case 1: {
                 queryClient.invalidateQueries('exports-today', { refetchInactive: true })
-                return <Navigate replace to='/admin/users'/>
+                return <Navigate replace to='/admin/users' />
             }
             case 2: {
                 queryClient.invalidateQueries('exports-today', { refetchInactive: true })
-                return <Navigate replace to='/sales/create'/>
+                return <Navigate replace to='/sales/create' />
             }
             default: {
                 setUsername(null)
@@ -70,62 +70,62 @@ const Login = () => {
             }
         }
     }
-    else 
+    else
 
-  return (
-    <Box
-        sx={{
-            my: 8,
-            mx: 4,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            boxShadow: 0
-        }}
-    >
-          <Typography component="h1" variant="h3" color='primary'
-              sx={{ textShadow: '1px 1px 2px rgba(0, 0, 0, 0.2), -1px -1px 2px rgba(0, 0, 0, 0.2)' }}>
-            Đăng nhập
-        </Typography>
-        <Box component="form" noValidate sx={{ mt: 2, width: '100%' }}>
-            <Grid container spacing={3}>
-                <Grid item xs={8} sm={12}>
-                    <FormInputText
-                        size='medium'
-                        name="username"
-                        control={control}
-                        label="Tên đăng nhập"
-                        placeholder='Nhập tên đăng nhập của bạn'
-                    />
-                </Grid>
-                <Grid item xs={8} sm={12}>
-                    <FormInputText
-                        size='medium'
-                        name="password"
-                        type='password'
-                        control={control}
-                        label="Mật khẩu"
-                        placeholder='Nhập mật khẩu của bạn'
-                    />      
-                </Grid>
-            </Grid>
-            
-            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                <Button
-                    type="submit"
-                    fullWidth
-                    variant="contained"
-                    sx={{ mt: 4, mb: 2, p: 1 }}
-                    onClick={handleSubmit(onSubmit)}
-                >
+        return (
+            <Box
+                sx={{
+                    my: 8,
+                    mx: 4,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    boxShadow: 0
+                }}
+            >
+                <Typography component="h1" variant="h3" color='primary'
+                    sx={{ textShadow: '1px 1px 2px rgba(0, 0, 0, 0.2), -1px -1px 2px rgba(0, 0, 0, 0.2)' }}>
                     Đăng nhập
-                </Button>
-                
-                <CustomLink link='/forgot-password' title='Quên mật khẩu?'/>
+                </Typography>
+                <Box component="form" noValidate sx={{ mt: 2, width: '100%' }}>
+                    <Grid container spacing={3}>
+                        <Grid item xs={8} sm={12}>
+                            <FormInputText
+                                size='medium'
+                                name="username"
+                                control={control}
+                                label="Tên đăng nhập"
+                                placeholder='Nhập tên đăng nhập của bạn'
+                            />
+                        </Grid>
+                        <Grid item xs={8} sm={12}>
+                            <FormInputText
+                                size='medium'
+                                name="password"
+                                type='password'
+                                control={control}
+                                label="Mật khẩu"
+                                placeholder='Nhập mật khẩu của bạn'
+                            />
+                        </Grid>
+                    </Grid>
+
+                    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                        <Button
+                            type="submit"
+                            fullWidth
+                            variant="contained"
+                            sx={{ mt: 4, mb: 2, p: 1 }}
+                            onClick={handleSubmit(onSubmit)}
+                        >
+                            Đăng nhập
+                        </Button>
+
+                        <CustomLink link='/forgot-password' title='Quên mật khẩu?' />
+                    </Box>
+                </Box>
             </Box>
-        </Box>
-    </Box>
-  );
+        );
 }
 
 export default Login

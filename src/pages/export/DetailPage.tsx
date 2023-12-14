@@ -1,4 +1,4 @@
-import { Button, Grid, Paper, Typography } from "@mui/material"
+import { Button, Chip, Grid, Paper, Typography } from "@mui/material"
 import { useLocation, useNavigate } from "react-router-dom"
 import { InfoBox } from "../../components/box/InfoBox"
 import { Item } from "../../types/props/FormInputListProps"
@@ -21,13 +21,29 @@ const customerRows: Item[] = [
 ]
 
 const columns = [
+    { key: 'drugId', value: 'Mã thuốc' },
     { key: 'drugName', value: 'Tên thuốc' },
-    { key: 'quantity', value: 'Số lượng bán' },
-    { key: 'unit', value: 'Đơn vị bán' },
+    { key: 'quantity', value: 'Số lượng' },
     { key: 'unitPrice', value: 'Đơn giá' },
     { key: 'vat', value: 'Thuế VAT' },
     { key: 'expiryDate', value: 'Hạn sử dụng' },
 ]
+
+const getVairantColorType = (type: number): string => {
+    switch (type) {
+        case 1: return 'success'
+        case 2: return 'warning'
+        default: return 'error'
+    }
+}
+
+const getVairantLabelType = (type: number): string => {
+    switch (type) {
+        case 1: return 'Bán'
+        case 2: return 'Hoàn'
+        default: return 'Hủy'
+    }
+}
 
 const DetailPage = () => {
     const { state } = useLocation()
@@ -56,7 +72,7 @@ const DetailPage = () => {
                 <Grid item xs={8} sm={3}>
                     <Typography>
                         <Typography display="inline" sx={{ fontWeight: 600 }}>
-                            Ngày bán:
+                            Thời gian tạo:
                         </Typography>
 
                         <Typography display="inline" sx={{ pl: 1, textDecoration: 'none' }}>
@@ -84,6 +100,25 @@ const DetailPage = () => {
                 </Grid>
 
                 <Grid item xs={8} sm={3}>
+                    <Typography>
+                        <Typography display="inline" sx={{ fontWeight: 600 }}>
+                            Loại:
+                        </Typography>
+
+                        <Typography display="inline" sx={{ textDecoration: 'none', ml: 1 }}>
+                            <Chip
+                                sx={{ bgcolor: '#f0f9ff', fontWeight: 600 }}
+                                //@ts-ignore
+                                label={getVairantLabelType(state.exportData.export.type)}
+                                //@ts-ignore
+                                color={getVairantColorType(state.exportData.export.type)}
+                                variant="outlined"
+                            />
+                        </Typography>
+                    </Typography>
+                </Grid>
+
+                <Grid item xs={8} sm={12}>
                     <Typography>
                         <Typography display="inline" sx={{ fontWeight: 600 }}>
                             Ghi chú:

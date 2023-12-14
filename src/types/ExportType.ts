@@ -28,6 +28,7 @@ export type ExportRawData = {
     id: number
     exportDate: string
     staff: Staff
+    type: number
     customer: Customer
     note: string
     prescriptionId: string
@@ -48,6 +49,7 @@ export type ExportDetailRawData = {
 export type ExportData = {
     id: number
     note: string
+    type: number
     prescriptionId: string
     staff: Staff
     customer: CustomerData | null

@@ -65,10 +65,11 @@ function createDataExport({
   note,
   prescriptionId,
   totalPriceWithVat,
-  totalPrice
+  totalPrice,
+  type
 }: ExportRawData): ExportData {
   return {
-    id, note, prescriptionId,
+    id, note, prescriptionId, type,
     staff: { ...staff, address: handleAddress(staff.address) },
     customer: customer ? {
       ...customer,
@@ -90,7 +91,7 @@ function createDataExportDetail({ drug, expiryDate, price, quantity, unitPrice, 
     drugName: drug.name,
     price: formatCurrency(price),
     unitPrice: formatCurrency(unitPrice),
-    quantity: formatNumber(quantity),
+    quantity: `${formatNumber(quantity)} ${drug.minimalUnit}`,
     vat: `${vat * 100}%`,
     expiryDate: formatDate(expiryDate),
   }

@@ -32,6 +32,7 @@ import StatisticsPage from "../pages/statistics/StatisticsPage";
 import CancelExport from "../pages/export/CancelExport";
 import InventoryPage from "../pages/inventory/InventoryPage";
 import TroublePage from "../pages/trouble/TroublePage";
+import ChatPage from "../pages/chat/ChatPage";
 
 export const dashboardRoutes: Array<Route> = [
     {
@@ -111,13 +112,19 @@ export const dashboardRoutes: Array<Route> = [
         icon: BarChartIcon,
         element: StatisticsPage
     },
-
     {
         key: 'troubles-route',
         title: 'Sự cố',
         path: 'troubles',
         icon: ErrorIcon,
         element: TroublePage
+    },
+    {
+        key: 'chat-route',
+        title: 'CSKH',
+        path: 'chat',
+        icon: ErrorIcon,
+        element: ChatPage
     },
 ]
 

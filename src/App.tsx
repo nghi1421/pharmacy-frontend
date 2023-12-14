@@ -5,6 +5,17 @@ import AppRoutes from "./routes/Routes"
 import { BrowserRouter } from "react-router-dom"
 import { SnackbarProvider } from "notistack"
 import { theme } from './themes'
+import { Socket } from "socket.io-client";
+
+interface ClientToServerEvents {
+  hello: () => void;
+}
+
+interface ServerToClientEvents {
+  noArg: () => void;
+  basicEmit: (a: number, b: string, c: any) => void;
+  withAck: (d: string, callback: (e: number) => void) => void;
+}
 
 export interface AuthType {
   accessToken: string | null,
@@ -18,28 +29,28 @@ export interface AuthType {
 export const AuthContext = createContext<AuthType>({
   accessToken: '',
   username: '',
-  setAccessToken: () => {},
+  setAccessToken: () => { },
   roleId: null,
-  setRoleId: () => {},
-  setUsername: () => {}
+  setRoleId: () => { },
+  setUsername: () => { }
 })
 
 const App: React.FC = () => {
-  const [accessToken, setAccessToken] = useState<string| null>(null)
-  const [username, setUsername] = useState<string| null>(null)
+  const [accessToken, setAccessToken] = useState<string | null>(null)
+  const [username, setUsername] = useState<string | null>(null)
   const [roleId, setRoleId] = useState<number | null>(null)
-  
+
   return (
     <React.Fragment>
       <AuthContext.Provider value={{ accessToken, setAccessToken, roleId, setRoleId, username, setUsername }}>
         <ThemeProvider theme={theme}>
-        <SnackbarProvider autoHideDuration={3000}>
-          <CssBaseline />
-          <BrowserRouter>
-            <AppRoutes/>
-          </BrowserRouter>
-        </SnackbarProvider>
-      </ThemeProvider>
+          <SnackbarProvider autoHideDuration={3000}>
+            <CssBaseline />
+            <BrowserRouter>
+              <AppRoutes />
+            </BrowserRouter>
+          </SnackbarProvider>
+        </ThemeProvider>
       </AuthContext.Provider>
     </React.Fragment>
   )

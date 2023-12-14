@@ -493,9 +493,9 @@ const EditSalesExport: React.FC = () => {
                                     <Typography display="inline" sx={{ fontWeight: 'bold' }}>
                                         Loại:
                                     </Typography>
-                                    <Typography display="inline" sx={{ textDecoration: 'none' }}>
+                                    <Typography display="inline" sx={{ textDecoration: 'none', ml: 1 }}>
                                         <Chip
-                                            sx={{ paddingLeft: 1 }}
+                                            sx={{ bgcolor: '#f0f9ff' }}
                                             //@ts-ignore
                                             label={getVairantLabelType(state.exportTodayIndex.export.type)}
                                             //@ts-ignore

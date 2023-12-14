@@ -1,5 +1,7 @@
 import { Item } from "../types/props/FormInputListProps";
 
+export const SOCKET_URL = 'http://localhost:3000'
+
 export const APP_TITLE = 'Quản lí nhà thuốc';
 export const APP_DESCRIPTION = 'Web được phát triển phục vụ việc quản lí nhà thuốc Việt Nam.';
 
