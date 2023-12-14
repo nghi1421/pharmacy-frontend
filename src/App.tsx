@@ -5,17 +5,6 @@ import AppRoutes from "./routes/Routes"
 import { BrowserRouter } from "react-router-dom"
 import { SnackbarProvider } from "notistack"
 import { theme } from './themes'
-import { Socket } from "socket.io-client";
-
-interface ClientToServerEvents {
-  hello: () => void;
-}
-
-interface ServerToClientEvents {
-  noArg: () => void;
-  basicEmit: (a: number, b: string, c: any) => void;
-  withAck: (d: string, callback: (e: number) => void) => void;
-}
 
 export interface AuthType {
   accessToken: string | null,
