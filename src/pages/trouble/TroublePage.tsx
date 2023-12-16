@@ -17,12 +17,12 @@ import { Trouble } from "../../types/Trouble";
 import { enqueueSnackbar } from "notistack";
 import { formatDateTime, formatNumber } from "../../utils/format";
 import EmptyImage from '../../assets/images/no-data.jpg'
+import { ExportExcelButton } from "../../components/ExportExcelButton";
 
 export interface TroubleForm {
     batchId: string
     drugId: number
 }
-
 
 export interface CreateTroubleForm {
     batchId: string
@@ -271,6 +271,9 @@ const TroublePage: React.FC<{}> = () => {
                                             <TextShow title="Thời gian tạo" data={formatDateTime(trouble.troubleDate)} />
                                             <TextShow title="Ghi chú" data={trouble.note ?? '_'} />
                                         </Grid>
+                                    </Grid>
+                                    <Grid item xs={8} sm={6} sx={{ my: 'auto' }}>
+                                        <ExportExcelButton data={rowsData} fileName='trouble'></ExportExcelButton>
                                     </Grid>
                                 </Box>
                                 :

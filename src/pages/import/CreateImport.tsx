@@ -157,8 +157,26 @@ const CreateImport: React.FC = () => {
         const validateErrors = ['', '', '', '']
         validateErrors[3] = drugCategory.batchId.length === 0 ? 'Mã lô thuốc bắt buộc.' : ''
         validateErrors[2] = dayjs(drugCategory.expiryDate).isBefore(dayjs(), 'day') ? 'Thuốc đã hết hạn sử dụng.' : ''
-        validateErrors[1] = isNaN(drugCategory.unitPrice) || drugCategory.unitPrice === 0 ? 'Đơn giá bắt buộc.' : ''
-        validateErrors[0] = isNaN(drugCategory.quantity) || drugCategory.quantity === 0 ? 'Số lượng nhập bắt buộc.' : ''
+
+        if (isNaN(drugCategory.quantity)) {
+            validateErrors[1] = 'Đơn giá nhập bắt buộc.'
+        }
+        else if (drugCategory.quantity <= 0) {
+            validateErrors[1] = 'Đơn giá nhập phải lơn hơn 0.'
+        }
+        else {
+            validateErrors[1] = ''
+        }
+
+        if (isNaN(drugCategory.quantity)) {
+            validateErrors[0] = 'Số lượng nhập bắt buộc.'
+        }
+        else if (drugCategory.quantity <= 0) {
+            validateErrors[0] = 'Số lượng nhập phải lơn hơn 0.'
+        }
+        else {
+            validateErrors[0] = ''
+        }
 
         return validateErrors;
     }

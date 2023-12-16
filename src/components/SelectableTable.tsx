@@ -13,13 +13,14 @@ import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import Checkbox from '@mui/material/Checkbox';
 import IconButton from '@mui/material/IconButton';
-import DeleteIcon from '@mui/icons-material/Delete';
+import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import { visuallyHidden } from '@mui/utils';
 import { Button } from '@mui/material';
 import { HandledData } from '../hooks/useTrouble';
 import { StyledTableCell } from './table/TableHeader';
 import { makeStyles } from '@mui/styles';
 import { formatNumber } from '../utils/format';
+import { ExportExcelButton } from './ExportExcelButton';
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
@@ -178,6 +179,7 @@ const useStyles = makeStyles({
 interface EnhancedTableToolbarProps {
   selected: number[];
   sendNotification: (a: number[]) => void;
+  getTrouble: (a: number[]) => any[];
 }
 
 function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
@@ -212,12 +214,15 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
         </Typography>
       )}
       {selected.length > 0 ? (
-        <IconButton color='success' onClick={() => { sendNotification(selected) }}>
-          <DeleteIcon />
-          <Typography>
-            Gửi thông báo
-          </Typography>
-        </IconButton>
+        <>
+          <IconButton color='primary' onClick={() => { sendNotification(selected) }}>
+            <MailOutlineIcon />
+            <Typography>
+              Gửi thông báo
+            </Typography>
+          </IconButton>
+          <ExportExcelButton data={props.getTrouble(selected)} fileName='trouble'></ExportExcelButton>
+        </>
       ) : (
         <></>
       )}
@@ -229,12 +234,11 @@ interface SelectablTableProps {
   rows: any[];
   setItem: (item: any) => void;
   openModal: () => void;
-  setSearchRows: (a: any[]) => void;
   sendNotification: (a: number[]) => void;
   unit: string;
 }
 
-export const SelectableTable: React.FC<SelectablTableProps> = ({ rows, setItem, openModal, setSearchRows, sendNotification, unit }) => {
+export const SelectableTable: React.FC<SelectablTableProps> = ({ rows, setItem, openModal, sendNotification, unit }) => {
   const [order, setOrder] = React.useState<Order>('asc');
   const [orderBy, setOrderBy] = React.useState<keyof HandledData>('exportId');
   const [selected, setSelected] = React.useState<readonly number[]>([]);
@@ -288,6 +292,23 @@ export const SelectableTable: React.FC<SelectablTableProps> = ({ rows, setItem, 
     setPage(0);
   };
 
+  const getTrouble = (exportIds: number[]) => {
+    const handleTrouble = rows.filter((row: any) => exportIds.includes(row.exportId))
+    return handleTrouble.map((row) => {
+      const listSales: any = {}
+      listSales['Mã phiếu xuất'] = row.exportId
+      listSales['Tên khách hàng'] = row.name
+      listSales['Số điện thoại'] = row.phoneNumber
+      listSales['Email'] = row.email
+      listSales['Địa chỉ'] = row.address
+      listSales['Số lượng mua'] = row.formatedQuantity
+      listSales['Số lượng trả'] = row.formatedQuantityBack
+      listSales['Thời gian trả'] = row.recoveryTime ? row.formatRecoveryTime : ''
+      listSales['Ghi chú'] = ''
+      return listSales
+    })
+  }
+
   const bgColor = (row: any) => {
     if (row.quantity === row.quantityBack) {
       return '#dcfce7'
@@ -315,7 +336,11 @@ export const SelectableTable: React.FC<SelectablTableProps> = ({ rows, setItem, 
   return (
     <Box sx={{ width: '100%' }}>
       <Paper sx={{ width: '100%', mb: 2 }}>
-        <EnhancedTableToolbar selected={selected} sendNotification={sendNotification} />
+        <EnhancedTableToolbar
+          selected={selected}
+          sendNotification={sendNotification}
+          getTrouble={getTrouble}
+        />
         <TableContainer>
           <Table
             sx={{ minWidth: 750 }}

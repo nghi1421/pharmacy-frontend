@@ -33,6 +33,7 @@ import CancelExport from "../pages/export/CancelExport";
 import InventoryPage from "../pages/inventory/InventoryPage";
 import TroublePage from "../pages/trouble/TroublePage";
 import ChatPage from "../pages/chat/ChatPage";
+import ChatIcon from '@mui/icons-material/Chat';
 
 export const dashboardRoutes: Array<Route> = [
     {
@@ -123,7 +124,7 @@ export const dashboardRoutes: Array<Route> = [
         key: 'chat-route',
         title: 'CSKH',
         path: 'chat',
-        icon: ErrorIcon,
+        icon: ChatIcon,
         element: ChatPage
     },
 ]

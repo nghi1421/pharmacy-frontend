@@ -9,7 +9,7 @@ export const useSalesExport = () => {
     const [cloneDrugs, setCloneDrugs] = useState<any[]>([])
     const [selectedDrugs, setSelectedDrugs] = useState<any[]>([])
     const [search, setSearch] = useState<string>('')
-    const [pay, setPay] = useState<number[]>([0 , 0, 0])
+    const [pay, setPay] = useState<number[]>([0, 0, 0])
 
     const handleSearchData = (event: React.ChangeEvent<HTMLInputElement>) => {
         const searchTerm = event.target.value as string
@@ -26,7 +26,7 @@ export const useSalesExport = () => {
 
     const checkDrugCategory = (drugCategory: any) => {
         const data = cloneDrugs.map(drug => {
-            return drug.id === drugCategory.id ? {...drug, checked: true} : drug
+            return drug.id === drugCategory.id ? { ...drug, checked: true } : drug
         })
         setCloneDrugs(data)
         if (search.trim().length > 0) {
@@ -37,12 +37,12 @@ export const useSalesExport = () => {
         else {
             setDrugs(data)
         }
-        selectedDrugs.push({...drugCategory, checked: false, exportQuantity: 1, error: ''})
+        selectedDrugs.push({ ...drugCategory, checked: false, exportQuantity: 1, error: '' })
     }
 
     const unCheckDrugCategory = (drugCategory: any) => {
         const data = cloneDrugs.map(drug => {
-            return drug.id === drugCategory.id ? {...drug, checked: false} : drug
+            return drug.id === drugCategory.id ? { ...drug, checked: false } : drug
         })
         setCloneDrugs(data);
         if (search.trim().length > 0) {
@@ -64,10 +64,11 @@ export const useSalesExport = () => {
             validateError = 'Số lượng tồn không đủ để xuất bán.'
         }
         else {
+            console.log(drugCategory.exportQuantity)
             if (isNaN(drugCategory.exportQuantity)) {
                 validateError = 'Số lượng bán bắt buộc'
             }
-            else if (drugCategory.exportQuantity === 0) {
+            else if (drugCategory.exportQuantity <= 0) {
                 validateError = 'Số lượng bán lớn hơn 0'
             }
             else {
@@ -75,7 +76,7 @@ export const useSalesExport = () => {
             }
         }
         setSelectedDrugs(selectedDrugs.map(drug => {
-            return drug.id === drugCategory.id ?  {...drugCategory, error: validateError} : drug
+            return drug.id === drugCategory.id ? { ...drugCategory, error: validateError } : drug
         }))
     }
 
@@ -112,7 +113,7 @@ export const useSalesExport = () => {
         globalEvent.emit('close-sidebar')
     }, [])
 
-  
+
 
     return {
         drugCategoryLoading,

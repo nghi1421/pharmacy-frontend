@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { socket } from '../../config/socket';
 
 const Clone = () => {
     const [username, setUsername] = useState('');

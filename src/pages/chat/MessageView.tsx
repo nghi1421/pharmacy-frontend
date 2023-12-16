@@ -1,14 +1,19 @@
-import { Box, Paper } from "@mui/material"
+import { Paper } from "@mui/material"
 import { useEffect, useRef } from "react";
 import { MessageItem } from "./MessageItem";
+import { Message } from "../../hooks/useChat";
 
-export const MessageView = () => {
+interface MessageViewProps {
+    messages: Message[]
+}
+
+export const MessageView: React.FC<MessageViewProps> = ({ messages }) => {
     const scrollableRef = useRef();
 
     useEffect(() => {
         //@ts-ignore
         scrollableRef.current.scrollTop = scrollableRef.current.scrollHeight;
-    }, []);
+    });
     return (
         //@ts-ignore
         <Paper
@@ -26,100 +31,16 @@ export const MessageView = () => {
             >
                 Nguyen Thanh Nghi
             </Box> */}
-            <MessageItem
-                time='20:20:11'
-                content="hello ban"
-                isRight={false}
-            />
-            <MessageItem
-                time='20:20:11'
-                content="hello ban"
-                isRight={true}
-            />
-            <MessageItem
-                time='20:20:11'
-                content="hello ban"
-                isRight={true}
-            />
-            <MessageItem
-                time='20:20:11'
-                content="hello ban"
-                isRight={true}
-            />
-            <MessageItem
-                time='20:20:11'
-                content="hello ban"
-                isRight={false}
-            />
-            <MessageItem
-                time='20:20:11'
-                content="hello ban"
-                isRight={false}
-            />
-            <MessageItem
-                time='20:20:11'
-                content="hello ban"
-                isRight={false}
-            />
-            <MessageItem
-                time='20:20:11'
-                content="hello ban"
-                isRight={true}
-            />
-            <MessageItem
-                time='20:20:11'
-                content="hello ban"
-                isRight={false}
-            />
-            <MessageItem
-                time='20:20:11'
-                content="hello ban"
-                isRight={false}
-            />
-            <MessageItem
-                time='20:20:11'
-                content="hello ban"
-                isRight={true}
-            /><MessageItem
-                time='20:20:11'
-                content="hello ban"
-                isRight={true}
-            />
-            <MessageItem
-                time='20:20:11'
-                content="hello ban"
-                isRight={false}
-            />
-            <MessageItem
-                time='20:20:11'
-                content="hello ban"
-                isRight={false}
-            />
-            <MessageItem
-                time='20:20:11'
-                content="hello ban"
-                isRight={false}
-            />
-            <MessageItem
-                time='20:20:11'
-                content="hello ban"
-                isRight={true}
-            />
-            <MessageItem
-                time='20:20:11'
-                content="hello ban"
-                isRight={false}
-            />
-            <MessageItem
-                time='20:20:11'
-                content="hello ban"
-                isRight={false}
-            />
-            <MessageItem
-                time='20:20:11'
-                content="hello ban"
-                isRight={false}
-            />
+            {
+                messages.map((message) => (
+                    <MessageItem
+                        time={message.time}
+                        content={message.content}
+                        isRight={!message.fromCustomer}
+                    />
+                ))
+            }
+
         </Paper>
     )
 }

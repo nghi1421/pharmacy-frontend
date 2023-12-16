@@ -1,6 +1,16 @@
 import { Paper, Button, TextField } from "@mui/material"
 
-export const FormMessage = () => {
+interface FormMessageProps {
+    message: string,
+    setMessage: (s: string) => void,
+    handleSendMessage: () => void
+}
+export const FormMessage: React.FC<FormMessageProps> = ({
+    message,
+    setMessage,
+    handleSendMessage
+}) => {
+
     return (
         <Paper sx={{
             display: 'flex',
@@ -8,8 +18,16 @@ export const FormMessage = () => {
         }}>
             <TextField
                 fullWidth
-                placeholder="Nhap tin nhan"
+                placeholder="Nhập tin nhắn"
                 size="small"
+                value={message}
+                onKeyDown={(event) => {
+                    if (event.key === "Enter")
+                        handleSendMessage();
+                }}
+                onChange={(event) => {
+                    setMessage(event.target.value as string)
+                }}
                 sx={{
                     outline: 'none',
                     '&:hover': {
@@ -20,6 +38,7 @@ export const FormMessage = () => {
             <Button
                 variant="contained"
                 sx={{ textTransform: 'none' }}
+                onClick={handleSendMessage}
             >
                 Gửi
             </Button>
