@@ -1,6 +1,6 @@
 import { Box, IconButton, Paper, TableCell, Tooltip, Typography } from "@mui/material";
 import TableComponent from "../../components/table/TableComponent";
-import { useDeleteAccount, useGetUsers } from "../../hooks/useAccount";
+import { useDeleteAccount, useGetUsers, useResetPassword } from "../../hooks/useAccount";
 import { useSearchQuery } from '../../hooks/useSearchQuery'
 import React from "react";
 import { useSearchableList } from "../../hooks/useSearchableList";
@@ -26,15 +26,22 @@ const UserPage: React.FC<{}> = () => {
     const { data, isLoading } = useGetUsers(query)
     const [columns, watchSearchList, control, setValue] = useSearchableList(columnsList, updateQueryParams)
     const deleteAccount = useDeleteAccount()
+    const resetPassword = useResetPassword()
     const [openConfirmDialog, props] = useConfirmDialog(deleteAccount.mutate)
-
+    const [openResetPasswordConfirm, propsResetPassword] = useConfirmDialog(resetPassword.mutate)
     return (
         <Paper>
             <ConfirmDialog
-                content="Vui lòng cân nhắc trước thu hồi và xóa tài khoản.
+                content="Vui lòng cân nhắc trước khi thu hồi và xóa tài khoản.
                  Nếu bạn đồng ý thu hồi và xóa tài khoản bạn hãy nhấn Xác nhận."
                 title="Bạn có thật sự muốn thu hồi và xóa tài khoản này không?"
                 {...props}
+            />
+            <ConfirmDialog
+                content="Vui lòng cân nhắc trước reset mật khẩu.
+                 Nếu bạn đồng ý reset mật khẩu bạn hãy nhấn Xác nhận."
+                title="Bạn có thật sự muốn reset mật khẩu tài khoản này không?"
+                {...propsResetPassword}
             />
             <Typography
                 variant="h4"
@@ -75,7 +82,7 @@ const UserPage: React.FC<{}> = () => {
                                     <Tooltip title="Reset mật khẩu">
                                         <IconButton
                                             color='primary'
-                                            onClick={() => { }}
+                                            onClick={() => { openResetPasswordConfirm(rowValue.id) }}
                                         >
                                             <ReplayIcon></ReplayIcon>
                                         </IconButton>

@@ -1,14 +1,12 @@
 import { enqueueSnackbar } from 'notistack';
 import axiosClient from '../services/axios';
-import { API_STAFF, API_USER, API_USER_WITH_ID } from '../utils/constants';
+import { API_RESET_PASSWORD, API_USER, API_USER_WITH_ID } from '../utils/constants';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { formatDateTime } from '../utils/format';
 import { User } from '../types/User';
 import { DataMetaResponse } from '../types/response/DataResponse';
 import { Query } from '../types/Query';
 import { defaultCatchErrorHandle, defaultOnSuccessHandle, updateSearchParams } from '../utils/helper';
-import { getAccessToken } from '../store/auth';
-import { AxiosHeaders } from 'axios';
 import { UseFormSetError } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { pathToUrl } from '../utils/path';
@@ -94,8 +92,28 @@ const useDeleteAccount = () => {
   })
 }
 
+const useResetPassword = () => {
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+
+  return useMutation({
+    mutationFn: async (userId: string) => {
+      return await axiosClient.post(pathToUrl(API_RESET_PASSWORD, { userId }))
+        .then(response => response)
+        .catch(error => {
+          console.log(error.response)
+          defaultCatchErrorHandle(error)
+        })
+    },
+    onSuccess: (response: any) => {
+      defaultOnSuccessHandle(queryClient, navigate, response, 'users', '/admin/users')
+    }
+  })
+}
+
 export {
   useGetUsers,
   useCreateAccount,
-  useDeleteAccount
+  useDeleteAccount,
+  useResetPassword
 }

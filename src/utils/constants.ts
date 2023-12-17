@@ -30,6 +30,7 @@ export const API_TYPE_BY_USE = 'type-by-uses';
 
 export const API_USER_WITH_ID = 'users/:userId';
 export const API_REVOKE_AND_DELETE_USER = 'users/revoke/:staffId';
+export const API_RESET_PASSWORD = 'reset-password/:userId';
 export const API_STAFF_WITH_ID = 'staffs/:staffId';
 export const API_CUSTOMER_WITH_ID = 'customers/:customerId';
 export const API_PROVIDER_WITH_ID = 'providers/:providerId';
