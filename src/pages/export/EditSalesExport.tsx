@@ -254,11 +254,11 @@ const EditSalesExport: React.FC = () => {
         }
     }, [selectedDrugs])
 
-    useEffect(() => {
-        if (exportData && exportDetailData) {
-            handlePrint();
-        }
-    }, [exportData, exportDetailData])
+    // useEffect(() => {
+    //     if (exportData && exportDetailData) {
+    //         handlePrint();
+    //     }
+    // }, [exportData, exportDetailData])
 
     const onSubmit = (data: EditExportForm) => {
         console.log(selectedDrugs);
@@ -575,7 +575,7 @@ const EditSalesExport: React.FC = () => {
                                         onChange={handleSearchData}
                                         classes={{ root: classes.customTextField }}
                                         size='small'
-                                        sx={{ flexGrow: 1, my: 'auto', mr: '20%', ml: 2 }}
+                                        sx={{ flexGrow: 1, my: 'auto', ml: 2 }}
                                         label="Tìm kiếm"
                                         value={search}
                                         placeholder="Nhập thông tin danh mục thuốc theo tên"
@@ -619,6 +619,18 @@ const EditSalesExport: React.FC = () => {
                                         Hoàn toàn bộ
                                     </Button>
 
+                                    <Button
+                                        variant="outlined"
+                                        color="primary"
+                                        sx={{
+                                            height: '70%',
+                                            m: 'auto',
+                                            textTransform: 'none',
+                                        }}
+                                        onClick={() => { handlePrint() }}
+                                    >
+                                        In hóa đơn
+                                    </Button>
                                 </Box>
                                 {
                                     drugCategoryLoading

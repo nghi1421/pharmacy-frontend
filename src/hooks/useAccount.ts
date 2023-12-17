@@ -13,24 +13,24 @@ import { UseFormSetError } from 'react-hook-form';
 import { GrandAccountForm } from '../pages/staff/GrantAccount';
 
 function createData({
-    id,
-    username,
-    role, 
-    createdAt,
-    updatedAt}: User
+  id,
+  username,
+  role,
+  createdAt,
+  updatedAt }: User
 ) {
-    return {
-        id, username,
-        role: role.name,
-        createdAt: formatDateTime(createdAt),
-        updatedAt: formatDateTime(updatedAt),
-    };
+  return {
+    id, username,
+    role: role.name,
+    createdAt: formatDateTime(createdAt),
+    updatedAt: formatDateTime(updatedAt),
+  };
 }
 
 const useGetUsers = (query: Query) => {
   const queryParams = updateSearchParams(query)
   const headers = new AxiosHeaders({
-    'Authorization':  `Bearer ${getAccessToken()}`,
+    'Authorization': `Bearer ${getAccessToken()}`,
   });
   return useQuery({
     queryKey: ['users', queryParams.toString()],
@@ -52,7 +52,7 @@ const useGetUsers = (query: Query) => {
       })
       .catch(error => {
 
-      }) ,
+      }),
     enabled: !!queryParams.toString()
   })
 };
@@ -66,21 +66,17 @@ const useCreateAccount = (setError: UseFormSetError<any>) => {
         .then(response => {
           if (response.data.message) {
             queryClient.invalidateQueries('users', { refetchInactive: true })
+            queryClient.invalidateQueries('staffs', { refetchInactive: true })
             enqueueSnackbar(response.data.message, {
-                autoHideDuration: 3000,
-                variant: 'success'
-            })  
+              autoHideDuration: 3000,
+              variant: 'success'
+            })
           }
-          else {
-              enqueueSnackbar(response.data.errorMessage, {
-                  autoHideDuration: 3000,
-                  variant: 'error'
-              }) 
-          }
+          return response
         })
         .catch(error => {
           defaultCatchErrorHandle(error, setError)
-        }) 
+        })
     }
   })
 }

@@ -201,7 +201,6 @@ const useGetExportToday = () => {
               exportTodayIndex: {
                 export: handleExport,
                 exportDetail: handleExportDetail,
-
               }
             },
             replace: true
@@ -240,16 +239,14 @@ const useCreateExport = (
       if (response.data.message) {
         queryClient.invalidateQueries('drug-categories', { refetchInactive: true })
         queryClient.invalidateQueries('exports-today', { refetchInactive: true })
-        const handleExport = createDataExport(response.data.data.export)
-        const handleExportDetail = response.data.data.exportDetail.map(
-          (exportDetail: ExportDetailRawData) => createExportDetailPdf(exportDetail))
-
-        setExportData(handleExport)
-        setExportDetailData(handleExportDetail)
+        // const handleExport = createDataExport(response.data.data.export)
+        // const handleExportDetail = response.data.data.exportDetail.map(
+        //   (exportDetail: ExportDetailRawData) => createExportDetailPdf(exportDetail))
         enqueueSnackbar(response.data.message, {
           autoHideDuration: 3000,
           variant: 'success'
         })
+        return response.data.data
       }
       else {
         enqueueSnackbar(response.data.errorMessage, {

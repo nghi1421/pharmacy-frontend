@@ -6,6 +6,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { Controller, useForm } from "react-hook-form";
 import { useGetRoles } from "../../hooks/useAuth";
 import { useCreateAccount } from "../../hooks/useAccount";
+import { useEffect } from "react";
 
 export interface GrandAccountForm {
     username: string
@@ -37,10 +38,15 @@ export const GrantAccount: React.FC<ChangePasswordProps> = ({ closeModal, staffI
     });
     const createAccount = useCreateAccount(setError)
 
-
     const onSubmit = (data: GrandAccountForm) => {
-        createAccount.mutate({...data, staffId})
+        createAccount.mutate({ ...data, staffId })
     }
+
+    useEffect(() => {
+        if (createAccount.data) {
+            closeModal()
+        }
+    }, [createAccount.data])
 
     const refreshForm = () => {
         reset();
@@ -62,30 +68,30 @@ export const GrantAccount: React.FC<ChangePasswordProps> = ({ closeModal, staffI
                         <InputLabel >Chức vụ</InputLabel>
                         <Controller
                             render={({ field: { onChange, value } }) => (
-                                    <Select
-                                        size='small'
-                                        onChange={onChange}
-                                        value={value}
-                                        label='Chức vụ'
-                                    >
-                                        {
-                                            isLoading
-                                                ?
-                                                <CircularProgress sx={{ margin: 'auto' }} />
-                                                :
+                                <Select
+                                    size='small'
+                                    onChange={onChange}
+                                    value={value}
+                                    label='Chức vụ'
+                                >
+                                    {
+                                        isLoading
+                                            ?
+                                            <CircularProgress sx={{ margin: 'auto' }} />
+                                            :
                                             data.map((position: any) => (
                                                 <MenuItem
                                                     key={`position-${position.id}`}
                                                     value={position.id}>
                                                     {position.name}
                                                 </MenuItem>)
-                                                )
-                                        }
+                                            )
+                                    }
                                 </Select>
                             )}
                             control={control}
                             name='roleId'
-                        />    
+                        />
                     </FormControl>
                 </Grid>
                 <Grid item xs={8} sm={12} sx={{ display: 'flex', justifyContent: 'end', gap: 2 }}>
@@ -107,7 +113,7 @@ export const GrantAccount: React.FC<ChangePasswordProps> = ({ closeModal, staffI
                         Làm mới
                     </Button>
 
-                     <Button
+                    <Button
                         color='error'
                         variant="outlined"
                         sx={{ textTransform: 'none' }}

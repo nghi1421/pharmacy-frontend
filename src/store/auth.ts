@@ -8,7 +8,7 @@ const getAccessToken = (): string | null => {
     return localStorage.getItem('accessToken');
 }
 
-const setStaff = (staff: Staff|null) => {
+const setStaff = (staff: Staff | null) => {
     localStorage.setItem('staffInfomation', JSON.stringify(staff));
 }
 

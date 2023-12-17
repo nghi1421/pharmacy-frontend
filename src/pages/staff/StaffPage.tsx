@@ -7,7 +7,7 @@ import CreateIcon from '@mui/icons-material/Create';
 import DeleteIcon from '@mui/icons-material/Delete';
 import WorkOffIcon from '@mui/icons-material/WorkOff';
 import WorkOnIcon from '@mui/icons-material/Work';
-import { useDeleteStaff, useGetStaff, useGetStaffs, useUpdateStaffStatus } from "../../hooks/useStaff";
+import { useDeleteStaff, useGetStaff, useGetStaffs, useRevokeAndDeleteAccount, useUpdateStaffStatus } from "../../hooks/useStaff";
 import { useConfirmDialog } from "../../hooks/useConfirmDialog";
 import ConfirmDialog from "../../components/ConfirmDialog";
 import { getSearchColums } from "../../utils/helper";
@@ -21,15 +21,17 @@ import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
 import { ModalComponent } from "../../components/Modal";
 import { GrantAccount } from "./GrantAccount";
 import PersonOffIcon from '@mui/icons-material/PersonOff';
+import { enqueueSnackbar } from "notistack";
+import { getStaff as getStaffFn } from '../../store/auth'
 
 const columnsList: Column[] = [
-    { key: 'id', value: 'Mã nhân viên', sortable: true, searchable: true, enableSearch: true},
-    { key: 'name', value: 'Họ tên', sortable: true, searchable: true, enableSearch: false},
-    { key: 'gender', value: 'Giới tính', sortable: true, searchable: false},
-    { key: 'phoneNumber', value: 'Số điện thoại', sortable: true, searchable: true, enableSearch: false},
-    { key: 'dob', value: 'Ngày sinh', sortable: true, searchable: true, enableSearch: false},
-    { key: 'email', value: 'Email', sortable: true, searchable: true, enableSearch: false},
-    { key: 'isWorking', value: 'Đang làm việc', sortable: true, searchable: false},
+    { key: 'id', value: 'Mã nhân viên', sortable: true, searchable: true, enableSearch: true },
+    { key: 'name', value: 'Họ tên', sortable: true, searchable: true, enableSearch: false },
+    { key: 'gender', value: 'Giới tính', sortable: true, searchable: false },
+    { key: 'phoneNumber', value: 'Số điện thoại', sortable: true, searchable: true, enableSearch: false },
+    { key: 'dob', value: 'Ngày sinh', sortable: true, searchable: true, enableSearch: false },
+    { key: 'email', value: 'Email', sortable: true, searchable: true, enableSearch: false },
+    { key: 'isWorking', value: 'Đang làm việc', sortable: true, searchable: false },
 ]
 
 const StaffPage: React.FC<{}> = () => {
@@ -40,11 +42,12 @@ const StaffPage: React.FC<{}> = () => {
     const [openModal, setOpenModal] = useState<boolean>(false)
     const [openConfirmDialog, props] = useConfirmDialog(deleteStaff.mutate)
     const [staffId, setStaffId] = useState<number>(0)
-    const [openConfirmDialogRevokeAccount, revokeProps] = useConfirmDialog(deleteStaff.mutate)
+    const revokeAndDeleteAccount = useRevokeAndDeleteAccount()
+    const [openConfirmDialogRevokeAccount, revokeProps] = useConfirmDialog(revokeAndDeleteAccount.mutate)
     const { query, actionChangePage, actionSort, actionSearch, updateQueryParams } =
         useSearchQuery(getSearchColums(columnsList, GET_ARRAY_OF_KEY))
     const { data, isLoading } = useGetStaffs(query)
-    const [columns, watchSearchList, control, setValue ] = useSearchableList(columnsList, updateQueryParams)
+    const [columns, watchSearchList, control, setValue] = useSearchableList(columnsList, updateQueryParams)
 
     const clickAdd = () => {
         navigate('/admin/staffs/create')
@@ -54,19 +57,19 @@ const StaffPage: React.FC<{}> = () => {
             <ConfirmDialog
                 content="Vui lòng cân nhắc trước khi xóa dữ liệu. Nếu bạn đồng ý xóa thông tin nhân viên bạn hãy nhấn Xác nhận."
                 title="Bạn có thật sự muốn xóa thông tin nhân viên này không?"
-                { ...props }
+                {...props}
             />
             <ConfirmDialog
                 content="Bạn có thật sự muốn thu hồi và xóa tài khoản này không?"
                 title="Thu hồi và xóa tài khoản"
-                { ...revokeProps }
+                {...revokeProps}
             />
             <ModalComponent
                 title='Cấp tài khoản'
                 initOpen={openModal}
                 width={450}
                 handleClose={() => setOpenModal(false)}
-                children={<GrantAccount closeModal={() => setOpenModal(false)} staffId={staffId}/>}
+                children={<GrantAccount closeModal={() => setOpenModal(false)} staffId={staffId} />}
             />
             <Box sx={{
                 display: 'flex',
@@ -81,7 +84,7 @@ const StaffPage: React.FC<{}> = () => {
                 <Typography
                     variant="h4"
                     fontWeight='500'
-                    sx={{ px:3, py: 2 }}
+                    sx={{ px: 3, py: 2 }}
                 >
                     Quản lí nhân viên
                 </Typography>
@@ -130,7 +133,7 @@ const StaffPage: React.FC<{}> = () => {
                 totalPage={data ? data.meta.totalPage : undefined}
                 hasAction={true}
                 action={
-                    (rowValue: any) => 
+                    (rowValue: any) =>
                         <TableCell
                             align="left"
                             key={`row-action-provider-table-${rowValue.id}`}>
@@ -144,68 +147,78 @@ const StaffPage: React.FC<{}> = () => {
                                     </IconButton>
                                 </Tooltip>
 
-                            {
-                                rowValue.user
-                                    ?
+                                {
+                                    rowValue.user
+                                        ?
                                         <Tooltip title="Thu hồi và xóa tài khoản">
-                                        <IconButton
-                                            color='error'
-                                            onClick={() => { openConfirmDialogRevokeAccount(rowValue.id) }}
-                                        >
-                                            <PersonOffIcon></PersonOffIcon>
-                                        </IconButton>
-                                    </Tooltip>
-                                    :
+                                            <IconButton
+                                                color='error'
+                                                onClick={() => {
+                                                    if (rowValue.id == getStaffFn().id) {
+                                                        enqueueSnackbar('Không thể thu hồi tài khoản của bản thân.', {
+                                                            autoHideDuration: 3000,
+                                                            variant: 'warning'
+                                                        })
+                                                    }
+                                                    else {
+                                                        openConfirmDialogRevokeAccount(rowValue.id);
+                                                    }
+                                                }}
+                                            >
+                                                <PersonOffIcon></PersonOffIcon>
+                                            </IconButton>
+                                        </Tooltip>
+                                        :
                                         <Tooltip title="Tạo và cấp tài khoản">
-                                        <IconButton
-                                            color='success'
+                                            <IconButton
+                                                color='success'
                                                 onClick={() => { setOpenModal(true); setStaffId(rowValue.id) }}
-                                        >
-                                            <PersonAddAltIcon></PersonAddAltIcon>
-                                        </IconButton>
-                                    </Tooltip>
-                            }
-                            {
-                                rowValue.status ?
-                                    <Tooltip title="Cho nghỉ việc">
-                                        <IconButton
-                                            color='error'
-                                            onClick={() => {
-                                                updateStaffStatus.mutate(rowValue.id)
-                                            }}
-                                        >
-                                            <WorkOffIcon></WorkOffIcon>
-                                        </IconButton>
-                                    </Tooltip>
-                                    
-                                    :
-                                    <Tooltip title="Làm việc">
-                                        <IconButton
-                                            color='success'
-                                            onClick={() => {
-                                                updateStaffStatus.mutate(rowValue.id)
-                                            }}
-                                        >
-                                        <WorkOnIcon></WorkOnIcon>
-                                        </IconButton>
-                                    </Tooltip >
-                                    
-                            }
-                            <Tooltip title="Xóa thông tin nhân viên">
-                                <IconButton
-                                    color='error'
-                                    onClick={() => { openConfirmDialog(rowValue.id) }}
-                                >
-                                    <DeleteIcon></DeleteIcon>
-                                </IconButton>
-                            </Tooltip>
-                        </Box>
-                    </TableCell>
+                                            >
+                                                <PersonAddAltIcon></PersonAddAltIcon>
+                                            </IconButton>
+                                        </Tooltip>
+                                }
+                                {
+                                    rowValue.status ?
+                                        <Tooltip title="Cho nghỉ việc">
+                                            <IconButton
+                                                color='error'
+                                                onClick={() => {
+                                                    updateStaffStatus.mutate(rowValue.id)
+                                                }}
+                                            >
+                                                <WorkOffIcon></WorkOffIcon>
+                                            </IconButton>
+                                        </Tooltip>
+
+                                        :
+                                        <Tooltip title="Làm việc">
+                                            <IconButton
+                                                color='success'
+                                                onClick={() => {
+                                                    updateStaffStatus.mutate(rowValue.id)
+                                                }}
+                                            >
+                                                <WorkOnIcon></WorkOnIcon>
+                                            </IconButton>
+                                        </Tooltip >
+
+                                }
+                                <Tooltip title="Xóa thông tin nhân viên">
+                                    <IconButton
+                                        color='error'
+                                        onClick={() => { openConfirmDialog(rowValue.id) }}
+                                    >
+                                        <DeleteIcon></DeleteIcon>
+                                    </IconButton>
+                                </Tooltip>
+                            </Box>
+                        </TableCell>
                 }
             />
         </Paper>
     )
-    
+
 }
 
 export default StaffPage;

@@ -1,6 +1,6 @@
 import { Box, Button, CircularProgress, Grid, InputAdornment, Paper, TextField, Typography } from "@mui/material"
 import { useNavigate } from "react-router-dom"
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Controller, PathString, useForm } from "react-hook-form";
 import { getStaff } from "../../store/auth";
 import { FormInputText } from "../../components/form/FormInputText";
@@ -16,7 +16,7 @@ import Address from "../../components/Address";
 import { useSearchCustomer } from '../../hooks/useCustomer'
 import yup from "../../utils/yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useCreateExport } from "../../hooks/useExport";
+import { useCreateExport, useGetExportToday } from "../../hooks/useExport";
 import ExportBill from "./ExportBill";
 import { enqueueSnackbar } from "notistack";
 import dayjs from "dayjs";
@@ -142,6 +142,7 @@ const SalesExport: React.FC = () => {
             clearErrors('name')
         clearErrors('email')
     }
+    const getExport = useGetExportToday()
     const searchCustomer = useSearchCustomer(setCustomer)
     const { handleSubmit, control, reset, setValue } = useForm<ExportForm>({
         defaultValues: defaultValuesExport,
@@ -166,6 +167,12 @@ const SalesExport: React.FC = () => {
         search,
         cloneDrugs
     } = useSalesExport()
+
+    useEffect(() => {
+        if (createExport.data) {
+            getExport.mutate(createExport.data.data.data.export.id)
+        }
+    }, [createExport.data])
 
     const onSubmit = (data: ExportForm) => {
         handleSubmitCustomer((_) => { })()
@@ -354,7 +361,7 @@ const SalesExport: React.FC = () => {
                                 onChange={handleSearchData}
                                 classes={{ root: classes.customTextField }}
                                 size='small'
-                                sx={{ flexGrow: 1, my: 'auto', mr: '0%', ml: 2 }}
+                                sx={{ flexGrow: 1, my: 'auto', mr: '30%', ml: 2 }}
                                 label="Tìm kiếm"
                                 value={search}
                                 placeholder="Nhập thông tin danh mục thuốc theo tên"
@@ -380,7 +387,7 @@ const SalesExport: React.FC = () => {
                                 }}
                                 onClick={handleSubmit(onSubmit)}
                             >
-                                Tạo phiếu & Xuất hóa đơn
+                                Tạo phiếu
                             </Button>
 
                             {
