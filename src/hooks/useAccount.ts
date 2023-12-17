@@ -1,6 +1,6 @@
 import { enqueueSnackbar } from 'notistack';
 import axiosClient from '../services/axios';
-import { API_STAFF, API_USER } from '../utils/constants';
+import { API_STAFF, API_USER, API_USER_WITH_ID } from '../utils/constants';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { formatDateTime } from '../utils/format';
 import { User } from '../types/User';
@@ -10,7 +10,8 @@ import { defaultCatchErrorHandle, defaultOnSuccessHandle, updateSearchParams } f
 import { getAccessToken } from '../store/auth';
 import { AxiosHeaders } from 'axios';
 import { UseFormSetError } from 'react-hook-form';
-import { GrandAccountForm } from '../pages/staff/GrantAccount';
+import { useNavigate } from 'react-router-dom';
+import { pathToUrl } from '../utils/path';
 
 function createData({
   id,
@@ -29,13 +30,11 @@ function createData({
 
 const useGetUsers = (query: Query) => {
   const queryParams = updateSearchParams(query)
-  const headers = new AxiosHeaders({
-    'Authorization': `Bearer ${getAccessToken()}`,
-  });
+
   return useQuery({
     queryKey: ['users', queryParams.toString()],
     queryFn: () => axiosClient
-      .get(`${API_USER}?${queryParams.toString()}`, { headers })
+      .get(`${API_USER}?${queryParams.toString()}`)
       .then((response): DataMetaResponse | undefined => {
         if (response.data.message) {
           return {
@@ -43,10 +42,6 @@ const useGetUsers = (query: Query) => {
             meta: response.data.meta
           }
         }
-        enqueueSnackbar(response.data.errorMessage, {
-          autoHideDuration: 3000,
-          variant: 'error'
-        })
 
         return undefined
       })
@@ -81,7 +76,26 @@ const useCreateAccount = (setError: UseFormSetError<any>) => {
   })
 }
 
+const useDeleteAccount = () => {
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+
+  return useMutation({
+    mutationFn: async (userId: string) => {
+      return await axiosClient.delete(pathToUrl(API_USER_WITH_ID, { userId }))
+        .then(response => response)
+        .catch(error => {
+          defaultCatchErrorHandle(error)
+        })
+    },
+    onSuccess: (response: any) => {
+      defaultOnSuccessHandle(queryClient, navigate, response, 'users', '/admin/users')
+    }
+  })
+}
+
 export {
   useGetUsers,
-  useCreateAccount
+  useCreateAccount,
+  useDeleteAccount
 }
