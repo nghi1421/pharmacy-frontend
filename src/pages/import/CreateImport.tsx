@@ -20,6 +20,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { Provider } from "../../types/Provider";
 import { useCreateImport } from "../../hooks/useImport";
 import { TextShow } from "../../components/TextShow";
+import { enqueueSnackbar } from "notistack";
 
 const useStyles = makeStyles({
     customTextField: {
@@ -158,10 +159,10 @@ const CreateImport: React.FC = () => {
         validateErrors[3] = drugCategory.batchId.length === 0 ? 'Mã lô thuốc bắt buộc.' : ''
         validateErrors[2] = dayjs(drugCategory.expiryDate).isBefore(dayjs(), 'day') ? 'Thuốc đã hết hạn sử dụng.' : ''
 
-        if (isNaN(drugCategory.quantity)) {
+        if (isNaN(drugCategory.unitPrice)) {
             validateErrors[1] = 'Đơn giá nhập bắt buộc.'
         }
-        else if (drugCategory.quantity <= 0) {
+        else if (drugCategory.unitPrice <= 0) {
             validateErrors[1] = 'Đơn giá nhập phải lơn hơn 0.'
         }
         else {
@@ -182,6 +183,13 @@ const CreateImport: React.FC = () => {
     }
 
     const onSubmit = (data: ImportForm) => {
+        if (selectedDrugs.length === 0) {
+            enqueueSnackbar('Vui lòng thuốc cần nhập.', {
+                autoHideDuration: 3000,
+                variant: 'warning'
+            })
+            return;
+        }
         let isInvalid = false;
         const validatedDrugs = selectedDrugs.map(drugCategory => {
             const validateErrros = validate(drugCategory);
@@ -195,7 +203,7 @@ const CreateImport: React.FC = () => {
             setSelectedDrugs(validatedDrugs)
         }
         else {
-            const result = createImport.mutate({
+            createImport.mutate({
                 ...data,
                 providerId: data.provider ? data.provider.id : 1,
                 staffId: staff.id,
@@ -209,9 +217,14 @@ const CreateImport: React.FC = () => {
                     } as ImportDetail
                 })
             })
-            console.log(result);
         }
     };
+
+    // useEffect(() => {
+    //     if (createImport.data) {
+
+    //     }
+    // }, [createImport.data])
 
     const checkDrugCategory = (drugCategory: any) => {
         const data = cloneDrugs.map(drug => {
@@ -415,7 +428,7 @@ const CreateImport: React.FC = () => {
                             }}
                             onClick={handleSubmit(onSubmit)}
                         >
-                            Tạo phiếu & Xuất hóa đơn
+                            Tạo phiếu
                         </Button>
 
                         <Button

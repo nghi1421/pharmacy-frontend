@@ -148,12 +148,17 @@ const CancelExport: React.FC = () => {
                     return { drugId: drug.id, quantity: drug.exportQuantity, importId: drug.importId }
                 })
             })
-            setSelectedDrugs([]),
-                setDrugs(cloneDrugs)
-            setSearch(''),
-                reset()
         }
     };
+
+    useEffect(() => {
+        if (createExport.data) {
+            setSelectedDrugs([])
+            setDrugs(cloneDrugs)
+            setSearch('')
+            reset()
+        }
+    }, [createExport.data])
 
     const checkDrugCategory = (drugCategory: any) => {
         const data = cloneDrugs.map(drug => {
@@ -198,7 +203,7 @@ const CancelExport: React.FC = () => {
             if (isNaN(drugCategory.exportQuantity)) {
                 validateErrors[1] = 'Số lượng bán bắt buộc.'
             }
-            else if (drugCategory.exportQuantity === 0) {
+            else if (drugCategory.exportQuantity <= 0) {
                 validateErrors[1] = 'Số lượng bán lớn hơn 0.'
             }
             else {

@@ -16,19 +16,23 @@ const changePasswordValidate: Yup.ObjectSchema<ChangePasswordForm> = yup.object(
     oldPassword: yup
         .string()
         .required('Tên đăng nhập bắt buộc.')
-        .min(6)
-        .max(255),
+        .min(6, 'Mật khẩu tối thiểu 6 kí tự')
+        .max(255, 'Mật khẩu tối đa 255 kí tự'),
     newPassword: yup
         .string()
         .required('Mật khẩu bắt buộc.')
-        .min(6)
-        .max(255),
+        .min(6, 'Mật khẩu tối thiểu 6 kí tự')
+        .matches(
+            /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\`*])(?=.{6,})/,
+            "Mật khẩu phải bao gồm chữ số, chữ in hoa và ít nhất 1 kí tự đặc biệt."
+        )
+        .max(255, 'Mật khẩu tối đa 255 kí tự'),
     confirmationPassword: yup
         .string()
         .required('Xác nhận mật khẩu bắt buộc.')
         .oneOf([Yup.ref('newPassword'), ''], 'Xác nhận mật khẩu không khớp.')
-        .min(6)
-        .max(255),
+        .min(6, 'Mật khẩu tối thiểu 6 kí tự')
+        .max(255, 'Mật khẩu tối đa 255 kí tự'),
 })
 
 interface ChangePasswordProps {
@@ -66,8 +70,8 @@ export const ChangePassword: React.FC<ChangePasswordProps> = ({ closeModal }) =>
                         placeholder='Nhập mật khẩu cũ'
                     />
                 </Grid>
-                
-                 <Grid item xs={8} sm={12}>
+
+                <Grid item xs={8} sm={12}>
                     <FormInputText
                         name="newPassword"
                         type='password'
@@ -106,7 +110,7 @@ export const ChangePassword: React.FC<ChangePasswordProps> = ({ closeModal }) =>
                         Làm mới
                     </Button>
 
-                     <Button
+                    <Button
                         color='error'
                         variant="outlined"
                         sx={{ textTransform: 'none' }}

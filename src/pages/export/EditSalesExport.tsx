@@ -167,8 +167,8 @@ const EditSalesExport: React.FC = () => {
     });
     const [address, setAddress] = useState<string>('');
     const [search, setSearch] = useState<string>('')
-    const [exportData, setExportData] = useState<ExportData | null>(null)
-    const [exportDetailData, setExportDetailData] = useState<ExportDetailPdf[] | null>(null)
+    const [exportData, setExportData] = useState<ExportData | null>(state.exportTodayIndex.exportPdf ?? null)
+    const [exportDetailData, setExportDetailData] = useState<ExportDetailPdf[] | null>(state.exportTodayIndex.exportDetailPdf ?? null)
     const refundAndCreate = useRefundAndCreateNewExport(setExportData, setExportDetailData);
     const [selectedExport, setSelectedExport] = useState<number>(state.exportTodayIndex.export.id)
     let componentRef = useRef<HTMLDivElement>(null);
@@ -181,7 +181,6 @@ const EditSalesExport: React.FC = () => {
 
     useEffect(() => {
         if (drugCategories && drugCategories.length > 0) {
-            console.log(3)
             setAddress(state.exportTodayIndex.export.customer.address)
             setChange(Math.random())
             setSelectedExport(state.exportTodayIndex.export.id)
@@ -486,11 +485,11 @@ const EditSalesExport: React.FC = () => {
                                 <TextShow title="Thời gian" data={dayjs(state.exportTodayIndex.export.exportDate).format('HH:mm:ss')} />
                             </Grid>
 
-                            <Grid item xs={8} sm={3} sx={{ marginTop: -0.25 }}>
+                            <Grid item xs={8} sm={3}>
                                 <Typography
                                     variant="subtitle2"
                                 >
-                                    <Typography display="inline" sx={{ fontWeight: 'bold' }}>
+                                    <Typography display="inline" sx={{ fontWeight: 600 }}>
                                         Loại:
                                     </Typography>
                                     <Typography display="inline" sx={{ textDecoration: 'none', ml: 1 }}>

@@ -1,4 +1,4 @@
-import { Box, Button, Grid, Paper, Typography } from "@mui/material";
+import { Box, Button, CircularProgress, Grid, Paper, Typography } from "@mui/material";
 import { FormInputText } from "../../components/form/FormInputText";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -18,6 +18,9 @@ import { enqueueSnackbar } from "notistack";
 import { formatDateTime, formatNumber } from "../../utils/format";
 import EmptyImage from '../../assets/images/no-data.jpg'
 import { ExportExcelButton } from "../../components/ExportExcelButton";
+import { useGetDataDrugCategories } from "../../hooks/useDrugCategory";
+import { Item } from "../../types/props/FormInputListProps";
+import { FormAutoId } from "../../components/form/FormAutoId";
 
 export interface TroubleForm {
     batchId: string
@@ -74,6 +77,7 @@ const TroublePage: React.FC<{}> = () => {
     const [change, setChange] = useState<number>(Math.random())
     const [inventoryImports, setInventoryImports] = useState<any[]>([])
     const [drugCategory, setDrugCategory] = useState<DrugCategory>()
+    const { data, isLoading } = useGetDataDrugCategories()
     const [provider, setProvider] = useState<any>(null)
     const [item, setItem] = useState<any>()
     const [trouble, setTrouble] = useState<Trouble | null>(null)
@@ -154,6 +158,17 @@ const TroublePage: React.FC<{}> = () => {
         setRowsData(newRowsData)
         setChange(Math.random())
     }
+    const [drugs, setDrugs] = useState<Item[]>([])
+    useEffect(() => {
+        if (data && data.length > 0) {
+            setDrugs(data.map((drug: DrugCategory) => {
+                return {
+                    label: drug.name,
+                    id: drug.id,
+                }
+            }))
+        }
+    }, [data])
     useEffect(() => {
         if (createTrouble.data) {
             //@ts-ignore
@@ -226,12 +241,20 @@ const TroublePage: React.FC<{}> = () => {
                         />
                     </Grid>
                     <Grid item xs={8} sm={3}>
-                        <FormInputText
-                            name="drugId"
-                            control={control}
-                            label="Mã danh mục thuốc"
-                            placeholder='Nhập mã danh mục thuốc'
-                        />
+                        {
+                            isLoading
+                                ?
+                                <CircularProgress sx={{ margin: 'auto' }} />
+                                :
+                                <FormAutoId
+                                    size='small'
+                                    control={control}
+                                    label='Danh mục thuốc'
+                                    placeholder='Chọn danh mục thuốc'
+                                    name='drugId'
+                                    options={drugs}
+                                />
+                        }
                     </Grid>
                     <Grid item xs={8} sm={3}>
                         <Button
@@ -271,9 +294,6 @@ const TroublePage: React.FC<{}> = () => {
                                             <TextShow title="Thời gian tạo" data={formatDateTime(trouble.troubleDate)} />
                                             <TextShow title="Ghi chú" data={trouble.note ?? '_'} />
                                         </Grid>
-                                    </Grid>
-                                    <Grid item xs={8} sm={6} sx={{ my: 'auto' }}>
-                                        <ExportExcelButton data={rowsData} fileName='trouble'></ExportExcelButton>
                                     </Grid>
                                 </Box>
                                 :

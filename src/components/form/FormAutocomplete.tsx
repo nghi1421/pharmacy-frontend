@@ -4,7 +4,7 @@ import { OverridableStringUnion } from '@mui/types';
 
 interface FormAutoCompleteProps {
   control: any
-  name: string  
+  name: string
   label: string
   placeholder: string
   options: any[]
@@ -14,33 +14,32 @@ interface FormAutoCompleteProps {
 
 export const FormAutocomplete: React.FC<FormAutoCompleteProps> =
   ({ control, label, name, placeholder, options, disable, size }) => {
-  return (
-    <Controller
-      render={({ field: { onChange }, fieldState: { error } }) => (
-        <Autocomplete
-          options={options}
-          disabled={disable ? disable : false}
-          id='autocomplete'
-          getOptionLabel={(option) => option.label}
-          isOptionEqualToValue={(option, value) => option.value === value.value}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              error={!!error}
-              helperText={error ? error.message : null}
-              size={size ? size : 'small'}
-              placeholder={placeholder}
-              label={label}
-              variant="outlined"
-            />
-          )}
-          onChange={(_, data) => onChange(data)}
-        />
-      )}
-      name={name}
-      rules={{required: 'Required field'}}
-      defaultValue=""
-      control={control}
-    />
-  );
-}
+    return (
+      <Controller
+        render={({ field: { onChange }, fieldState: { error } }) => (
+          <Autocomplete
+            options={options}
+            disabled={disable ? disable : false}
+            id='autocomplete'
+            getOptionLabel={(option) => option.label}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                error={!!error}
+                helperText={error ? error.message : null}
+                size={size ? size : 'small'}
+                placeholder={placeholder}
+                label={label}
+                variant="outlined"
+              />
+            )}
+            onChange={(_, data) => onChange(data)}
+          />
+        )}
+        name={name}
+        rules={{ required: 'Required field' }}
+        defaultValue=""
+        control={control}
+      />
+    );
+  }

@@ -142,7 +142,6 @@ const SalesExport: React.FC = () => {
             clearErrors('name')
         clearErrors('email')
     }
-    const getExport = useGetExportToday()
     const searchCustomer = useSearchCustomer(setCustomer)
     const { handleSubmit, control, reset, setValue } = useForm<ExportForm>({
         defaultValues: defaultValuesExport,
@@ -150,8 +149,9 @@ const SalesExport: React.FC = () => {
     });
     const [address, setAddress] = useState<string>('');
 
-    const { exportData, exportDetailData, componentRef, setExportData, setExportDetailData } = useExportPdf()
-    const createExport = useCreateExport(setExportData, setExportDetailData);
+    // const { exportData, exportDetailData, componentRef, setExportData, setExportDetailData } = useExportPdf()
+    const getExport = useGetExportToday()
+    const createExport = useCreateExport();
     const {
         handleSearchData,
         checkDrugCategory,
@@ -443,14 +443,14 @@ const SalesExport: React.FC = () => {
                     </Grid>
 
                 </Grid>
-                <div style={{ display: 'none' }}>
+                {/* <div style={{ display: 'none' }}>
                     <ExportBill
                         //@ts-ignore
                         ref={componentRef}
                         exportData={exportData}
                         exportDetail={exportDetailData}
                     />
-                </div>
+                </div> */}
 
             </Paper>
             <Box sx={{ flex: 1, px: 2, py: 1 }}></Box>

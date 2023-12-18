@@ -184,7 +184,10 @@ const useGetExport = () => {
   })
 }
 
-const useGetExportToday = () => {
+const useGetExportToday = (
+  // setExportData: (e: ExportData) => void,
+  // setExportDetailData: (e: ExportDetailPdf[]) => void
+) => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
@@ -194,13 +197,17 @@ const useGetExportToday = () => {
       .then((response) => {
         const handleExport = response.data.data.export
         const handleExportDetail = response.data.data.exportDetail
-
+        const handleExportPdf = createDataExport(response.data.data.export)
+        const handleExportDetailPdf = response.data.data.exportDetail.map(
+          (exportDetail: ExportDetailRawData) => createExportDetailPdf(exportDetail))
         navigate(`/sales/${exportId}/edit`,
           {
             state: {
               exportTodayIndex: {
                 export: handleExport,
                 exportDetail: handleExportDetail,
+                exportPdf: handleExportPdf,
+                exportDetailPdf: handleExportDetailPdf
               }
             },
             replace: true
@@ -217,10 +224,7 @@ const useGetExportToday = () => {
   })
 }
 
-const useCreateExport = (
-  setExportData: (e: ExportData) => void,
-  setExportDetailData: (e: ExportDetailPdf[]) => void
-) => {
+const useCreateExport = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -239,9 +243,6 @@ const useCreateExport = (
       if (response.data.message) {
         queryClient.invalidateQueries('drug-categories', { refetchInactive: true })
         queryClient.invalidateQueries('exports-today', { refetchInactive: true })
-        // const handleExport = createDataExport(response.data.data.export)
-        // const handleExportDetail = response.data.data.exportDetail.map(
-        //   (exportDetail: ExportDetailRawData) => createExportDetailPdf(exportDetail))
         enqueueSnackbar(response.data.message, {
           autoHideDuration: 3000,
           variant: 'success'

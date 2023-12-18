@@ -19,6 +19,10 @@ const setNewPasswordValidate: Yup.ObjectSchema<SetNewPasswordForm> = yup.object(
         .string()
         .required('Mật khẩu bắt buộc.')
         .min(6, 'Mật khẩu tối thiểu 6 kí tự')
+        .matches(
+            /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\`*])(?=.{6,})/,
+            "Mật khẩu phải bao gồm chữ số, chữ in hoa và ít nhất 1 kí tự đặc biệt."
+        )
         .max(255, 'Mật khẩu tối đa 255 kí tự'),
     confirmationPassword: yup
         .string()
@@ -42,9 +46,9 @@ export const SetNewPassword: React.FC<SetNewPasswordProps> = ({ email }) => {
         },
         resolver: yupResolver(setNewPasswordValidate)
     });
-    
+
     const onSubmit = (data: SetNewPasswordForm) => {
-        setNewPassword.mutate({...data, email})
+        setNewPassword.mutate({ ...data, email })
     }
     return (
         <>
@@ -89,7 +93,7 @@ export const SetNewPassword: React.FC<SetNewPasswordProps> = ({ email }) => {
                         </Button>
 
                     </Box>
-                    <CustomLink link='/login' title='Quay về trang đăng nhập'/>
+                    <CustomLink link='/login' title='Quay về trang đăng nhập' />
                 </Box>
             </Box>
         </>
